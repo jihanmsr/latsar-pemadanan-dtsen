@@ -5,6 +5,9 @@ import { Database, Zap, FileCheck, CheckCircle2 } from 'lucide-react';
 import UploadForm from '@/components/UploadForm';
 import FAQ from '@/components/FAQ';
 import DashboardStats from '@/components/DashboardStats';
+import SOPTimeline from '@/components/SOPTimeline';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 const steps = [
   {
@@ -30,24 +33,32 @@ const steps = [
 ];
 
 export default function Home() {
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <div className="w-full h-full pb-16">
+    <div className="w-full h-full pb-16 animate-fade-in">
       
       {/* HERO SECTION */}
-      <div className="relative overflow-hidden rounded-3xl bg-blue-600 p-8 sm:p-12 mb-12 shadow-2xl">
-        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 opacity-10">
-          <Database className="w-96 h-96" />
+      <div className="relative overflow-hidden rounded-3xl p-8 sm:p-12 mb-12 shadow-2xl transition-colors duration-500 bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-900 dark:to-slate-950 border border-slate-200/50 dark:border-white/10">
+        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 opacity-5 pointer-events-none">
+          <Database className="w-96 h-96 text-primary" />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent pointer-events-none"></div>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="relative z-10 max-w-3xl"
         >
-          <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4 tracking-tight">
-            Selamat Datang di PAKEWA<span className="text-blue-300">.</span>
+          <h1 className="text-4xl sm:text-5xl font-black text-foreground leading-tight mb-4 tracking-tight drop-shadow-sm">
+            Selamat Datang di PAKEWA<span className="text-primary">.</span>
           </h1>
-          <p className="text-blue-100 text-lg sm:text-xl font-medium mb-8 max-w-2xl leading-relaxed">
+          <p className="text-muted text-lg sm:text-xl font-medium mb-8 max-w-2xl leading-relaxed">
             Padanan Kesejahteraan Warga. Platform terpadu untuk memverifikasi, 
             memadankan, dan menjaga akurasi data sosial ekonomi secara cerdas dan aman.
           </p>
@@ -57,26 +68,10 @@ export default function Home() {
       {/* STORYBOARD SECTION */}
       <div className="mb-16">
         <div className="text-center mb-10">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">Bagaimana PAKEWA Bekerja?</h2>
-          <p className="text-slate-500 mt-2">Alur kerja pemadanan data dari hulu ke hilir</p>
+          <h2 className="text-3xl font-black text-foreground tracking-tight">Standar Operasional Prosedur</h2>
+          <p className="text-muted mt-3">Alur kerja pemadanan data dari hulu ke hilir</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {steps.map((step, idx) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.15 }}
-              className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-            >
-              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
-                <step.icon className="w-7 h-7 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-3">{step.title}</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{step.desc}</p>
-            </motion.div>
-          ))}
-        </div>
+        <SOPTimeline />
       </div>
 
       <DashboardStats />
