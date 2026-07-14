@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  PEMDA
+  BPS_ADMIN
+}
+
+enum FileType {
+  CSV
+  XLSX
+  IMAGE
+}
+
+enum Status {
+  PENDING
+  VALIDATED
+  MATCHING
+  COMPLETED
+  FAILED
+}
+
+enum StatusPadan {
+  PADAN
+  TIDAK_PADAN
+  ANOMALI
+}
+
+enum DocType {
+  BAST
+  NDA
+  MOU
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String
+  name        String
+  role        Role
+  instansi    String?
+  createdAt   DateTime     @default(now())
+  submissions Submission[]
+
+  @@map("users")
+}
+
+model Submission {
+  id                 Int              @id @default(autoincrement())
+  user_id            Int?
+  file_name          String?          @db.VarChar(255)
+  file_type          FileType?
+  status             Status?          @default(PENDING)
+  sla_deadline       DateTime?        @db.DateTime(0)
+  created_at         DateTime         @default(now()) @db.Timestamp(0)
+  total_rows         Int?             @default(0)
+  valid_rows         Int?             @default(0)
+  original_file_data Json?
+  user               User?            @relation(fields: [user_id], references: [id])
+  matching_results   MatchingResult[]
+  documents          Document[]
+
+  @@index([user_id])
+  @@map("submissions")
+}
+
+model MasterDtsen {
+  nik            String   @id @db.Char(16)
+  nama_lengkap   String?  @db.VarChar(255)
+  alamat_lengkap String?  @db.Text
+  is_active      Boolean? @default(true)
+
+  @@map("master_dtsen")
+}
+
+model MatchingResult {
+  id               Int         @id @default(autoincrement())
+  submission_id    Int?
+  nik_usulan       String?     @db.Char(16)
+  nama_usulan      String?     @db.VarChar(255)
+  nik_master       String?     @db.Char(16)
+  nama_master      String?     @db.VarChar(255)
+  similarity_score Decimal?    @db.Decimal(5, 2)
+  status_padan     StatusPadan?
+  submission       Submission? @relation(fields: [submission_id], references: [id])
+
+  @@index([submission_id])
+  @@map("matching_results")
+}
+
+model Document {
+  id            Int         @id @default(autoincrement())
+  submission_id Int?
+  doc_type      DocType?
+  file_path     String?     @db.VarChar(255)
+  is_signed     Boolean?    @default(false)
+  uploaded_at   DateTime    @default(now()) @db.Timestamp(0)
+  submission    Submission? @relation(fields: [submission_id], references: [id])
+
+  @@index([submission_id])
+  @@map("documents")
+}
