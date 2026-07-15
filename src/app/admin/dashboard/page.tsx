@@ -7,11 +7,7 @@ import { motion } from 'framer-motion';
 import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive } from 'lucide-react';
 import DashboardStats from '@/components/DashboardStats';
 
-const mockSubmissions = [
-  { id: 'REQ-20240501-112', instansi: 'Pemkot Palu', status: 'pending', date: '01 Mei 2024', files: 3, records: 12500, type: 'Data Sensus Ekonomi' },
-  { id: 'REQ-20240503-455', instansi: 'Pemkab Donggala', status: 'verified', date: '03 Mei 2024', files: 1, records: 4200, type: 'Data Kemiskinan Ekstrem' },
-  { id: 'REQ-20240510-889', instansi: 'Pemprov Sulteng', status: 'pending', date: '10 Mei 2024', files: 5, records: 89000, type: 'Data Bantuan Sosial' },
-];
+import { toast } from 'sonner';
 
 const mockArchives = [
   { id: 'DOC-112', instansi: 'Pemkot Palu', type: 'MoU & NDA', date: '01 Mei 2024', url: '#' },
@@ -26,13 +22,55 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'submissions' | 'archives'>('submissions');
   const [mounted, setMounted] = useState(false);
+  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [verifyingId, setVerifyingId] = useState<number | null>(null);
+
+  const fetchSubmissions = async () => {
+    try {
+      const res = await fetch('/api/submissions');
+      const json = await res.json();
+      if (json.success) {
+        setSubmissions(json.data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
     if (user && user.role !== 'BPS_ADMIN') {
       router.push('/');
+    } else if (user && user.role === 'BPS_ADMIN') {
+      fetchSubmissions();
     }
   }, [user, router]);
+
+  const handleVerify = async (id: number) => {
+    setVerifyingId(id);
+    toast.info('Memulai verifikasi...');
+    try {
+      const res = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissionId: id })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`Verifikasi Selesai: ${data.valid_rows} dari ${data.total_rows} data valid.`);
+        fetchSubmissions();
+      } else {
+        toast.error(data.message || 'Gagal memverifikasi');
+      }
+    } catch (e) {
+      toast.error('Terjadi kesalahan koneksi');
+    } finally {
+      setVerifyingId(null);
+    }
+  };
 
   if (!mounted || !user || user.role !== 'BPS_ADMIN') return null;
 
@@ -83,23 +121,29 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {mockSubmissions.map((sub) => (
+                  {loading ? (
+                    <tr><td colSpan={5} className="text-center py-8">Memuat data...</td></tr>
+                  ) : submissions.map((sub) => (
                     <tr key={sub.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                       <td className="px-6 py-4">
-                        <span className="font-mono font-medium text-blue-600 dark:text-blue-400">{sub.id}</span>
-                        <p className="text-xs text-slate-500 mt-1">{sub.date}</p>
+                        <span className="font-mono font-medium text-blue-600 dark:text-blue-400">REQ-{sub.id}</span>
+                        <p className="text-xs text-slate-500 mt-1">{new Date(sub.created_at).toLocaleDateString('id-ID')}</p>
                       </td>
                       <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
-                        {sub.instansi}
+                        {sub.user?.instansi || sub.user?.name}
                       </td>
                       <td className="px-6 py-4">
-                        <p className="font-medium text-slate-700 dark:text-slate-300">{sub.type}</p>
-                        <p className="text-xs text-slate-500 mt-1">{sub.files} Files • {sub.records.toLocaleString()} Records</p>
+                        <p className="font-medium text-slate-700 dark:text-slate-300">{sub.file_name}</p>
+                        <p className="text-xs text-slate-500 mt-1">{sub.total_rows?.toLocaleString() || 0} Records</p>
                       </td>
                       <td className="px-6 py-4">
-                        {sub.status === 'pending' ? (
+                        {sub.status === 'PENDING' ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                             <Clock className="w-3 h-3" /> Menunggu Verifikasi
+                          </span>
+                        ) : sub.status === 'MATCHING' ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800 animate-pulse">
+                            <Clock className="w-3 h-3 animate-spin" /> Memproses...
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
@@ -115,9 +159,14 @@ export default function AdminDashboard() {
                           <button className="p-2 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Unduh Manifes BPS">
                             <Download className="w-4 h-4" />
                           </button>
-                          {sub.status === 'pending' && (
-                            <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5">
-                              <ShieldCheck className="w-3.5 h-3.5" /> Verifikasi
+                          {sub.status === 'PENDING' && (
+                            <button 
+                              onClick={() => handleVerify(sub.id)}
+                              disabled={verifyingId === sub.id}
+                              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5"
+                            >
+                              <ShieldCheck className="w-3.5 h-3.5" /> 
+                              {verifyingId === sub.id ? 'Memproses...' : 'Verifikasi'}
                             </button>
                           )}
                         </div>

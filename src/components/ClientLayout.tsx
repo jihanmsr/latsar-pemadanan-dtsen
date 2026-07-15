@@ -10,8 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isLoading } = useAuth();
-  const isPublicPage = pathname === "/login" || pathname === "/sop";
+  const { user, isLoading } = useAuth();
+  const isPublicPage = pathname === "/login" || (pathname === "/sop" && !user);
 
   if (isLoading) {
     return (

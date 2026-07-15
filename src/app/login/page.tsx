@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Lock, Mail, Loader2, Building2, CheckCircle2, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, Loader2, Building2, CheckCircle2, ArrowRight, Sun, Moon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -14,7 +15,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => setMounted(true), []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +44,7 @@ export default function LoginPage() {
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-16">
             <div className="w-12 h-12 bg-transparent rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-black/10">
-              <Image src="/logo-pakewa.png" alt="PAKEWA Logo" width={48} height={48} className="object-contain" priority unoptimized />
+              <img src="/logo-pakewa.png" alt="PAKEWA Logo" width="48" height="48" className="object-contain" />
             </div>
             <span className="font-black text-3xl tracking-tight text-slate-900 dark:text-white">PAKEWA.</span>
           </div>
@@ -84,6 +89,17 @@ export default function LoginPage() {
 
       {/* RIGHT COLUMN - Login Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 relative">
+        
+        {/* Theme Toggle */}
+        {mounted && (
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="absolute top-6 right-6 p-3 rounded-full bg-white dark:bg-slate-900 shadow-lg border border-slate-200 dark:border-slate-800 hover:scale-110 transition-transform text-slate-500 dark:text-slate-400"
+          >
+            {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-indigo-500" />}
+          </button>
+        )}
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -93,7 +109,7 @@ export default function LoginPage() {
           {/* Mobile Logo */}
           <div className="lg:hidden flex flex-col items-center mb-10">
             <div className="w-20 h-20 bg-transparent rounded-2xl flex items-center justify-center shadow-xl shadow-black/10 mb-4 overflow-hidden">
-              <Image src="/logo-pakewa.png" alt="PAKEWA Logo" width={80} height={80} className="object-contain" priority unoptimized />
+              <img src="/logo-pakewa.png" alt="PAKEWA Logo" width="80" height="80" className="object-contain" />
             </div>
             <h1 className="text-3xl font-black text-foreground tracking-tight">PAKEWA.</h1>
             <p className="text-sm font-semibold text-muted mt-1">Padanan Kesejahteraan Warga</p>
@@ -140,7 +156,7 @@ export default function LoginPage() {
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center ml-1">
                   <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Password</label>
-                  <a href="#" className="text-xs font-bold text-primary hover:underline">Lupa Password?</a>
+                  <a href="https://wa.me/6289644327893?text=Halo%20BPS%20Provinsi%20Sulawesi%20Tengah,%20saya%20ingin%20meminta%20bantuan%20karena%20saya%20mau%20mengubah%20password%20akun%20PAKEWA%20saya." target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline">Lupa Password?</a>
                 </div>
                 <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary transition-colors" />
@@ -173,7 +189,9 @@ export default function LoginPage() {
             <div className="mt-8 text-center">
                <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
                  Belum punya akun? <br className="sm:hidden" />
-                 <span className="font-bold text-slate-600 dark:text-slate-300">Hubungi BPS Pusat untuk pembuatan akun instansi.</span>
+                 <a href="https://wa.me/6289644327893?text=Halo%20BPS%20Provinsi%20Sulawesi%20Tengah,%20saya%20ingin%20meminta%20pembuatan%20akun%20PAKEWA%20untuk%20instansi%20saya." target="_blank" rel="noopener noreferrer" className="font-bold text-primary hover:underline transition-colors">
+                   Hubungi BPS Provinsi Sulawesi Tengah untuk pembuatan akun instansi.
+                 </a>
                </p>
             </div>
           </div>

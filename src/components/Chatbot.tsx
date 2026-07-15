@@ -85,7 +85,7 @@ export default function Chatbot() {
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   placeholder="Ketik pertanyaan..." 
-                  className="flex-1 px-4 py-2 border border-slate-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  className="flex-1 px-4 py-2 border border-slate-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-slate-900 dark:text-slate-900 bg-white"
                 />
                 <button 
                   type="submit"

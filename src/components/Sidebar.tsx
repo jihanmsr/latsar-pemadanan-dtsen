@@ -11,7 +11,7 @@ export default function Sidebar() {
     <aside className="w-64 bg-surface border-r border-border h-full hidden md:flex flex-col transition-colors duration-300 relative z-20">
       <div className="p-6 flex items-center gap-3 border-b border-border">
         <div className="bg-transparent p-0 rounded-xl overflow-hidden shrink-0">
-          <Image src="/logo-pakewa.png" alt="Logo PAKEWA" width={40} height={40} className="object-contain" priority unoptimized />
+          <img src="/logo-pakewa.png" alt="Logo PAKEWA" width="40" height="40" className="object-contain" />
         </div>
         <h1 className="font-extrabold text-2xl leading-tight text-foreground tracking-tight">PAKEWA<span className="text-primary text-3xl">.</span></h1>
       </div>
@@ -36,7 +36,7 @@ export default function Sidebar() {
           </Link>
         )}
 
-        <Link href="/workflow" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
+        <Link href="/sop" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:text-primary group-hover:scale-110 transition-all duration-300"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8"/><path d="M12 8v6"/><path d="M3 16h5v5"/><path d="M16 16h5v5"/></svg>
           <span className="group-hover:translate-x-1 transition-transform duration-300">SOP Pemadanan</span>
         </Link>

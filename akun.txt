@@ -1,0 +1,17 @@
+Daftar Akun Sistem PAKEWA:
+
+👑 BPS Admin (Pusat Kendali / Verifikator BPS)
+Email     : admin@bps.go.id
+Password  : Admin@BPS2024!
+
+🏛️ PEMDA Palu (Instansi Daerah)
+Email     : pemda.palu@sulteng.go.id
+Password  : Pemda@12345!
+
+🏛️ PEMDA Sigi (Instansi Daerah)
+Email     : pemda.sigi@sulteng.go.id
+Password  : Pemda@12345!
+
+🏛️ PEMDA Donggala (Instansi Daerah)
+Email     : pemda.donggala@sulteng.go.id
+Password  : Pemda@12345!
