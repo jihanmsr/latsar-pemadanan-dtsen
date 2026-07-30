@@ -194,6 +194,18 @@ export default function TestMatchPage() {
                     </div>
                   </div>
 
+                  {result.alasan_anomali && (
+                    <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-xl">
+                      <div className="flex gap-3">
+                        <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-bold text-amber-800 dark:text-amber-400">Catatan Pemadanan</p>
+                          <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">{result.alasan_anomali}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {result.matched_data ? (
                     <div className="space-y-4">
                       <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700">

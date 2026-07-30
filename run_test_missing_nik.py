@@ -76,9 +76,9 @@ for idx, row in missing_df.iterrows():
     
     if len(nik_usulan) == 16 and nik_usulan in master_dict:
         score = int(string_similarity(nama_usulan, master_dict[nik_usulan]) * 100)
-        status = 'PADAN' if score >= 80 else ('ANOMALI' if score >= 60 else 'TIDAK_PADAN')
-        if status == 'PADAN': padan += 1
-        elif status == 'ANOMALI': anomali += 1
+        status = 'EXACT MATCH' if score >= 80 else ('PROBABLE MATCH' if score >= 60 else 'NO MATCH')
+        if status == 'EXACT MATCH': padan += 1
+        elif status == 'PROBABLE MATCH': anomali += 1
         else: tidak_padan += 1
         out_status.append(status)
         out_score.append(score)
@@ -141,13 +141,13 @@ for idx, row in missing_df.iterrows():
                 
     if best_score >= 80:
         padan += 1
-        out_status.append('PADAN')
+        out_status.append('EXACT MATCH')
     elif best_score >= 60:
         anomali += 1
-        out_status.append('ANOMALI')
+        out_status.append('PROBABLE MATCH')
     else:
         tidak_padan += 1
-        out_status.append('TIDAK_PADAN')
+        out_status.append('NO MATCH')
         
     out_score.append(best_score if best_score != -1 else 0)
     out_nik.append(best_match['nik'] if best_match else None)
@@ -162,10 +162,10 @@ missing_df['New_Matched_NIK'] = out_nik
 missing_df['New_Matched_Nama'] = out_nama
 
 print(f"Finished matching in {time.time() - start_time:.2f} seconds.", flush=True)
-print(f"PADAN: {padan}, ANOMALI: {anomali}, TIDAK PADAN: {tidak_padan}", flush=True)
+print(f"EXACT MATCH: {padan}, PROBABLE MATCH: {anomali}, NO MATCH: {tidak_padan}", flush=True)
 
 # Simpan ke Excel
-print("Menyimpan hasil ke Hasil_Pemadanan_Baru.xlsx...", flush=True)
-missing_df.to_excel("Hasil_Pemadanan_Baru.xlsx", index=False)
-print("Selesai! File Hasil_Pemadanan_Baru.xlsx telah berhasil dibuat.", flush=True)
+print("Menyimpan hasil ke Hasil_Pemadanan_V3.xlsx...", flush=True)
+missing_df.to_excel("Hasil_Pemadanan_V3.xlsx", index=False)
+print("Selesai! File Hasil_Pemadanan_V3.xlsx telah berhasil dibuat.", flush=True)
 

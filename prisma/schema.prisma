@@ -35,6 +35,7 @@ model matching_results {
   nama_master      String?                        @db.VarChar(255)
   similarity_score Decimal?                       @db.Decimal(5, 2)
   status_padan     matching_results_status_padan?
+  alasan_anomali   String?                        @db.Text
   submissions      submissions?                   @relation(fields: [submission_id], references: [id])
 
   @@index([submission_id])

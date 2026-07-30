@@ -116,7 +116,8 @@ export async function POST(req: NextRequest) {
       nik_master: string | null;
       nama_master: string | null;
       similarity_score: number;
-      status_padan: 'PADAN' | 'ANOMALI' | 'TIDAK_PADAN';
+      status_padan: 'PADAN' | 'ANOMALI' | 'TIDAK_PADAN' | 'EXACT_MATCH' | 'PROBABLE_MATCH' | 'NO_MATCH';
+      alasan_anomali: string | null;
     }[] = [];
 
     for (const row of uploadedRows) {
@@ -146,6 +147,8 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      const usulanWilayah = nikUsulan.length >= 6 ? nikUsulan.substring(0, 6) : null;
+
       // Cek apakah NIK ada di master (exact match)
       const masterExact = masterMap.get(nikUsulan);
 
@@ -170,12 +173,14 @@ export async function POST(req: NextRequest) {
           nama_master: masterExact.nama,
           similarity_score: score,
           status_padan: status,
+          alasan_anomali: score >= THRESHOLD_EXACT ? null : "Ditemukan NIK persis sama, tapi nama kurang cocok.",
         });
       } else {
         // TAHAP 2: PROBABILISTIK BERDASARKAN RUMUS NIK DAN NAMA
         let bestCandidateNik: string | null = null;
         let bestCandidateNama: string | null = null;
         let bestScore = -1;
+        let bestReason: string | null = null;
 
         if (parsedUsulan) {
           for (const m of masterMap.values()) {
@@ -205,6 +210,7 @@ export async function POST(req: NextRequest) {
                 bestScore = finalScore;
                 bestCandidateNik = m.nik;
                 bestCandidateNama = m.nama;
+                bestReason = isSameDOB ? "Pencarian fallback NIK dengan Tanggal Lahir & Kelamin cocok." : "Pencarian fallback NIK (Tanggal Lahir berbeda).";
               }
               if (bestScore === 100) break; // Perfect match found
             }
@@ -218,6 +224,7 @@ export async function POST(req: NextRequest) {
             if (!m.nama.includes(firstWord)) continue;
             
             let score = calculateLevenshteinSimilarity(namaUsulan, m.nama);
+            let currentReason = "";
             
             // Validasi DOB untuk menghindari salah orang pada nama pasaran (misal: Joko Santoso)
             if (usulanDD !== undefined && usulanMM !== undefined && usulanYY !== undefined) {
@@ -227,19 +234,37 @@ export async function POST(req: NextRequest) {
                                   usulanMM === parsedMaster.mm && 
                                   usulanYY === parsedMaster.yy;
                 
+                const isSameWilayah = usulanWilayah && usulanWilayah === parsedMaster.wilayah;
+
                 // Jika nama mirip tapi DOB beda, berikan penalti agar tidak salah orang
                 if (score >= 80 && !isSameDOB) {
                   score -= 30; // Turunkan skor (misal 100 -> 70, akan jadi PROBABLE atau NO_MATCH)
+                  currentReason = "Nama mirip, tetapi Tanggal Lahir berbeda.";
+                  if (isSameWilayah) {
+                    score += 15; // Tertolong karena wilayahnya sama
+                    currentReason += " (Terselamatkan karena 1 Kecamatan).";
+                  }
                 } else if (score >= 60 && isSameDOB) {
-                  score = Math.min(100, score + 20); // Beri bonus jika DOB sama
+                  if (isSameWilayah) {
+                    score = Math.min(100, score + 30); // Bonus maksimal jika DOB dan Wilayah sama
+                    currentReason = "Nama mirip, Tanggal Lahir & Kecamatan sama persis.";
+                  } else {
+                    score = Math.min(100, score + 15); // Bonus standar
+                    currentReason = "Nama mirip dan Tanggal Lahir sama (Beda Kecamatan).";
+                  }
+                } else {
+                  currentReason = isSameDOB ? "Nama agak berbeda, tapi Tanggal Lahir sama." : "Nama mirip, Tanggal Lahir berbeda.";
                 }
               }
+            } else {
+              currentReason = "Pencarian nama murni (Tanpa info Tanggal Lahir).";
             }
 
             if (score > bestScore) {
               bestScore = score;
               bestCandidateNik = m.nik;
               bestCandidateNama = m.nama;
+              bestReason = currentReason;
             }
             if (bestScore === 100) break; 
             
@@ -257,6 +282,7 @@ export async function POST(req: NextRequest) {
             nama_master: bestCandidateNama,
             similarity_score: bestScore,
             status_padan: 'EXACT_MATCH',
+            alasan_anomali: bestReason,
           });
         } else if (bestCandidateNik && bestScore >= THRESHOLD_PROBABLE) {
           results.push({
@@ -267,6 +293,7 @@ export async function POST(req: NextRequest) {
             nama_master: bestCandidateNama,
             similarity_score: bestScore,
             status_padan: 'PROBABLE_MATCH',
+            alasan_anomali: bestReason,
           });
         } else {
           // NIK tidak ada di master dan tidak ada yang mendekati → TIDAK_PADAN
@@ -278,6 +305,7 @@ export async function POST(req: NextRequest) {
             nama_master: null,
             similarity_score: 0,
             status_padan: 'NO_MATCH',
+            alasan_anomali: 'Tidak ada kecocokan pada Master Data.',
           });
         }
       }
@@ -293,13 +321,14 @@ export async function POST(req: NextRequest) {
       r.nik_master,
       r.nama_master,
       r.similarity_score,
-      r.status_padan
+      r.status_padan,
+      r.alasan_anomali
     ]);
 
     if (resultsToInsert.length > 0) {
       await batch(`
-        INSERT INTO matching_results (submission_id, nik_usulan, nama_usulan, nik_master, nama_master, similarity_score, status_padan)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO matching_results (submission_id, nik_usulan, nama_usulan, nik_master, nama_master, similarity_score, status_padan, alasan_anomali)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `, resultsToInsert);
     }
 

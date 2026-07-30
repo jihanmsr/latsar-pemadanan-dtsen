@@ -33,8 +33,10 @@ export async function POST(req: Request) {
       take: 200 // Batasi untuk berjaga-jaga
     });
 
+    let isNameFallback = false;
     // Jika tidak ditemukan dengan tanggal lahir + gender, coba relaksasi dengan cari nama (3 huruf pertama)
     if (candidates.length === 0) {
+      isNameFallback = true;
       const first3Chars = nama.substring(0, 3);
       candidates = await prisma.dtsenMaster.findMany({
         where: {
@@ -79,15 +81,27 @@ export async function POST(req: Request) {
     }
 
     let status = 'NO_MATCH';
-    if (highestScore >= 80.0) status = 'EXACT_MATCH';
-    else if (highestScore >= 60.0) status = 'PROBABLE_MATCH';
-    else if (highestScore >= 40.0) status = 'WEAK_MATCH';
+    let alasan = 'Data tidak ditemukan di Master.';
+
+    if (highestScore >= 80.0) {
+      status = 'EXACT_MATCH';
+      alasan = isNameFallback ? "Nama cocok, tapi Tanggal Lahir / Gender di database Master berbeda." : null;
+    } else if (highestScore >= 60.0) {
+      status = 'PROBABLE_MATCH';
+      alasan = isNameFallback 
+        ? "Mirip secara nama, namun Tanggal Lahir / Gender tidak cocok."
+        : "Tanggal Lahir cocok, tapi Penulisan Nama cukup berbeda (Typo / Singkatan).";
+    } else if (highestScore >= 40.0) {
+      status = 'WEAK_MATCH';
+      alasan = "Kecocokan data sangat lemah. Kemungkinan orang yang berbeda.";
+    }
 
     return NextResponse.json({
       status,
       score: Number(highestScore.toFixed(2)),
       matched_data: bestMatch,
-      total_candidates_checked: candidates.length
+      total_candidates_checked: candidates.length,
+      alasan_anomali: alasan
     });
 
   } catch (error: any) {
