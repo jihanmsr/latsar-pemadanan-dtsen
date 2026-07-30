@@ -5,16 +5,52 @@ import { ChevronDown } from 'lucide-react';
 
 const faqs = [
   {
-    q: "Berapa lama proses pemadanan data (SLA)?",
-    a: "Sesuai Standar Layanan (SLA), proses pemadanan memakan waktu 1 hingga 5 hari kerja tergantung dari antrean dan volume data yang diunggah."
+    q: "Apa itu DTSEN?",
+    a: (
+      <>
+        Sesuai dengan amanat <strong>Instruksi Presiden No. 4 Tahun 2025</strong> tentang Data Tunggal Sosial dan Ekonomi Nasional (DTSEN), diperlukan pengelolaan data tunggal sosial dan ekonomi nasional terintegrasi yang akurat guna mencapai tujuan pembangunan yang terukur dan berkelanjutan. Hal ini menjadi dasar kebijakan, perencanaan, dan evaluasi pembangunan yang efektif, dalam rangka mendukung keterpaduan program pembangunan nasional serta sinergi antar kementerian, lembaga, dan pemerintah daerah.
+      </>
+    )
   },
   {
-    q: "Format file apa saja yang didukung?",
-    a: "Saat ini sistem menerima format CSV, Excel (.xlsx, .xls), serta gambar tangkapan layar atau KTP (.png, .jpg) yang akan dibaca menggunakan OCR."
+    q: "Apa landasan hukum berbagipakai DTSEN?",
+    a: (
+      <>
+        <strong>Peraturan Menteri PPN/Kepala Bappenas Nomor 7 Tahun 2025</strong> tentang Pedoman Berbagipakai Data Tunggal Sosial dan Ekonomi Nasional. Peraturan ini mengatur secara detail persyaratan permohonan DTSEN, referensi dokumen yang dibutuhkan, serta kewajiban dan wewenang pemohon maupun penerima DTSEN.
+      </>
+    )
   },
   {
-    q: "Mengapa tombol unduh saya terkunci?",
-    a: "Tombol unduh hanya terbuka jika status The Core Engine telah mencapai 100% dan Anda telah mengunggah serta mencentang persetujuan dokumen BAST & NDA."
+    q: "Bagaimana alur lengkap permohonan DTSEN?",
+    a: (
+      <ol className="list-decimal pl-4 space-y-1 mt-2">
+        <li>Pembuatan Akun (dengan Surat Permohonan Pembuatan Akun)</li>
+        <li>Login menggunakan akun yang telah disetujui</li>
+        <li>Mengunggah dokumen permohonan sesuai Level DTSEN:
+          <ul className="list-[circle] pl-5 mt-1 space-y-1 text-slate-500">
+            <li>Surat Pengajuan Permintaan DTSEN</li>
+            <li>Formulir Pernyataan Keamanan dan Pemanfaatan DTSEN</li>
+            <li>Kerangka Acuan Kerja (KAK) Pemanfaatan DTSEN</li>
+            <li>SK Pelaksana Pengelolaan Pemanfaatan DTSEN</li>
+            <li>Regulasi Penyelenggaraan SDI dan/atau Keputusan BUMN</li>
+          </ul>
+        </li>
+        <li>Verifikasi Teknis</li>
+        <li>Verifikasi Substansi</li>
+        <li>Persetujuan Koordinator</li>
+        <li>Penandatanganan BAST</li>
+        <li>Penyiapan Data, Penjaminan Mutu, dan Pengiriman Data</li>
+        <li>Pemanfaatan Data dan Pelaporan</li>
+      </ol>
+    )
+  },
+  {
+    q: "Ke mana saya bisa koordinasi lebih lanjut?",
+    a: (
+      <>
+        Untuk koordinasi lebih lanjut, kami menyediakan Layanan DTSEN melalui portal <a href="https://dtsen.data.go.id" className="text-blue-600 hover:underline">dtsen.data.go.id</a>, email <a href="mailto:sdi@bappenas.go.id" className="font-medium text-slate-700">sdi@bappenas.go.id</a>, atau hotline <strong>+62 821-2019-4130</strong>.
+      </>
+    )
   }
 ];
 
@@ -39,8 +75,8 @@ export default function FAQ() {
               <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${openIndex === index ? 'rotate-180' : ''}`} />
             </button>
             {openIndex === index && (
-              <div className="px-6 pb-4 pt-1 text-slate-600 bg-slate-50 border-t border-slate-100">
-                <p className="mt-2 text-sm leading-relaxed">{faq.a}</p>
+              <div className="px-6 pb-4 pt-1 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800">
+                <div className="mt-2 text-sm leading-relaxed">{faq.a}</div>
               </div>
             )}
           </div>

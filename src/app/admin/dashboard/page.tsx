@@ -60,7 +60,7 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success(`Verifikasi Selesai: ${data.valid_rows} dari ${data.total_rows} data valid.`);
+        toast.success(`Verifikasi Selesai: ${data.stats?.padan} EXACT_MATCH, ${data.stats?.anomali} PROBABLE_MATCH dari total ${data.stats?.totalDiproses} data.`);
         fetchSubmissions();
       } else {
         toast.error(data.message || 'Gagal memverifikasi');

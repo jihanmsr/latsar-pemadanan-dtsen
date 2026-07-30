@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 import { verifyAuth, unauthorizedResponse } from '@/lib/auth';
 
 /**
@@ -38,64 +38,88 @@ export async function GET(req: NextRequest) {
     }
 
     // ── 3. QUERY ──────────────────────────────────────────────────────────
-    const [submissions, total] = await Promise.all([
-      prisma.submission.findMany({
-        where,
-        orderBy: { created_at: 'desc' },
-        take: limit,
-        skip: offset,
-        select: {
-          id: true,
-          file_name: true,
-          file_type: true,
-          status: true,
-          total_rows: true,
-          valid_rows: true,
-          sla_deadline: true,
-          created_at: true,
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              instansi: true,
-            },
-          },
-          // Jangan include original_file_data (bisa sangat besar)
-          matching_results: {
-            select: {
-              status_padan: true,
-              similarity_score: true,
-            },
-          },
-          documents: {
-            select: {
-              doc_type: true,
-              is_signed: true,
-            },
-          },
-        },
-      }),
-      prisma.submission.count({ where }),
-    ]);
+    const conditions: string[] = [];
+    const values: any[] = [];
+    if (where.user_id) {
+      conditions.push('s.user_id = ?');
+      values.push(where.user_id);
+    }
+    if (where.status) {
+      conditions.push('s.status = ?');
+      values.push(where.status);
+    }
+
+    const whereSql = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+    
+    // Get total
+    const totalResult = await query(`SELECT COUNT(*) as total FROM submissions s ${whereSql}`, values);
+    const total = Number(totalResult[0].total);
+
+    // Get submissions
+    const sql = `
+      SELECT s.id, s.file_name, s.file_type, s.status, s.total_rows, s.valid_rows, s.sla_deadline, s.created_at,
+             u.id as user_id, u.name as user_name, u.email as user_email, u.instansi as user_instansi
+      FROM submissions s
+      LEFT JOIN users u ON s.user_id = u.id
+      ${whereSql}
+      ORDER BY s.created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+    const submissions = await query(sql, [...values, limit, offset]);
+
+    if (submissions.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        pagination: { total, limit, offset, hasMore: false },
+      });
+    }
+
+    const submissionIds = submissions.map((s: any) => s.id);
+    const placeholders = submissionIds.map(() => '?').join(',');
+
+    // Get matching results stats
+    const matchStatsMap: Record<string, any> = {};
+    const docsMap: Record<string, any[]> = {};
+    for (const id of submissionIds) {
+      matchStatsMap[id] = { padan: 0, anomali: 0, tidak_padan: 0, total_score: 0, total_count: 0 };
+      docsMap[id] = [];
+    }
+
+    const matchingResults = await query(`
+      SELECT submission_id, status_padan, similarity_score 
+      FROM matching_results 
+      WHERE submission_id IN (${placeholders})
+    `, submissionIds);
+
+    for (const row of matchingResults) {
+      const stats = matchStatsMap[row.submission_id];
+      if (row.status_padan === 'EXACT_MATCH') stats.padan++;
+      else if (row.status_padan === 'PROBABLE_MATCH') stats.anomali++;
+      else stats.tidak_padan++;
+      
+      stats.total_score += Number(row.similarity_score ?? 0);
+      stats.total_count++;
+    }
+
+    // Get documents
+    const documents = await query(`
+      SELECT submission_id, doc_type, is_signed 
+      FROM documents 
+      WHERE submission_id IN (${placeholders})
+    `, submissionIds);
+
+    for (const doc of documents) {
+      docsMap[doc.submission_id].push({
+        doc_type: doc.doc_type,
+        is_signed: doc.is_signed === 1 || doc.is_signed === true
+      });
+    }
 
     // ── 4. FORMAT RESPONSE ────────────────────────────────────────────────
-    const formatted = submissions.map(s => {
-      const matchStats = s.matching_results.reduce(
-        (acc, m) => {
-          if (m.status_padan === 'PADAN') acc.padan++;
-          else if (m.status_padan === 'ANOMALI') acc.anomali++;
-          else acc.tidak_padan++;
-          return acc;
-        },
-        { padan: 0, anomali: 0, tidak_padan: 0 }
-      );
-
-      const avgScore = s.matching_results.length > 0
-        ? s.matching_results.reduce(
-            (sum, m) => sum + Number(m.similarity_score ?? 0), 0
-          ) / s.matching_results.length
-        : null;
+    const formatted = submissions.map((s: any) => {
+      const stats = matchStatsMap[s.id];
+      const avgScore = stats.total_count > 0 ? stats.total_score / stats.total_count : null;
 
       return {
         id: s.id,
@@ -106,13 +130,20 @@ export async function GET(req: NextRequest) {
         valid_rows: s.valid_rows,
         sla_deadline: s.sla_deadline,
         created_at: s.created_at,
-        user: s.user,
-        matching_stats: {
-          ...matchStats,
-          avg_score: avgScore !== null ? Number(avgScore.toFixed(2)) : null,
-          total: s.matching_results.length,
+        user: {
+          id: s.user_id,
+          name: s.user_name,
+          email: s.user_email,
+          instansi: s.user_instansi
         },
-        documents: s.documents,
+        matching_stats: {
+          padan: stats.padan,
+          anomali: stats.anomali,
+          tidak_padan: stats.tidak_padan,
+          avg_score: avgScore !== null ? Number(avgScore.toFixed(2)) : null,
+          total: stats.total_count,
+        },
+        documents: docsMap[s.id],
       };
     });
 

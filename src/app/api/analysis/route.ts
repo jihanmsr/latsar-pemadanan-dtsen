@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 import { verifyAuth, unauthorizedResponse, forbiddenResponse } from '@/lib/auth';
 
 /**
@@ -19,30 +19,43 @@ export async function GET(req: NextRequest) {
 
   try {
     // ── 3. ANALISIS KUALITAS & AKURASI (Matching Engine) ─────────────────
-    const [totalMatch, totalAnomaly, totalNotMatch, avgScoreAgg] = await Promise.all([
-      prisma.matchingResult.count({ where: { status_padan: 'PADAN' } }),
-      prisma.matchingResult.count({ where: { status_padan: 'ANOMALI' } }),
-      prisma.matchingResult.count({ where: { status_padan: 'TIDAK_PADAN' } }),
-      prisma.matchingResult.aggregate({ _avg: { similarity_score: true } }),
-    ]);
+    const matchAgg = await query(`
+      SELECT 
+        SUM(CASE WHEN status_padan = 'EXACT_MATCH' THEN 1 ELSE 0 END) as padanCount,
+        SUM(CASE WHEN status_padan = 'PROBABLE_MATCH' THEN 1 ELSE 0 END) as anomaliCount,
+        SUM(CASE WHEN status_padan = 'NO_MATCH' THEN 1 ELSE 0 END) as tidakPadanCount,
+        AVG(similarity_score) as avgScore
+      FROM matching_results
+    `);
+    const totalMatch = Number(matchAgg[0].padanCount || 0);
+    const totalAnomaly = Number(matchAgg[0].anomaliCount || 0);
+    const totalNotMatch = Number(matchAgg[0].tidakPadanCount || 0);
+    const avgScore = Number(matchAgg[0].avgScore || 0);
 
     // ── 4. ANALISIS DESKRIPTIF (Pre-Matching) ────────────────────────────
-    const [totalSubmissions, validatedSubmissions, completedSubmissions, failedSubmissions] =
-      await Promise.all([
-        prisma.submission.count(),
-        prisma.submission.count({ where: { status: 'VALIDATED' } }),
-        prisma.submission.count({ where: { status: 'COMPLETED' } }),
-        prisma.submission.count({ where: { status: 'FAILED' } }),
-      ]);
+    const subAgg = await query(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'VALIDATED' THEN 1 ELSE 0 END) as validated,
+        SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) as completed,
+        SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END) as failed
+      FROM submissions
+    `);
+    
+    const totalSubmissions = Number(subAgg[0].total || 0);
+    const validatedSubmissions = Number(subAgg[0].validated || 0);
+    const completedSubmissions = Number(subAgg[0].completed || 0);
+    const failedSubmissions = Number(subAgg[0].failed || 0);
 
     // ── 5. ANALISIS SLA ───────────────────────────────────────────────────
-    const completedWithSla = await prisma.submission.findMany({
-      where: { status: 'COMPLETED', sla_deadline: { not: null } },
-      select: { created_at: true, sla_deadline: true },
-    });
+    const completedWithSla = await query(`
+      SELECT created_at, sla_deadline 
+      FROM submissions 
+      WHERE status = 'COMPLETED' AND sla_deadline IS NOT NULL
+    `);
 
-    const metSla = completedWithSla.filter(s =>
-      s.sla_deadline && new Date(s.sla_deadline) >= s.created_at
+    const metSla = completedWithSla.filter((s: any) =>
+      s.sla_deadline && new Date(s.sla_deadline) >= new Date(s.created_at)
     ).length;
 
     const slaPercentage = completedWithSla.length > 0
@@ -50,8 +63,14 @@ export async function GET(req: NextRequest) {
       : '100.0';
 
     // ── 6. MASTER DTSEN STATS ─────────────────────────────────────────────
-    const masterTotal = await prisma.masterDtsen.count();
-    const masterActive = await prisma.masterDtsen.count({ where: { is_active: true } });
+    const masterStats = await query(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active
+      FROM master_dtsen
+    `);
+    const masterTotal = Number(masterStats[0].total || 0);
+    const masterActive = Number(masterStats[0].active || 0);
 
     return NextResponse.json({
       success: true,
@@ -61,7 +80,7 @@ export async function GET(req: NextRequest) {
           anomali: totalAnomaly,
           tidak_padan: totalNotMatch,
           total: totalMatch + totalAnomaly + totalNotMatch,
-          rata_rata_skor: Number(avgScoreAgg._avg.similarity_score ?? 0).toFixed(2),
+          rata_rata_skor: avgScore.toFixed(2),
         },
         pre_matching: {
           total_pengajuan: totalSubmissions,

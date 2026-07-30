@@ -1,24 +1,87 @@
 generator client {
   provider = "prisma-client-js"
-  engineType = "library"
 }
 
 datasource db {
   provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
-enum Role {
-  PEMDA
-  BPS_ADMIN
+model documents {
+  id            Int                 @id @default(autoincrement())
+  submission_id String?
+  doc_type      documents_doc_type?
+  file_path     String?             @db.VarChar(255)
+  is_signed     Boolean?            @default(false)
+  uploaded_at   DateTime            @default(now()) @db.Timestamp(0)
+  submissions   submissions?        @relation(fields: [submission_id], references: [id])
+
+  @@index([submission_id])
 }
 
-enum FileType {
+model master_dtsen {
+  nik            String   @id @db.VarChar(255)
+  nama_lengkap   String?  @db.VarChar(255)
+  alamat_lengkap String?  @db.Text
+  is_active      Boolean? @default(true)
+}
+
+model matching_results {
+  id               Int                            @id @default(autoincrement())
+  submission_id    String?
+  nik_usulan       String?                        @db.VarChar(255)
+  nama_usulan      String?                        @db.VarChar(255)
+  nik_master       String?                        @db.VarChar(255)
+  nama_master      String?                        @db.VarChar(255)
+  similarity_score Decimal?                       @db.Decimal(5, 2)
+  status_padan     matching_results_status_padan?
+  submissions      submissions?                   @relation(fields: [submission_id], references: [id])
+
+  @@index([submission_id])
+}
+
+model submissions {
+  id                 String                 @id
+  user_id            Int?
+  file_name          String?                @db.VarChar(255)
+  file_type          submissions_file_type?
+  status             submissions_status?    @default(PENDING)
+  sla_deadline       DateTime?              @db.DateTime(0)
+  created_at         DateTime               @default(now()) @db.Timestamp(0)
+  total_rows         Int?                   @default(0)
+  valid_rows         Int?                   @default(0)
+  original_file_data String?                @db.LongText
+  documents          documents[]
+  matching_results   matching_results[]
+  users              users?                 @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+}
+
+model users {
+  id          Int           @id @default(autoincrement())
+  email       String        @unique
+  password    String
+  name        String
+  role        users_role
+  instansi    String?
+  createdAt   DateTime      @default(now())
+  submissions submissions[]
+}
+
+enum documents_doc_type {
+  BAST
+  NDA
+  MOU
+}
+
+enum submissions_file_type {
   CSV
   XLSX
   IMAGE
 }
 
-enum Status {
+enum submissions_status {
   PENDING
   VALIDATED
   MATCHING
@@ -26,83 +89,52 @@ enum Status {
   FAILED
 }
 
-enum StatusPadan {
-  PADAN
-  TIDAK_PADAN
-  ANOMALI
+enum users_role {
+  PEMDA
+  BPS_ADMIN
 }
 
-enum DocType {
-  BAST
-  NDA
-  MOU
+enum matching_results_status_padan {
+  EXACT_MATCH
+  NO_MATCH
+  PROBABLE_MATCH
 }
 
-model User {
-  id          Int          @id @default(autoincrement())
-  email       String       @unique
-  password    String
-  name        String
-  role        Role
-  instansi    String?
-  createdAt   DateTime     @default(now())
-  submissions Submission[]
+model DtsenMaster {
+  id              Int      @id @default(autoincrement())
+  nik             String   @unique
+  nama            String
+  tanggal_lahir   DateTime
+  jenis_kelamin   String
+  alamat_lengkap  String
+  provinsi        String
+  kabupaten_kota  String
+  kecamatan       String
+  desa_kelurahan  String
+  desil           Int      @default(0)
 
-  @@map("users")
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  
+  @@index([nik])
+  @@index([nama, tanggal_lahir])
 }
 
-model Submission {
-  id                 Int              @id @default(autoincrement())
-  user_id            Int?
-  file_name          String?          @db.VarChar(255)
-  file_type          FileType?
-  status             Status?          @default(PENDING)
-  sla_deadline       DateTime?        @db.DateTime(0)
-  created_at         DateTime         @default(now()) @db.Timestamp(0)
-  total_rows         Int?             @default(0)
-  valid_rows         Int?             @default(0)
-  original_file_data Json?
-  user               User?            @relation(fields: [user_id], references: [id])
-  matching_results   MatchingResult[]
-  documents          Document[]
+model SasaranPemda {
+  id              Int      @id @default(autoincrement())
+  assignment_id   String
+  nik_sasaran     String?
+  nama_sasaran    String
+  tanggal_lahir   DateTime
+  jenis_kelamin   String
+  alamat          String
+  status_match    String   @default("PENDING")
+  score_match     Float?
+  
+  dtsen_id        Int?
+  
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-  @@index([user_id])
-  @@map("submissions")
-}
-
-model MasterDtsen {
-  nik            String   @id @db.Char(16)
-  nama_lengkap   String?  @db.VarChar(255)
-  alamat_lengkap String?  @db.Text
-  is_active      Boolean? @default(true)
-
-  @@map("master_dtsen")
-}
-
-model MatchingResult {
-  id               Int         @id @default(autoincrement())
-  submission_id    Int?
-  nik_usulan       String?     @db.Char(16)
-  nama_usulan      String?     @db.VarChar(255)
-  nik_master       String?     @db.Char(16)
-  nama_master      String?     @db.VarChar(255)
-  similarity_score Decimal?    @db.Decimal(5, 2)
-  status_padan     StatusPadan?
-  submission       Submission? @relation(fields: [submission_id], references: [id])
-
-  @@index([submission_id])
-  @@map("matching_results")
-}
-
-model Document {
-  id            Int         @id @default(autoincrement())
-  submission_id Int?
-  doc_type      DocType?
-  file_path     String?     @db.VarChar(255)
-  is_signed     Boolean?    @default(false)
-  uploaded_at   DateTime    @default(now()) @db.Timestamp(0)
-  submission    Submission? @relation(fields: [submission_id], references: [id])
-
-  @@index([submission_id])
-  @@map("documents")
+  @@index([assignment_id])
 }

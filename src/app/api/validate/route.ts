@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
+import crypto from 'crypto';
 import { verifyAuth, unauthorizedResponse } from '@/lib/auth';
 import { validateNIK } from '@/utils/validation';
 
@@ -61,23 +62,27 @@ export async function POST(req: NextRequest) {
     // ── 3. SIMPAN SUBMISSION KE DATABASE ─────────────────────────────────
     const slaDeadline = new Date();
     slaDeadline.setDate(slaDeadline.getDate() + 2); // SLA Target: 2 hari
+    
+    const submissionId = crypto.randomUUID();
+    const originalFileDataJson = JSON.stringify(validRows);
 
-    const submission = await prisma.submission.create({
-      data: {
-        user_id: user.id,
-        file_name: fileName,
-        file_type: fileType,
-        status: 'VALIDATED',
-        sla_deadline: slaDeadline,
-        total_rows: rows.length,
-        valid_rows: validRows.length,
-        original_file_data: validRows as never, // simpan hanya baris valid
-      },
-    });
+    await query(`
+      INSERT INTO submissions (id, user_id, file_name, file_type, status, sla_deadline, total_rows, valid_rows, original_file_data)
+      VALUES (?, ?, ?, ?, 'VALIDATED', ?, ?, ?, ?)
+    `, [
+      submissionId,
+      user.id,
+      fileName,
+      fileType,
+      slaDeadline,
+      rows.length,
+      validRows.length,
+      originalFileDataJson
+    ]);
 
     return NextResponse.json({
       success: true,
-      submissionId: submission.id,
+      submissionId: submissionId,
       summary: {
         totalRows: rows.length,
         validRows: validRows.length,

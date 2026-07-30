@@ -5,6 +5,8 @@ import { MatchingProvider } from "@/context/MatchingContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ClientLayout from "@/components/ClientLayout";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import FloatingFeedback from "@/components/FloatingFeedback";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +40,8 @@ export default function RootLayout({
             <MatchingProvider>
               <ClientLayout>
                 {children}
+                <FloatingWhatsApp />
+                <FloatingFeedback />
               </ClientLayout>
             </MatchingProvider>
           </AuthProvider>

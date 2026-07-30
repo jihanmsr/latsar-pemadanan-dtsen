@@ -114,7 +114,7 @@ export default function TrackingTimeline() {
         return {
           NIK: `317${Math.floor(Math.random() * 10000000000000)}`,
           Nama: `Penduduk ${i+1} (${f.name.substring(0, 10)})`,
-          Status_Padan: isMatch ? 'PADAN' : 'TIDAK PADAN',
+          Status_Padan: isMatch ? 'EXACT_MATCH' : 'TIDAK EXACT_MATCH',
           Skor_Levenshtein: score,
           ID_BPS_DTSEN: `DTSEN-${Math.floor(Math.random() * 10000)}`
         };

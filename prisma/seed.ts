@@ -1,86 +1,60 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import * as mariadb from 'mariadb';
 import bcrypt from 'bcryptjs';
-
-function parseDbUrl(url: string): mariadb.PoolConfig {
-  const parsed = new URL(url);
-  return {
-    host: parsed.hostname,
-    port: parseInt(parsed.port || '3306'),
-    user: decodeURIComponent(parsed.username),
-    password: decodeURIComponent(parsed.password),
-    database: parsed.pathname.replace(/^\//, ''),
-    connectionLimit: 5,
-  };
-}
-
-const dbUrl = process.env.DATABASE_URL;
-if (!dbUrl) throw new Error('DATABASE_URL tidak ditemukan.');
-
-const pool = mariadb.createPool(parseDbUrl(dbUrl));
-const adapter = new PrismaMariaDb(pool as any);
-const prisma = new PrismaClient({ adapter });
+import { encrypt } from '../src/lib/encryption';
 
 
 async function main() {
+  const dbUrl = process.env.DATABASE_URL || "mysql://u12228jhr_dtsen:inidatapenting123@103.5.51.154:3306/u12228jhr_dtsen";
+  const parsed = new URL(dbUrl);
+  const pool = mariadb.createPool({
+    host: parsed.hostname,
+    port: Number(parsed.port) || 3306,
+    user: decodeURIComponent(parsed.username),
+    password: decodeURIComponent(parsed.password),
+    database: parsed.pathname.slice(1),
+    connectionLimit: 10,
+  });
+
+  const conn = await pool.getConnection();
   console.log('🌱 Seeding database...');
 
-  // ── USERS ────────────────────────────────────────────────────────────────
+  // ── ADMIN BPS ────────────────────────────────────────────────────────────
   const adminPassword = await bcrypt.hash('Admin@BPS2024!', 10);
+  
+  // Upsert Admin BPS
+  await conn.query(`
+    INSERT INTO users (id, email, password, name, role, instansi) 
+    VALUES (UUID(), ?, ?, 'Admin BPS Pusat', 'ADMIN', 'BPS Pusat')
+    ON DUPLICATE KEY UPDATE password = ?, name = 'Admin BPS Pusat'
+  `, ['admin@bps.go.id', adminPassword, adminPassword]);
+  
+  console.log('  ✅ Admin BPS: admin@bps.go.id');
+
   const pemdaPassword = await bcrypt.hash('Pemda@12345!', 10);
 
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@bps.go.id' },
-    update: {},
-    create: {
-      email: 'admin@bps.go.id',
-      password: adminPassword,
-      name: 'Admin BPS Pusat',
-      role: 'BPS_ADMIN',
-      instansi: 'BPS RI',
-    },
-  });
-  console.log(`  ✅ Admin BPS: ${admin.email}`);
+  // Upsert Pemda Palu
+  await conn.query(`
+    INSERT INTO users (id, email, password, name, role, instansi) 
+    VALUES (UUID(), 'pemda.palu@sulteng.go.id', ?, 'Operator Dinas Palu', 'PEMDA', 'Dinas Sosial Kota Palu')
+    ON DUPLICATE KEY UPDATE password = ?
+  `, [pemdaPassword, pemdaPassword]);
+  console.log('  ✅ PEMDA Palu: pemda.palu@sulteng.go.id');
 
-  const pemda1 = await prisma.user.upsert({
-    where: { email: 'pemda.palu@sulteng.go.id' },
-    update: {},
-    create: {
-      email: 'pemda.palu@sulteng.go.id',
-      password: pemdaPassword,
-      name: 'Operator Dinas Palu',
-      role: 'PEMDA',
-      instansi: 'Dinas Sosial Kota Palu',
-    },
-  });
-  console.log(`  ✅ PEMDA Palu: ${pemda1.email}`);
+  // Upsert Pemda Sigi
+  await conn.query(`
+    INSERT INTO users (id, email, password, name, role, instansi) 
+    VALUES (UUID(), 'pemda.sigi@sulteng.go.id', ?, 'Operator Dinas Sigi', 'PEMDA', 'Dinas Sosial Kab. Sigi')
+    ON DUPLICATE KEY UPDATE password = ?
+  `, [pemdaPassword, pemdaPassword]);
+  console.log('  ✅ PEMDA Sigi: pemda.sigi@sulteng.go.id');
 
-  const pemda2 = await prisma.user.upsert({
-    where: { email: 'pemda.sigi@sulteng.go.id' },
-    update: {},
-    create: {
-      email: 'pemda.sigi@sulteng.go.id',
-      password: pemdaPassword,
-      name: 'Operator Dinas Sigi',
-      role: 'PEMDA',
-      instansi: 'Dinas Sosial Kab. Sigi',
-    },
-  });
-  console.log(`  ✅ PEMDA Sigi: ${pemda2.email}`);
-
-  const pemda3 = await prisma.user.upsert({
-    where: { email: 'pemda.donggala@sulteng.go.id' },
-    update: {},
-    create: {
-      email: 'pemda.donggala@sulteng.go.id',
-      password: pemdaPassword,
-      name: 'Operator Dinas Donggala',
-      role: 'PEMDA',
-      instansi: 'Dinas Sosial Kab. Donggala',
-    },
-  });
-  console.log(`  ✅ PEMDA Donggala: ${pemda3.email}`);
+  // Upsert Pemda Donggala
+  await conn.query(`
+    INSERT INTO users (id, email, password, name, role, instansi) 
+    VALUES (UUID(), 'pemda.donggala@sulteng.go.id', ?, 'Operator Dinas Donggala', 'PEMDA', 'Dinas Sosial Kab. Donggala')
+    ON DUPLICATE KEY UPDATE password = ?
+  `, [pemdaPassword, pemdaPassword]);
+  console.log('  ✅ PEMDA Donggala: pemda.donggala@sulteng.go.id');
 
   // ── MASTER DTSEN ─────────────────────────────────────────────────────────
   // 60 data dummy master DTSEN untuk keperluan testing matching
@@ -149,14 +123,22 @@ async function main() {
 
   // Upsert agar tidak duplikat jika seed dijalankan ulang
   let seededCount = 0;
+  
+  // Use batch for better performance
+  const batchData = [];
   for (const data of masterData) {
-    await prisma.masterDtsen.upsert({
-      where: { nik: data.nik },
-      update: { nama_lengkap: data.nama_lengkap, alamat_lengkap: data.alamat_lengkap },
-      create: { ...data, is_active: true },
-    });
+    const encryptedNik = encrypt(data.nik);
+    batchData.push([
+      encryptedNik, data.nama_lengkap, data.alamat_lengkap, 1
+    ]);
     seededCount++;
   }
+  
+  await conn.batch(`
+    INSERT INTO master_dtsen (nik, nama_lengkap, alamat_lengkap, is_active)
+    VALUES (?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE nama_lengkap = VALUES(nama_lengkap), alamat_lengkap = VALUES(alamat_lengkap)
+  `, batchData);
   console.log(`  ✅ Master DTSEN: ${seededCount} records`);
 
   console.log('\n🎉 Seeding selesai!');
@@ -165,14 +147,12 @@ async function main() {
   console.log('  🏛️  PEMDA Palu  : pemda.palu@sulteng.go.id | Pemda@12345!');
   console.log('  🏛️  PEMDA Sigi  : pemda.sigi@sulteng.go.id | Pemda@12345!');
   console.log('  🏛️  PEMDA Dongg : pemda.donggala@sulteng.go.id | Pemda@12345!');
+  await conn.release();
+  await pool.end();
 }
 
 main()
   .catch((e) => {
     console.error('❌ Seed error:', e);
     process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-    await pool.end();
   });

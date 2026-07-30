@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { SignJWT } from 'jose';
 import { serialize } from 'cookie';
@@ -9,9 +9,8 @@ export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const users = await query('SELECT * FROM users WHERE email = ? LIMIT 1', [email]);
+    const user = users.length > 0 ? users[0] : null;
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return NextResponse.json(
@@ -29,7 +28,7 @@ export async function POST(request: Request) {
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
-      .setExpirationTime('24h')
+      .setExpirationTime('2h')
       .sign(JWT_SECRET);
 
     const cookie = serialize('auth_token', token, {
@@ -37,7 +36,7 @@ export async function POST(request: Request) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24, // 24 hours
+      maxAge: 60 * 60 * 2, // 2 hours
     });
 
     return NextResponse.json(

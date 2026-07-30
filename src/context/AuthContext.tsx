@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (data.user.role === 'BPS_ADMIN') {
           router.push('/admin/dashboard');
         } else {
-          router.push('/');
+          router.push('/dashboard');
         }
         return { success: true, message: data.message };
       } else {

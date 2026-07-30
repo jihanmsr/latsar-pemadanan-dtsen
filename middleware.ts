@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // 2. Allow public pages
-  if (pathname === '/login' || pathname === '/sop') {
+  if (pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/sop' || pathname === '/dashboard/test-match') {
     return NextResponse.next();
   }
 

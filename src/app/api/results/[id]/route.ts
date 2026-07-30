@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 import { verifyAuth, unauthorizedResponse, forbiddenResponse } from '@/lib/auth';
+import { decrypt } from '@/lib/encryption';
+
+function maskNIK(nik: string | null): string | null {
+  if (!nik) return null;
+  if (nik.length !== 16) return nik; // fallback
+  return nik.substring(0, 6) + '********' + nik.substring(14);
+}
 
 /**
  * GET /api/results/[id]
@@ -11,7 +18,7 @@ import { verifyAuth, unauthorizedResponse, forbiddenResponse } from '@/lib/auth'
  * - PEMDA: hanya bisa akses submission miliknya sendiri
  *
  * Query params:
- *   ?status=PADAN|ANOMALI|TIDAK_PADAN (filter opsional)
+ *   ?status=EXACT_MATCH|PROBABLE_MATCH|NO_MATCH (filter opsional)
  *   ?limit=50 (default 50, max 200)
  *   ?offset=0
  */
@@ -25,9 +32,9 @@ export async function GET(
 
   try {
     const { id } = await params;
-    const submissionId = parseInt(id);
+    const submissionId = id;
 
-    if (isNaN(submissionId)) {
+    if (!submissionId) {
       return NextResponse.json(
         { success: false, error: 'ID submission tidak valid.' },
         { status: 400 }
@@ -35,26 +42,46 @@ export async function GET(
     }
 
     // ── 2. AMBIL SUBMISSION UNTUK OWNERSHIP CHECK ─────────────────────────
-    const submission = await prisma.submission.findUnique({
-      where: { id: submissionId },
-      select: {
-        id: true,
-        user_id: true,
-        file_name: true,
-        file_type: true,
-        status: true,
-        total_rows: true,
-        valid_rows: true,
-        sla_deadline: true,
-        created_at: true,
-        user: {
-          select: { name: true, instansi: true, email: true },
-        },
-        documents: {
-          select: { doc_type: true, is_signed: true, uploaded_at: true },
-        },
+    const subRows = await query(`
+      SELECT s.id, s.user_id, s.file_name, s.file_type, s.status, s.total_rows, 
+             s.valid_rows, s.sla_deadline, s.created_at,
+             u.name as user_name, u.instansi as user_instansi, u.email as user_email
+      FROM submissions s
+      JOIN users u ON s.user_id = u.id
+      WHERE s.id = ? LIMIT 1
+    `, [submissionId]);
+
+    if (subRows.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Submission tidak ditemukan.' },
+        { status: 404 }
+      );
+    }
+    
+    const s = subRows[0];
+    const docRows = await query(`SELECT doc_type, is_signed, uploaded_at FROM documents WHERE submission_id = ?`, [submissionId]);
+    
+    const submission = {
+      id: s.id,
+      user_id: s.user_id,
+      file_name: s.file_name,
+      file_type: s.file_type,
+      status: s.status,
+      total_rows: s.total_rows,
+      valid_rows: s.valid_rows,
+      sla_deadline: s.sla_deadline,
+      created_at: s.created_at,
+      user: {
+        name: s.user_name,
+        instansi: s.user_instansi,
+        email: s.user_email
       },
-    });
+      documents: docRows.map((d: any) => ({
+        doc_type: d.doc_type,
+        is_signed: d.is_signed === 1 || d.is_signed === true,
+        uploaded_at: d.uploaded_at
+      }))
+    };
 
     if (!submission) {
       return NextResponse.json(
@@ -71,47 +98,45 @@ export async function GET(
     // ── 3. QUERY PARAMS ───────────────────────────────────────────────────
     const { searchParams } = new URL(req.url);
     const filterStatus = searchParams.get('status') as
-      | 'PADAN' | 'ANOMALI' | 'TIDAK_PADAN' | null;
+      | 'EXACT_MATCH' | 'PROBABLE_MATCH' | 'NO_MATCH' | null;
     const limit  = Math.min(parseInt(searchParams.get('limit') ?? '50'), 200);
     const offset = parseInt(searchParams.get('offset') ?? '0');
 
     // ── 4. AMBIL MATCHING RESULTS ─────────────────────────────────────────
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: Record<string, any> = { submission_id: submissionId };
-    if (filterStatus) where.status_padan = filterStatus;
+    const conditions = ['submission_id = ?'];
+    const values = [submissionId];
+    if (filterStatus) {
+      conditions.push('status_padan = ?');
+      values.push(filterStatus);
+    }
+    const whereSql = 'WHERE ' + conditions.join(' AND ');
 
-    const [results, totalResults] = await Promise.all([
-      prisma.matchingResult.findMany({
-        where,
-        orderBy: [
-          { status_padan: 'asc' }, // ANOMALI dulu, lalu PADAN, lalu TIDAK_PADAN
-          { similarity_score: 'desc' },
-        ],
-        take: limit,
-        skip: offset,
-        select: {
-          id: true,
-          nik_usulan: true,
-          nama_usulan: true,
-          nik_master: true,
-          nama_master: true,
-          similarity_score: true,
-          status_padan: true,
-        },
-      }),
-      prisma.matchingResult.count({ where }),
-    ]);
+    const countRes = await query(`SELECT COUNT(*) as total FROM matching_results ${whereSql}`, values);
+    const totalResults = Number(countRes[0].total);
+
+    const results = await query(`
+      SELECT id, nik_usulan, nama_usulan, nik_master, nama_master, similarity_score, status_padan
+      FROM matching_results
+      ${whereSql}
+      ORDER BY FIELD(status_padan, 'PROBABLE_MATCH', 'EXACT_MATCH', 'NO_MATCH'), similarity_score DESC
+      LIMIT ? OFFSET ?
+    `, [...values, limit, offset]);
 
     // ── 5. HITUNG AGREGAT ─────────────────────────────────────────────────
-    const [padanCount, anomaliCount, tidakPadanCount, avgScore] = await Promise.all([
-      prisma.matchingResult.count({ where: { submission_id: submissionId, status_padan: 'PADAN' } }),
-      prisma.matchingResult.count({ where: { submission_id: submissionId, status_padan: 'ANOMALI' } }),
-      prisma.matchingResult.count({ where: { submission_id: submissionId, status_padan: 'TIDAK_PADAN' } }),
-      prisma.matchingResult.aggregate({
-        where: { submission_id: submissionId },
-        _avg: { similarity_score: true },
-      }),
-    ]);
+    const aggRes = await query(`
+      SELECT 
+        SUM(CASE WHEN status_padan = 'EXACT_MATCH' THEN 1 ELSE 0 END) as padanCount,
+        SUM(CASE WHEN status_padan = 'PROBABLE_MATCH' THEN 1 ELSE 0 END) as anomaliCount,
+        SUM(CASE WHEN status_padan = 'NO_MATCH' THEN 1 ELSE 0 END) as tidakPadanCount,
+        AVG(similarity_score) as avgScore
+      FROM matching_results
+      WHERE submission_id = ?
+    `, [submissionId]);
+
+    const padanCount = Number(aggRes[0].padanCount || 0);
+    const anomaliCount = Number(aggRes[0].anomaliCount || 0);
+    const tidakPadanCount = Number(aggRes[0].tidakPadanCount || 0);
+    const avgScore = Number(aggRes[0].avgScore || 0);
 
     return NextResponse.json({
       success: true,
@@ -121,13 +146,19 @@ export async function GET(
           padan: padanCount,
           anomali: anomaliCount,
           tidak_padan: tidakPadanCount,
-          avg_score: Number(avgScore._avg.similarity_score ?? 0).toFixed(2),
+          avg_score: avgScore.toFixed(2),
         },
       },
-      results: results.map(r => ({
-        ...r,
-        similarity_score: Number(r.similarity_score ?? 0),
-      })),
+      results: results.map((r: any) => {
+        const decryptedUsulan = r.nik_usulan ? decrypt(r.nik_usulan) : null;
+        const decryptedMaster = r.nik_master ? decrypt(r.nik_master) : null;
+        return {
+          ...r,
+          nik_usulan: maskNIK(decryptedUsulan),
+          nik_master: maskNIK(decryptedMaster),
+          similarity_score: Number(r.similarity_score ?? 0),
+        };
+      }),
       pagination: {
         total: totalResults,
         limit,

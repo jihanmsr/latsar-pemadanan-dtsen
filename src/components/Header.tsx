@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Bell, UserCircle, CheckCircle2, Sun, Moon, LogOut } from 'lucide-react';
+import { Bell, UserCircle, CheckCircle2, Sun, Moon, LogOut, Menu } from 'lucide-react';
 import { useMatching } from '@/context/MatchingContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Header() {
+export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: boolean) => void }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { matchingProgress, files } = useMatching();
@@ -35,8 +35,14 @@ export default function Header() {
   const hasUnread = notifications.length > 0;
 
   return (
-    <header className="h-16 glass sticky top-0 z-10 flex items-center justify-between px-6 transition-all duration-300">
-      <div className="flex items-center gap-4">
+    <header className="h-16 glass sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 transition-all duration-300">
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={() => setIsSidebarOpen?.(true)}
+          className="p-2 md:hidden rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-700/50 text-muted hover:text-foreground transition-all duration-300"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
         <h2 className="text-xl font-bold text-foreground hidden sm:block tracking-tight">Dashboard Instansi</h2>
       </div>
       <div className="flex items-center gap-2 sm:gap-4">

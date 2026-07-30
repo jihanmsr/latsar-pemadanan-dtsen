@@ -1,20 +1,45 @@
 import Link from 'next/link';
-import Image from 'next/image';
-import { Database, FileCheck, ShieldCheck, LayoutDashboard } from 'lucide-react';
+import { Database, FileCheck, ShieldCheck, LayoutDashboard, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIsOpen?: (val: boolean) => void }) {
   const { user } = useAuth();
   const isBps = user?.role === 'BPS_ADMIN';
 
+  const pathname = usePathname();
+
+  // Close sidebar on route change
+  useEffect(() => {
+    if (setIsOpen) setIsOpen(false);
+  }, [pathname, setIsOpen]);
+
   return (
-    <aside className="w-64 bg-surface border-r border-border h-full hidden md:flex flex-col transition-colors duration-300 relative z-20">
-      <div className="p-6 flex items-center gap-3 border-b border-border">
-        <div className="bg-transparent p-0 rounded-xl overflow-hidden shrink-0">
-          <img src="/logo-pakewa.png" alt="Logo PAKEWA" width="40" height="40" className="object-contain" />
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsOpen?.(false)}
+        />
+      )}
+
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-border flex flex-col transition-transform duration-300 md:static md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 flex items-center justify-between border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="bg-transparent p-0 rounded-xl overflow-hidden shrink-0">
+              <img src="/logo-pakewa.png" alt="Logo PAKEWA" width="40" height="40" className="object-contain" />
+            </div>
+            <h1 className="font-extrabold text-2xl leading-tight text-foreground tracking-tight">PAKEWA<span className="text-primary text-3xl">.</span></h1>
+          </div>
+          <button 
+            className="p-1 md:hidden text-muted hover:text-foreground"
+            onClick={() => setIsOpen?.(false)}
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
-        <h1 className="font-extrabold text-2xl leading-tight text-foreground tracking-tight">PAKEWA<span className="text-primary text-3xl">.</span></h1>
-      </div>
       <nav className="flex-1 p-4 space-y-2">
         {!isBps && (
           <>
@@ -50,5 +75,6 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }
