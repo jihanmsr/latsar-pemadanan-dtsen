@@ -32,8 +32,8 @@ with open('72/72/anggota_keluarga_dtsen_v3_2026_72.01.csv', 'r') as f:
         if not line.strip(): continue
         parts = [p.replace('"', '') for p in line.split('|')]
         if len(parts) >= 3:
-            # Di file, NIK yang sebenarnya ada di index 1 (dimulai 72...), index 0 mungkin ID Keluarga
-            nik = parts[1].strip() 
+            # Di file, NIK yang sebenarnya ada di index 0
+            nik = parts[0].strip() 
             nama = parts[2].strip().upper()
             master_dict[nik] = nama
             

@@ -124,6 +124,28 @@ export async function POST(req: NextRequest) {
       const namaUsulan = (row.nama ?? row.nama_lengkap ?? '').toString().trim();
       const parsedUsulan = parseNik(nikUsulan);
 
+      // Ekstrak Tanggal Lahir dari file upload (jika ada) untuk validasi ekstra
+      let usulanDD = parsedUsulan?.dd;
+      let usulanMM = parsedUsulan?.mm;
+      let usulanYY = parsedUsulan?.yy;
+
+      const rowTgl = parseInt(row.tgl_lahir ?? row.tanggal_lahir, 10);
+      const rowBln = parseInt(row.bln_lahir ?? row.bulan_lahir, 10);
+      const rowThn = parseInt(row.thn_lahir ?? row.tahun_lahir, 10);
+      
+      if (!isNaN(rowTgl) && !isNaN(rowBln) && !isNaN(rowThn)) {
+        usulanDD = rowTgl;
+        usulanMM = rowBln;
+        usulanYY = rowThn % 100;
+      } else if (row.tanggal_lahir && typeof row.tanggal_lahir === 'string') {
+        const parts = row.tanggal_lahir.split('-');
+        if (parts.length === 3) {
+          usulanYY = parseInt(parts[0], 10) % 100;
+          usulanMM = parseInt(parts[1], 10);
+          usulanDD = parseInt(parts[2], 10);
+        }
+      }
+
       // Cek apakah NIK ada di master (exact match)
       const masterExact = masterMap.get(nikUsulan);
 
@@ -195,7 +217,25 @@ export async function POST(req: NextRequest) {
             // Cepat filter apakah nama di master mengandung kata pertama dari nama usulan
             if (!m.nama.includes(firstWord)) continue;
             
-            const score = calculateLevenshteinSimilarity(namaUsulan, m.nama);
+            let score = calculateLevenshteinSimilarity(namaUsulan, m.nama);
+            
+            // Validasi DOB untuk menghindari salah orang pada nama pasaran (misal: Joko Santoso)
+            if (usulanDD !== undefined && usulanMM !== undefined && usulanYY !== undefined) {
+              const parsedMaster = parseNik(m.nik);
+              if (parsedMaster) {
+                const isSameDOB = usulanDD === parsedMaster.dd && 
+                                  usulanMM === parsedMaster.mm && 
+                                  usulanYY === parsedMaster.yy;
+                
+                // Jika nama mirip tapi DOB beda, berikan penalti agar tidak salah orang
+                if (score >= 80 && !isSameDOB) {
+                  score -= 30; // Turunkan skor (misal 100 -> 70, akan jadi PROBABLE atau NO_MATCH)
+                } else if (score >= 60 && isSameDOB) {
+                  score = Math.min(100, score + 20); // Beri bonus jika DOB sama
+                }
+              }
+            }
+
             if (score > bestScore) {
               bestScore = score;
               bestCandidateNik = m.nik;
