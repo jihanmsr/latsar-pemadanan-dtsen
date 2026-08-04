@@ -115,7 +115,7 @@ export async function GET(
     const totalResults = Number(countRes[0].total);
 
     const results = await query(`
-      SELECT id, nik_usulan, nama_usulan, nik_master, nama_master, similarity_score, status_padan
+      SELECT id, nik_usulan, nama_usulan, nik_master, nama_master, similarity_score, status_padan, alasan_anomali
       FROM matching_results
       ${whereSql}
       ORDER BY FIELD(status_padan, 'PROBABLE_MATCH', 'EXACT_MATCH', 'NO_MATCH'), similarity_score DESC

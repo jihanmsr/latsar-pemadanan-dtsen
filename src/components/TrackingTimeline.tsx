@@ -116,7 +116,8 @@ export default function TrackingTimeline() {
           Nama: `Penduduk ${i+1} (${f.name.substring(0, 10)})`,
           Status_Padan: isMatch ? 'EXACT_MATCH' : 'TIDAK EXACT_MATCH',
           Skor_Levenshtein: score,
-          ID_BPS_DTSEN: `DTSEN-${Math.floor(Math.random() * 10000)}`
+          ID_BPS_DTSEN: `DTSEN-${Math.floor(Math.random() * 10000)}`,
+          'Catatan Pemadanan (Metode)': isMatch ? 'Pencarian Lapis 1 (Tanggal Lahir cocok).' : 'Pencarian Lapis 2 (Nama Murni): Tanggal Lahir berbeda / salah input.'
         };
       });
 

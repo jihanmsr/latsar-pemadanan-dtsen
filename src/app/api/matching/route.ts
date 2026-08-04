@@ -214,9 +214,10 @@ export async function POST(req: NextRequest) {
               }
               if (bestScore === 100) break; // Perfect match found
             }
-          }
-        } else {
-          // Jika NIK usulan sama sekali tidak valid formatnya, fallback cari berdasarkan kata pertama nama
+        }
+        
+        if (bestScore < 60) {
+          // LAPIS 2: Jika Lapis 1 gagal (bestScore < 60) atau NIK/Tanggal Lahir usulan cacat, cari nama murni
           const firstWord = namaUsulan.split(' ')[0] || namaUsulan;
           let count = 0;
           for (const m of masterMap.values()) {
@@ -253,7 +254,7 @@ export async function POST(req: NextRequest) {
                     currentReason = "Nama mirip dan Tanggal Lahir sama (Beda Kecamatan).";
                   }
                 } else {
-                  currentReason = isSameDOB ? "Nama agak berbeda, tapi Tanggal Lahir sama." : "Nama mirip, Tanggal Lahir berbeda.";
+                  currentReason = isSameDOB ? "Nama agak berbeda, tapi Tanggal Lahir sama." : "Lapis 2: Tanggal Lahir beda/salah input, namun Nama Mirip.";
                 }
               }
             } else {
