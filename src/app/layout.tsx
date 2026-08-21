@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { MatchingProvider } from "@/context/MatchingContext";
 import { AuthProvider } from "@/context/AuthContext";
@@ -8,13 +8,11 @@ import ClientLayout from "@/components/ClientLayout";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import FloatingFeedback from "@/components/FloatingFeedback";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { Poppins } from "next/font/google";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const poppins = Poppins({
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: "--font-poppins",
   subsets: ["latin"],
 });
 
@@ -32,7 +30,7 @@ export default function RootLayout({
     <html
       lang="id"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${poppins.variable} font-sans h-full antialiased`}
     >
       <body className="h-full bg-background text-foreground transition-colors duration-300">
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false}>

@@ -1,29 +1,33 @@
 import pandas as pd
 import time
 
+import difflib
+import re
+
+COMMON_TITLES = {"MUHAMMAD", "MOHAMMAD", "MOH", "M", "SITI", "NUR", "ABDUL", "ACHMAD", "AHMAD", "HJ", "H", "RADEN", "R", "NY", "TN", "ANDI"}
+
+def clean_name(name):
+    name = str(name).strip().upper()
+    name = re.sub(r'[^A-Z\s]', ' ', name)
+    tokens = [t for t in name.split() if t and t not in COMMON_TITLES]
+    if not tokens:
+        tokens = [t for t in name.split() if t] # fallback
+    return " ".join(tokens)
+
 def string_similarity(s1, s2):
-    if not s1 or not s2: return 0.0
-    s1 = str(s1).strip().upper()
-    s2 = str(s2).strip().upper()
-    if s1 == s2: return 1.0
+    s1_clean = clean_name(s1)
+    s2_clean = clean_name(s2)
+    if not s1_clean or not s2_clean: return 0.0
+    if s1_clean == s2_clean: return 1.0
+    
+    t1 = set(s1_clean.split())
+    t2 = set(s2_clean.split())
+    if t1 and t2:
+        inter = t1.intersection(t2)
+        if len(inter) == min(len(t1), len(t2)):
+            return 0.95 
 
-    len1, len2 = len(s1), len(s2)
-    if len1 == 0 or len2 == 0: return 0.0
-
-    matrix = [[0] * (len2 + 1) for _ in range(len1 + 1)]
-    for i in range(len1 + 1): matrix[i][0] = i
-    for j in range(len2 + 1): matrix[0][j] = j
-
-    for i in range(1, len1 + 1):
-        for j in range(1, len2 + 1):
-            cost = 0 if s1[i - 1] == s2[j - 1] else 1
-            matrix[i][j] = min(matrix[i - 1][j] + 1,       
-                               matrix[i][j - 1] + 1,       
-                               matrix[i - 1][j - 1] + cost) 
-
-    dist = matrix[len1][len2]
-    max_len = max(len1, len2)
-    return (max_len - dist) / max_len
+    return difflib.SequenceMatcher(None, s1_clean, s2_clean).ratio()
 
 def parse_nik(nik):
     nik = str(nik).strip()
@@ -43,6 +47,7 @@ import csv
 
 master_dict = {} 
 master_dob = {}  
+master_wilayah = {}
 
 csv_files = glob.glob('72/72/anggota_keluarga_dtsen_v3_2026_72.*.csv')
 
@@ -63,18 +68,25 @@ for master_path in csv_files:
                         if dob_key not in master_dob:
                             master_dob[dob_key] = []
                         master_dob[dob_key].append({'nik': nik, 'nama': nama, 'wilayah': p['wilayah']})
+                        
+                        kab = p['wilayah'][:4]
+                        if kab not in master_wilayah:
+                            master_wilayah[kab] = []
+                        master_wilayah[kab].append({'nik': nik, 'nama': nama, 'p': p})
 
 print(f"Master Loaded: {len(master_dict)} records.")
 
 print("Loading Validation Data...")
-df = pd.read_excel('sqllab_untitled_query_14_20260803T101305.xlsx')
+df = pd.read_excel('Missing NIK.xlsx')
 
 correct_matches = 0
 incorrect_matches = 0
 not_found = 0
 
 out_predicted_nik = []
+out_predicted_nama = []
 out_validation_status = []
+out_keterangan = []
 
 start_time = time.time()
 
@@ -82,11 +94,10 @@ for idx, row in df.iterrows():
     actual_nik = str(row['nik_dtsen_prelist']).strip()
     if '.0' in actual_nik: actual_nik = actual_nik.replace('.0', '')
     
-    # Validasi Sesungguhnya: Apakah NIK ini ada di Master? 
+    # Validasi Sesungguhnya: Apakah NIK ini ada di Master?
+    has_ground_truth = True
     if len(actual_nik) != 16 or actual_nik not in master_dict:
-        out_predicted_nik.append(None)
-        out_validation_status.append('SKIP (TIDAK ADA DI MASTER)')
-        continue
+        has_ground_truth = False
         
     nama_usulan = str(row['nama_dtsen_var']).upper().strip()
     if nama_usulan == 'NAN' or not nama_usulan: 
@@ -102,7 +113,9 @@ for idx, row in df.iterrows():
             tgl, bln, thn = p['dd'], p['mm'], p['yy']
         else:
             out_predicted_nik.append(None)
+            out_predicted_nama.append(None)
             out_validation_status.append('SKIP (DOB INVALID)')
+            out_keterangan.append('Tanggal/Bulan lahir tidak valid')
             continue
             
     try:
@@ -110,7 +123,9 @@ for idx, row in df.iterrows():
         thn = thn % 100
     except:
         out_predicted_nik.append(None)
+        out_predicted_nama.append(None)
         out_validation_status.append('SKIP (DOB FORMAT ERROR)')
+        out_keterangan.append('Format tgl/bln/thn bukan angka')
         continue
         
     gender = str(row['jk_dtsen_value']).strip()
@@ -118,6 +133,7 @@ for idx, row in df.iterrows():
     if gender == '2.0': gender = '2'
     if gender == '1.0': gender = '1'
 
+    usulan_kab = str(row['level_6_full_code']).strip()[:4]
     usulan_wilayah = str(row['level_6_full_code']).strip()[:6]
 
     # JALANKAN ALGORITMA FALLBACK (PURA-PURA NIK HILANG)
@@ -131,53 +147,85 @@ for idx, row in df.iterrows():
         for m in candidates:
             score = int(string_similarity(nama_usulan, m['nama']) * 100)
             
-            # Tambahkan bonus jika nama agak beda tapi TTL sama persis (yang mana ini pasti)
-            if score >= 50:
-                score = min(100, score + 15)
+            # Hanya beri bonus jika nama sudah cukup mirip (minimal 75%)
+            if score >= 75:
+                score = min(100, score + 10)
                 
-            if usulan_wilayah == m['wilayah'] and score >= 60:
+            if usulan_wilayah == m['wilayah'] and score >= 75:
                 score = min(100, score + 5)
                 
             if score > best_score:
                 best_score = score
                 best_match_nik = m['nik']
-            if best_score == 100: break
+            if best_score >= 90: break
 
     # Lapis 2: Jika Lapis 1 gagal
     if best_score < 60:
-        first_word = nama_usulan.split(' ')[0] if ' ' in nama_usulan else nama_usulan
-        for nik, nama in master_dict.items():
-            if first_word not in nama: continue
+        c_name = clean_name(nama_usulan)
+        first_word = c_name.split(' ')[0] if ' ' in c_name else c_name
+        
+        kab_candidates = master_wilayah.get(usulan_kab, [])
+        
+        for c in kab_candidates:
+            if first_word not in c['nama']: continue
             
-            score = int(string_similarity(nama_usulan, nama) * 100)
-            p = parse_nik(nik)
-            if p:
-                is_same_dob = (tgl == p['dd'] and bln == p['mm'] and thn == p['yy'])
-                is_same_wil = (usulan_wilayah == p['wilayah'])
+            score = int(string_similarity(nama_usulan, c['nama']) * 100)
+            p = c['p']
+            
+            is_same_dob = (tgl == p['dd'] and bln == p['mm'] and thn == p['yy'])
+            is_same_wil = (usulan_wilayah == p['wilayah'])
+            
+            if score >= 85 and not is_same_dob:
+                score -= 15 # Penalti lebih kecil jika nama sangat mirip (>=85%)
+            elif score >= 75 and is_same_dob:
+                score = min(100, score + 10) # Bonus TTL
                 
-                if score >= 80 and not is_same_dob:
-                    score -= 30
-                    if is_same_wil: score += 15
-                elif score >= 60 and is_same_dob:
-                    score = min(100, score + (30 if is_same_wil else 15))
+            if is_same_wil and score >= 75:
+                score = min(100, score + 5) # Bonus Wilayah
                     
             if score > best_score:
                 best_score = score
-                best_match_nik = nik
-            if best_score == 100: break
+                best_match_nik = c['nik']
+            if best_score >= 90: break
     
-    if best_score >= 60:
-        if best_match_nik == actual_nik:
-            correct_matches += 1
-            out_validation_status.append('BENAR')
-        else:
-            incorrect_matches += 1
-            out_validation_status.append('SALAH ORANG')
+    system_status = 'NO_MATCH'
+    keterangan = ''
+    
+    p_best = parse_nik(best_match_nik) if best_match_nik else None
+    is_dob_anomaly = False
+    
+    if p_best:
+        is_dob_anomaly = not (tgl == p_best['dd'] and bln == p_best['mm'] and thn == p_best['yy'])
+        
+    if best_score >= 90 and not is_dob_anomaly:
+        system_status = 'EXACT_MATCH'
+    elif best_score >= 70:
+        system_status = 'HIGH_PROBABLE_MATCH'
+        if is_dob_anomaly:
+            keterangan = 'Perbedaan Tanggal Lahir'
+    elif best_score >= 50:
+        system_status = 'PROBABLE_MATCH'
+        
+    if system_status != 'NO_MATCH':
         out_predicted_nik.append(best_match_nik)
+        out_predicted_nama.append(master_dict.get(best_match_nik, '-'))
+        if has_ground_truth:
+            if best_match_nik == actual_nik:
+                correct_matches += 1
+                if not keterangan: keterangan = 'Valid (Sesuai NIK Aktual)'
+            else:
+                incorrect_matches += 1
+                if not keterangan: keterangan = 'Invalid (Dipetakan ke NIK Berbeda)'
+        else:
+            if not keterangan: keterangan = 'Prediksi Berhasil (Tanpa Ground Truth)'
     else:
         not_found += 1
         out_predicted_nik.append(None)
-        out_validation_status.append('TIDAK DITEMUKAN')
+        out_predicted_nama.append(None)
+        keterangan = 'Tidak Ditemukan Kandidat Master'
+        
+    out_validation_status.append(system_status)
+    out_keterangan.append(keterangan)
         
     if (idx + 1) % 100 == 0:
         print(f"Processed {idx + 1} rows...")
@@ -193,6 +241,8 @@ print(f"Not Found (No Match): {not_found}")
 print(f"Time Taken: {time.time() - start_time:.2f} seconds")
 
 df['Prediksi_NIK_Algoritma'] = out_predicted_nik
-df['Status_Validasi_Akurasi'] = out_validation_status
+df['Prediksi_Nama_Master'] = out_predicted_nama
+df['Status_Pemadanan_Sistem'] = out_validation_status
+df['Keterangan_Validasi_Kunci'] = out_keterangan
 df.to_excel('Hasil_Validasi_Akurasi.xlsx', index=False)
 print("File Hasil_Validasi_Akurasi.xlsx berhasil dibuat!")
