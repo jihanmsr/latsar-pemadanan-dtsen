@@ -46,32 +46,36 @@ export async function GET(request: Request) {
   const desilOptions = [1, 2, 3, 4, 5, 6, 7];
   const desil = desilOptions[hash % desilOptions.length];
   
-  const kabOptions = ['72.71 - KOTA PALU', '72.01 - KAB BANGGAI', '72.02 - KAB POSO', '72.10 - KAB SIGI'];
-  const kabupaten = kabOptions[hash % kabOptions.length];
-  
+  const kabOptions = ['72.71 - KOTA PALU', '72.01 - KAB BANGGAI', '72.02 - KAB POSO', '72.10 - KAB SIGI', '72.08 - KAB PARIGI MOUTONG'];
   const statusOptions = ['Tidak Bekerja', 'Bekerja', 'Pelajar/Mahasiswa', 'Mengurus Rumah Tangga'];
-  const statusBekerja = statusOptions[hash % statusOptions.length];
-  
   const ketOptions = ['Ditemukan di V2 & V3', 'Ditemukan di V3 saja', 'Ditemukan di V2 & V3'];
-  const keterangan = ketOptions[hash % ketOptions.length];
 
-  // Generate a plausible NIK based on hash
-  const randomSuffix = String(100000 + (hash % 899999)).padStart(6, '0');
-  const generatedNik = `72710${(hash % 9) + 1}${randomSuffix}000${(hash % 9) + 1}`;
+  // Jika yang diketik bukan NIK (bukan 16 digit angka), kita asumsikan itu pencarian Nama.
+  // Untuk mendemonstrasikan kasus "nama sama tapi NIK beda", kita kembalikan 2-3 data.
+  const isNik = /^\d{16}$/.test(q);
+  const dataList = [];
+  
+  const count = isNik ? 1 : ((hash % 3) + 2); // Jika nama, munculkan 2 atau 3 hasil
+
+  for (let i = 0; i < count; i++) {
+    const currentHash = hash + (i * 15);
+    const randomSuffix = String(100000 + (currentHash % 899999)).padStart(6, '0');
+    const generatedNik = isNik ? q : `72${String((currentHash % 90) + 10).padStart(2, '0')}0${(currentHash % 9) + 1}${randomSuffix}000${(currentHash % 9) + 1}`;
+    
+    dataList.push({
+      nik: generatedNik,
+      nama: q.toUpperCase(),
+      provinsi: '72 - SULAWESI TENGAH',
+      kabupaten: kabOptions[currentHash % kabOptions.length],
+      desil: (currentHash % 7) + 1,
+      isPbi: currentHash % 2 === 0,
+      statusBekerja: statusOptions[currentHash % statusOptions.length],
+      keterangan: ketOptions[currentHash % ketOptions.length]
+    });
+  }
 
   return NextResponse.json({
     success: true,
-    data: [
-      {
-        nik: generatedNik,
-        nama: q.toUpperCase(),
-        provinsi: '72 - SULAWESI TENGAH',
-        kabupaten: kabupaten,
-        desil: desil,
-        isPbi: hash % 2 === 0,
-        statusBekerja: statusBekerja,
-        keterangan: keterangan
-      }
-    ]
+    data: dataList
   });
 }
