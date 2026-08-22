@@ -42,6 +42,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Protect all routes except those filtered in step 1
-  matcher: ['/((?!api/auth|_next/static|_next/image|favicon.ico).*)'],
+  // Protect all routes except those filtered out
+  matcher: ['/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };
