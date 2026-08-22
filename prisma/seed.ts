@@ -24,8 +24,8 @@ async function main() {
   // Upsert Admin BPS
   await conn.query(`
     INSERT INTO users (id, email, password, name, role, instansi) 
-    VALUES (UUID(), ?, ?, 'Admin BPS Pusat', 'ADMIN', 'BPS Pusat')
-    ON DUPLICATE KEY UPDATE password = ?, name = 'Admin BPS Pusat'
+    VALUES (UUID(), ?, ?, 'Admin BPS', 'ADMIN', 'BPS Provinsi/Kabupaten')
+    ON DUPLICATE KEY UPDATE password = ?, name = 'Admin BPS'
   `, ['admin@bps.go.id', adminPassword, adminPassword]);
   
   console.log('  ✅ Admin BPS: admin@bps.go.id');

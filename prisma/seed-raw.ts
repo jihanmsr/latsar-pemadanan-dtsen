@@ -98,7 +98,7 @@ async function main() {
     const pemdaPass = await bcrypt.hash('Pemda@12345!', 10);
 
     const users = [
-      { email: 'admin@bps.go.id', password: adminPass, name: 'Admin BPS Pusat', role: 'BPS_ADMIN', instansi: 'BPS RI' },
+      { email: 'admin@bps.go.id', password: adminPass, name: 'Admin BPS', role: 'BPS_ADMIN', instansi: 'BPS Provinsi/Kabupaten' },
       { email: 'pemda.palu@sulteng.go.id', password: pemdaPass, name: 'Operator Dinas Palu', role: 'PEMDA', instansi: 'Dinas Sosial Kota Palu' },
       { email: 'pemda.sigi@sulteng.go.id', password: pemdaPass, name: 'Operator Dinas Sigi', role: 'PEMDA', instansi: 'Dinas Sosial Kab. Sigi' },
       { email: 'pemda.donggala@sulteng.go.id', password: pemdaPass, name: 'Operator Dinas Donggala', role: 'PEMDA', instansi: 'Dinas Sosial Kab. Donggala' },

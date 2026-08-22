@@ -111,7 +111,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
         <div className="flex items-center gap-3 border-l border-border pl-4 ml-2">
           <div className="hidden sm:flex flex-col items-end">
             <p className="text-sm font-extrabold text-foreground leading-none mb-1">
-              {user ? user.name : 'Tamu'}
+              {user ? (user.name === 'Admin BPS Pusat' ? 'Admin BPS' : user.name) : 'Tamu'}
             </p>
             <p className="text-xs text-muted font-medium leading-none">
               {user?.role === 'BPS_ADMIN' ? 'BPS Administrator' : (user?.instansi || 'Perwakilan Pemda')}
