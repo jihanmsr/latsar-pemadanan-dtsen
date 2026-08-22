@@ -38,9 +38,28 @@ export default function LoginPage() {
       {/* LEFT COLUMN - Information / Branding */}
       <div className="w-full lg:w-5/12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 lg:p-16 flex flex-col justify-center relative overflow-hidden">
         {/* Background decorations */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full bg-blue-600/10 blur-[120px]"></div>
-          <div className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] rounded-full bg-indigo-600/10 blur-[100px]"></div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Animated Glowing Orbs */}
+          <motion.div 
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full bg-blue-600/20 blur-[120px]"
+          />
+          <motion.div 
+            animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] rounded-full bg-indigo-500/20 blur-[120px]"
+          />
+          
+          {/* Subtle Futuristic Grid Pattern */}
+          <div 
+            className="absolute inset-0 opacity-[0.04]" 
+            style={{ 
+              backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', 
+              backgroundSize: '40px 40px',
+              maskImage: 'linear-gradient(to bottom, black 40%, transparent)' // Fades out the grid at the bottom
+            }}
+          />
         </div>
 
         <div className="max-w-xl mx-auto w-full relative z-10">
