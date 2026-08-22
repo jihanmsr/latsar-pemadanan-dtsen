@@ -5,6 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Chatbot from "./Chatbot";
+import FloatingWhatsApp from "./FloatingWhatsApp";
+import FloatingFeedback from "./FloatingFeedback";
 import { Toaster } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -31,6 +33,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <>
         <Toaster position="top-right" richColors />
         {children}
+        {/* Floating buttons for public pages */}
+        <FloatingWhatsApp />
+        <Chatbot />
       </>
     );
   }
@@ -56,6 +61,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </AnimatePresence>
         </main>
       </div>
+      {/* Floating buttons for authenticated pages */}
+      <FloatingFeedback />
       <Chatbot />
     </div>
   );

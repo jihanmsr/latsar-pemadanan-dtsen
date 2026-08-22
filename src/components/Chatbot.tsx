@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Loader2 } from 'lucide-react';
+import { MessageSquare, X, Send, Loader2, Bot, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'bot' | 'user', text: string}[]>([
-    { role: 'bot', text: 'Halo! Saya asisten virtual PAKEWA. Ada yang bisa saya bantu terkait pemadanan data DTSEN?' }
+    { role: 'bot', text: 'Halo! Saya asisten virtual PAKEWA 👋\nAda yang bisa saya bantu terkait pemadanan data DTSEN?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -45,88 +45,151 @@ export default function Chatbot() {
       } else {
         setMessages(prev => [...prev, { role: 'bot', text: data.error || 'Maaf, terjadi kesalahan.' }]);
       }
-    } catch (error) {
+    } catch {
       setMessages(prev => [...prev, { role: 'bot', text: 'Koneksi terputus. Silakan coba lagi nanti.' }]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const quickQuestions = [
+    'Apa itu DTSEN?',
+    'Cara pemadanan?',
+    'Regulasi DTSEN?',
+  ];
+
   return (
     <>
-      <button 
-        onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/30 hover:scale-110 transition-transform z-40 ${isOpen ? 'scale-0' : 'scale-100'}`}
-      >
-        <MessageSquare className="w-6 h-6" />
-      </button>
+      {/* Floating Button - bottom-right, higher than default to not overlap */}
+      <AnimatePresence>
+        {!isOpen && (
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            onClick={() => setIsOpen(true)}
+            className="fixed bottom-6 right-6 z-40 group"
+          >
+            <div className="relative w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:scale-110 transition-all duration-200">
+              <MessageSquare className="w-6 h-6" />
+              {/* Pulse indicator */}
+              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
+            </div>
+            {/* Tooltip */}
+            <span className="absolute right-16 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">
+              Tanya AI PAKEWA
+            </span>
+          </motion.button>
+        )}
+      </AnimatePresence>
 
+      {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: 50, scale: 0.9, transformOrigin: 'bottom right' }}
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-6 right-6 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-50 flex flex-col"
-            style={{ height: '500px', maxHeight: '80vh' }}
+            exit={{ opacity: 0, y: 30, scale: 0.92 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+            className="fixed bottom-6 right-6 w-[360px] sm:w-[400px] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden z-50 flex flex-col"
+            style={{ height: '520px', maxHeight: '85vh' }}
           >
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 flex items-center justify-between text-white shadow-md">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5" />
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-5 py-4 flex items-center justify-between text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Bot className="w-5 h-5" />
+                </div>
                 <div>
-                  <div className="font-bold text-sm">PAKEWA AI Assistant</div>
-                  <div className="text-[10px] text-blue-100">Powered by Gemini NLP</div>
+                  <div className="font-bold text-sm flex items-center gap-1.5">
+                    PAKEWA Assistant
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                  </div>
+                  <div className="text-[11px] text-blue-100 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-pulse"/>
+                    Online · Siap Membantu
+                  </div>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/20 rounded transition-colors">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-xl transition-colors"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
-            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-950 flex flex-col">
+
+            {/* Messages */}
+            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 dark:bg-slate-950">
               {messages.map((m, i) => (
-                <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
-                    m.role === 'user' 
-                      ? 'bg-blue-600 text-white rounded-tr-sm' 
-                      : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-tl-sm'
+                <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} items-end gap-2`}>
+                  {m.role === 'bot' && (
+                    <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 mb-0.5 shadow-md">
+                      <Bot className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  )}
+                  <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap shadow-sm ${
+                    m.role === 'user'
+                      ? 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-br-sm'
+                      : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-bl-sm'
                   }`}>
                     {m.text}
                   </div>
                 </div>
               ))}
               {isLoading && (
-                <div className="flex justify-start">
-                  <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-tl-sm flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
-                    <span className="text-xs text-slate-500">PAKEWA AI sedang mengetik...</span>
+                <div className="flex justify-start items-end gap-2">
+                  <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                    <Bot className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1.5 shadow-sm">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:0ms]" />
+                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:150ms]" />
+                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:300ms]" />
                   </div>
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-              <form 
+            {/* Quick Questions */}
+            {messages.length === 1 && (
+              <div className="px-4 pb-2 bg-slate-50 dark:bg-slate-950 flex gap-2 flex-wrap">
+                {quickQuestions.map((q, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setInput(q)}
+                    className="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-full hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-colors"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Input */}
+            <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+              <form
                 onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-                className="flex items-center gap-2 relative"
+                className="flex items-center gap-2"
               >
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={input}
                   onChange={e => setInput(e.target.value)}
-                  placeholder="Ketik pertanyaan Anda..." 
-                  className="flex-1 pl-4 pr-12 py-2.5 border border-slate-300 dark:border-slate-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-800 transition-colors"
+                  placeholder="Ketik pertanyaan Anda..."
+                  className="flex-1 pl-4 pr-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-800 transition-colors"
                   disabled={isLoading}
                 />
-                <button 
+                <button
                   type="submit"
                   disabled={!input.trim() || isLoading}
-                  className="absolute right-1 top-1 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center hover:shadow-lg hover:shadow-blue-500/30 disabled:opacity-50 transition-all hover:scale-105 flex-shrink-0"
                 >
                   <Send className="w-4 h-4 ml-0.5" />
                 </button>
               </form>
+              <p className="text-center text-[10px] text-slate-400 mt-2">Powered by PAKEWA AI · Data DTSEN Resmi</p>
             </div>
           </motion.div>
         )}
