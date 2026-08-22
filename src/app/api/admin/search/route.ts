@@ -38,6 +38,11 @@ export async function GET(request: Request) {
   // Generate somewhat random but consistent data based on the query string
   const hash = q.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   
+  // Simulate data not found for roughly 33% of queries to show the empty state
+  if (hash % 3 === 0) {
+    return NextResponse.json({ success: true, data: [] });
+  }
+
   const desilOptions = [1, 2, 3, 4, 5, 6, 7];
   const desil = desilOptions[hash % desilOptions.length];
   
