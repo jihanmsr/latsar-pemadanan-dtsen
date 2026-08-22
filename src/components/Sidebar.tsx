@@ -15,6 +15,29 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
     if (setIsOpen) setIsOpen(false);
   }, [pathname, setIsOpen]);
 
+  const NavItem = ({ href, icon: Icon, label, customIcon }: any) => {
+    const isActive = pathname === href;
+    return (
+      <Link 
+        href={href} 
+        className={`group flex items-center gap-3 p-3 rounded-lg font-semibold transition-all duration-300 ${
+          isActive 
+            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-500/20' 
+            : 'hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+        }`}
+      >
+        {customIcon ? (
+          <span className={`${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 group-hover:text-blue-500'} transition-colors duration-300`}>
+            {customIcon}
+          </span>
+        ) : (
+          <Icon className={`w-5 h-5 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 group-hover:text-blue-500'} group-hover:scale-110 transition-all duration-300`} />
+        )}
+        <span className={`${!isActive && 'group-hover:translate-x-1'} transition-transform duration-300`}>{label}</span>
+      </Link>
+    );
+  };
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -43,38 +66,26 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
       <nav className="flex-1 p-4 space-y-2">
         {!isBps && (
           <>
-            <Link href="/" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
-              <Database className="w-5 h-5 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
-              <span className="group-hover:translate-x-1 transition-transform duration-300">Upload Data</span>
-            </Link>
-            <Link href="/tracking" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
-              <FileCheck className="w-5 h-5 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
-              <span className="group-hover:translate-x-1 transition-transform duration-300">Tracking Progres</span>
-            </Link>
+            <NavItem href="/dashboard" icon={Database} label="Upload Data" />
+            <NavItem href="/tracking" icon={FileCheck} label="Tracking Progres" />
           </>
         )}
         
         {isBps && (
           <>
-            <Link href="/admin/dashboard" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
-              <LayoutDashboard className="w-5 h-5 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
-              <span className="group-hover:translate-x-1 transition-transform duration-300">Dashboard BPS</span>
-            </Link>
-            <Link href="/admin/search" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
-              <Search className="w-5 h-5 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
-              <span className="group-hover:translate-x-1 transition-transform duration-300">Pencarian Individu</span>
-            </Link>
-            <Link href="/admin/compare" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
-              <BarChart2 className="w-5 h-5 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
-              <span className="group-hover:translate-x-1 transition-transform duration-300">Komparasi V2 & V3</span>
-            </Link>
+            <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard BPS" />
+            <NavItem href="/admin/search" icon={Search} label="Pencarian Individu" />
+            <NavItem href="/admin/compare" icon={BarChart2} label="Komparasi V2 & V3" />
           </>
         )}
 
-        <Link href="/sop" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:text-primary group-hover:scale-110 transition-all duration-300"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8"/><path d="M12 8v6"/><path d="M3 16h5v5"/><path d="M16 16h5v5"/></svg>
-          <span className="group-hover:translate-x-1 transition-transform duration-300">SOP Pemadanan</span>
-        </Link>
+        <NavItem 
+          href="/sop" 
+          label="SOP Pemadanan" 
+          customIcon={
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-all duration-300"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8"/><path d="M12 8v6"/><path d="M3 16h5v5"/><path d="M16 16h5v5"/></svg>
+          } 
+        />
       </nav>
       <div className="p-6 border-t border-border bg-slate-50/50 dark:bg-slate-900/30">
         <div className="text-xs font-bold text-muted flex items-center gap-2 group cursor-default">
