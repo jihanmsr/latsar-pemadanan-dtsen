@@ -20,9 +20,9 @@ export default function FloatingFeedback() {
       {/* Floating Button */}
       <button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-5 py-3 rounded-full shadow-lg shadow-amber-600/30 transition-all hover:scale-105"
+        className="fixed bottom-24 right-6 z-40 flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-full shadow-lg shadow-amber-500/30 transition-all hover:scale-105"
       >
-        <MessageSquare className="w-5 h-5" />
+        <MessageSquare className="w-4 h-4" />
         <span className="font-semibold text-sm">Kotak Saran</span>
       </button>
 
