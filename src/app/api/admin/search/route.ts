@@ -35,19 +35,37 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: true, data: [] });
   }
 
-  // Pencarian nama (dummy)
+  // Generate somewhat random but consistent data based on the query string
+  const hash = q.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  
+  const desilOptions = [1, 2, 3, 4, 5, 6, 7];
+  const desil = desilOptions[hash % desilOptions.length];
+  
+  const kabOptions = ['72.71 - KOTA PALU', '72.01 - KAB BANGGAI', '72.02 - KAB POSO', '72.10 - KAB SIGI'];
+  const kabupaten = kabOptions[hash % kabOptions.length];
+  
+  const statusOptions = ['Tidak Bekerja', 'Bekerja', 'Pelajar/Mahasiswa', 'Mengurus Rumah Tangga'];
+  const statusBekerja = statusOptions[hash % statusOptions.length];
+  
+  const ketOptions = ['Ditemukan di V2 & V3', 'Ditemukan di V3 saja', 'Ditemukan di V2 & V3'];
+  const keterangan = ketOptions[hash % ketOptions.length];
+
+  // Generate a plausible NIK based on hash
+  const randomSuffix = String(100000 + (hash % 899999)).padStart(6, '0');
+  const generatedNik = `72710${(hash % 9) + 1}${randomSuffix}000${(hash % 9) + 1}`;
+
   return NextResponse.json({
     success: true,
     data: [
       {
-        nik: '7271012304500001',
+        nik: generatedNik,
         nama: q.toUpperCase(),
         provinsi: '72 - SULAWESI TENGAH',
-        kabupaten: '72.71 - KOTA PALU',
-        desil: 3,
-        isPbi: false,
-        statusBekerja: 'Tidak Bekerja',
-        keterangan: 'Ditemukan di V2 & V3'
+        kabupaten: kabupaten,
+        desil: desil,
+        isPbi: hash % 2 === 0,
+        statusBekerja: statusBekerja,
+        keterangan: keterangan
       }
     ]
   });
