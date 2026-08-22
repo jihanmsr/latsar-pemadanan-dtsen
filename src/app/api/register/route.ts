@@ -1,21 +1,25 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir, readFile } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
+
+const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     
-    const kategori_instansi = formData.get("kategoriPemohon") as string;
-    const nama_instansi = formData.get("namaInstansi") as string;
-    const email_narahubung = formData.get("emailNarahubung") as string;
-    const nama_narahubung = formData.get("namaNarahubung") as string;
-    const no_hp_narahubung = formData.get("noHandphone") as string;
-    const file = formData.get("lampiran") as File | null;
+    // Extract basic info
+    const kategoriInstansi = formData.get("kategoriInstansi") as string;
+    const namaInstansi = formData.get("namaInstansi") as string;
+    const emailNarahubung = formData.get("emailNarahubung") as string;
+    const namaNarahubung = formData.get("namaNarahubung") as string;
+    const noHpNarahubung = formData.get("noHandphone") as string || formData.get("noHpNarahubung") as string;
+    
+    const file = formData.get("lampiran") as File | null || formData.get("suratPermohonan") as File | null;
 
-    if (!kategori_instansi || !nama_instansi || !email_narahubung || !nama_narahubung || !no_hp_narahubung || !file) {
+    if (!kategoriInstansi || !namaInstansi || !emailNarahubung || !namaNarahubung || !noHpNarahubung || !file) {
       return NextResponse.json({ success: false, message: "Semua field instansi wajib diisi." }, { status: 400 });
     }
 
@@ -44,9 +48,7 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(bytes);
     
     const uploadDir = path.join(process.cwd(), "public/uploads/registrations");
-    if (!fs.existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
+    await mkdir(uploadDir, { recursive: true });
 
     const uniqueId = uuidv4();
     const fileName = `${uniqueId}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
@@ -54,38 +56,32 @@ export async function POST(request: Request) {
     await writeFile(filePath, buffer);
     const relativeFilePath = `/uploads/registrations/${fileName}`;
 
-    // Read existing JSON DB
-    const dbPath = path.join(process.cwd(), "src/data/registrations.json");
-    let registrations = [];
-    if (fs.existsSync(dbPath)) {
-      const dbContent = await readFile(dbPath, "utf-8");
-      registrations = JSON.parse(dbContent);
-    } else {
-      const dataDir = path.dirname(dbPath);
-      if (!fs.existsSync(dataDir)) await mkdir(dataDir, { recursive: true });
-    }
-
-    // Append new registration
-    const newRequest = {
-      id: uniqueId,
-      kategori_instansi,
-      nama_instansi,
-      email_narahubung,
-      nama_narahubung,
-      no_hp_narahubung,
-      surat_permohonan_path: relativeFilePath,
-      status: "PENDING",
-      created_at: new Date().toISOString(),
-      users
-    };
-    
-    registrations.push(newRequest);
-    await writeFile(dbPath, JSON.stringify(registrations, null, 2));
+    // Save to Database using Prisma
+    const newRequest = await prisma.registration_requests.create({
+      data: {
+        kategori_instansi: kategoriInstansi,
+        nama_instansi: namaInstansi,
+        email_narahubung: emailNarahubung,
+        nama_narahubung: namaNarahubung,
+        no_hp_narahubung: noHpNarahubung,
+        surat_permohonan_path: relativeFilePath,
+        users: {
+          create: users.map((u: any) => ({
+            nip_nik: u.nip_nik,
+            nama_lengkap: u.nama_lengkap,
+            nama_unit_kerja: u.nama_unit_kerja,
+            no_hp: u.no_hp,
+            email: u.email,
+            jabatan: u.jabatan
+          }))
+        }
+      }
+    });
 
     return NextResponse.json({ 
       success: true, 
       message: "Pendaftaran berhasil dikirim. Kami akan memverifikasi permohonan Anda.",
-      requestId: uniqueId
+      requestId: newRequest.id
     });
 
   } catch (error: any) {

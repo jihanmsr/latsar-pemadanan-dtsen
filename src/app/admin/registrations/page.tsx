@@ -30,15 +30,15 @@ export default function AdminRegistrationsPage() {
     }
   };
 
-  const handleAction = async (id: string, action: "approve" | "reject") => {
-    if (!confirm(`Anda yakin ingin ${action === "approve" ? "MENYETUJUI" : "MENOLAK"} permohonan ini?`)) return;
+  const handleAction = async (id: string, action: "approve" | "reject", reason?: string) => {
+    if (action === "approve" && !confirm(`Anda yakin ingin MENYETUJUI permohonan ini?`)) return;
     
     setProcessingId(id);
     try {
       const res = await fetch(`/api/admin/registrations/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action, reason }),
       });
       const data = await res.json();
       if (data.success) {
@@ -55,7 +55,7 @@ export default function AdminRegistrationsPage() {
     }
   };
 
-  if (user?.role !== "bps" && user?.role !== "admin") {
+  if (user?.role !== "BPS_ADMIN") {
     return <div className="p-8 text-center">Akses Ditolak. Halaman ini hanya untuk Admin BPS.</div>;
   }
 
@@ -145,16 +145,28 @@ export default function AdminRegistrationsPage() {
                             </span>
                           )}
                           {reg.status === "REJECTED" && (
-                            <span className="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">
-                              DITOLAK
-                            </span>
+                            <div className="flex flex-col items-center gap-1">
+                              <span className="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">
+                                DITOLAK
+                              </span>
+                              {reg.alasan_penolakan && (
+                                <span className="text-[10px] text-rose-500 max-w-[150px] truncate" title={reg.alasan_penolakan}>
+                                  Alasan: {reg.alasan_penolakan}
+                                </span>
+                              )}
+                            </div>
                           )}
                         </td>
                         <td className="px-6 py-4 text-right">
                           {reg.status === "PENDING" && (
                             <div className="flex items-center justify-end gap-2">
                               <button
-                                onClick={() => handleAction(reg.id, "reject")}
+                                onClick={() => {
+                                  const reason = prompt("Masukkan alasan penolakan:");
+                                  if (reason !== null) {
+                                    handleAction(reg.id, "reject", reason);
+                                  }
+                                }}
                                 disabled={processingId === reg.id}
                                 className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors disabled:opacity-50"
                                 title="Tolak"

@@ -140,3 +140,39 @@ model SasaranPemda {
 
   @@index([assignment_id])
 }
+
+model registration_requests {
+  id                    String               @id @default(uuid())
+  kategori_instansi     String               @db.VarChar(100)
+  nama_instansi         String               @db.VarChar(255)
+  email_narahubung      String               @db.VarChar(255)
+  nama_narahubung       String               @db.VarChar(255)
+  no_hp_narahubung      String               @db.VarChar(50)
+  surat_permohonan_path String               @db.VarChar(255)
+  status                registration_status  @default(PENDING)
+  alasan_penolakan      String?              @db.Text
+  created_at            DateTime             @default(now()) @db.Timestamp(0)
+  
+  users                 registration_users[]
+}
+
+model registration_users {
+  id              Int                   @id @default(autoincrement())
+  request_id      String
+  nip_nik         String                @db.VarChar(100)
+  nama_lengkap    String                @db.VarChar(255)
+  nama_unit_kerja String                @db.VarChar(255)
+  no_hp           String                @db.VarChar(50)
+  email           String                @db.VarChar(255)
+  jabatan         String                @db.VarChar(255)
+
+  request         registration_requests @relation(fields: [request_id], references: [id], onDelete: Cascade)
+
+  @@index([request_id])
+}
+
+enum registration_status {
+  PENDING
+  APPROVED
+  REJECTED
+}

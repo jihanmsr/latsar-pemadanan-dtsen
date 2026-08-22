@@ -1,20 +1,18 @@
 import { NextResponse } from "next/server";
-import { readFile } from "fs/promises";
-import path from "path";
-import fs from "fs";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const dbPath = path.join(process.cwd(), "src/data/registrations.json");
-    if (!fs.existsSync(dbPath)) {
-      return NextResponse.json({ success: true, data: [] });
-    }
-
-    const dbContent = await readFile(dbPath, "utf-8");
-    const registrations = JSON.parse(dbContent);
-
-    // Sort by created_at descending
-    registrations.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const registrations = await prisma.registration_requests.findMany({
+      include: {
+        users: true
+      },
+      orderBy: {
+        created_at: 'desc'
+      }
+    });
 
     return NextResponse.json({ success: true, data: registrations });
   } catch (error: any) {

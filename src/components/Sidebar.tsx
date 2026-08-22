@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Database, FileCheck, ShieldCheck, LayoutDashboard, X, Search, BarChart2, Bot } from 'lucide-react';
+import { Database, FileCheck, ShieldCheck, LayoutDashboard, X, Search, BarChart2, Bot, Building2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
