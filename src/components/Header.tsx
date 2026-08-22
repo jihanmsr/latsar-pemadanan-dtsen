@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Bell, UserCircle, CheckCircle2, Sun, Moon, LogOut, Menu } from 'lucide-react';
+import { Bell, UserCircle, CheckCircle2, Sun, Moon, LogOut, Menu, Shield, Building } from 'lucide-react';
 import { useMatching } from '@/context/MatchingContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from 'next-themes';
@@ -43,9 +43,19 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
         >
           <Menu className="w-5 h-5" />
         </button>
-        <h2 className="text-xl font-bold text-foreground hidden sm:block tracking-tight">
-          {user?.role === 'BPS_ADMIN' ? 'Dashboard Admin BPS' : 'Dashboard Instansi'}
-        </h2>
+        <div className="hidden sm:flex items-center">
+          {user?.role === 'BPS_ADMIN' ? (
+            <div className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-bold border border-blue-200 dark:border-blue-800 tracking-tight shadow-sm flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              Dashboard Admin BPS
+            </div>
+          ) : (
+            <div className="px-3 py-1.5 bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 rounded-lg text-sm font-bold border border-rose-200 dark:border-rose-800 tracking-tight shadow-sm flex items-center gap-2">
+              <Building className="w-4 h-4" />
+              Dashboard Instansi
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex items-center gap-2 sm:gap-4">
         {mounted && (
