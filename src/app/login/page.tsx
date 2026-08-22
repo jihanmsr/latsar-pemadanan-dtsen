@@ -102,7 +102,7 @@ export default function LoginPage() {
           className="max-w-md mx-auto w-full"
         >
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-3">Selamat Datang Kembali</h2>
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight">Selamat Datang Kembali</h2>
             <p className="text-slate-500 dark:text-slate-400 font-medium">
               Silakan masuk dengan kredensial instansi Anda.
             </p>
