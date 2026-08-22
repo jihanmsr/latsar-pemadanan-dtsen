@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, X, Download, ShieldCheck } from 'lucide-react';
+import { FileText, X, Download } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
@@ -22,9 +22,13 @@ export default function PublicNavbar() {
       <nav className={`w-full sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm' : 'bg-transparent border-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 transition-all group-hover:scale-105">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
+            <img
+              src="/logo-pakewa.png"
+              alt="Logo PAKEWA"
+              width={40}
+              height={40}
+              className="object-contain group-hover:scale-105 transition-transform"
+            />
             <span className="font-extrabold text-2xl tracking-tight text-slate-900 dark:text-white ml-1">PAKEWA<span className="text-blue-600">.</span></span>
           </Link>
           <div className="flex items-center gap-6">
