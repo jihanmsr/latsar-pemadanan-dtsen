@@ -81,7 +81,7 @@ export async function POST(req: Request) {
     }
 
     let status = 'NO_MATCH';
-    let alasan = 'Data tidak ditemukan di Master.';
+    let alasan: string | null = 'Data tidak ditemukan di Master.';
 
     if (highestScore >= 80.0) {
       status = 'EXACT_MATCH';

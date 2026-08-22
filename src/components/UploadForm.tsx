@@ -293,15 +293,21 @@ export default function UploadForm() {
 
       <MoUUpload onUploadSuccess={() => setIsMouChecked(true)} />
 
-      <div className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors relative ${
+      <motion.div 
+        whileHover={isMouChecked ? { scale: 1.02 } : {}}
+        whileTap={isMouChecked ? { scale: 0.98 } : {}}
+        className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all relative overflow-hidden group ${
             isMouChecked 
-              ? 'border-blue-300 dark:border-slate-600 bg-blue-50/50 dark:bg-slate-800/50 hover:bg-blue-100/50 dark:hover:bg-slate-800 cursor-pointer' 
-              : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/20 cursor-not-allowed opacity-70'
+              ? 'border-blue-300 dark:border-slate-600 bg-blue-50/40 dark:bg-slate-800/40 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-100/50 dark:hover:bg-slate-800/80 cursor-pointer hover:shadow-[0_0_20px_rgba(59,130,246,0.15)]' 
+              : 'border-slate-200 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/20 cursor-not-allowed opacity-70'
            }`}
            onClick={() => isMouChecked && fileInputRef.current?.click()}
            onDragOver={(e) => e.preventDefault()}
            onDrop={(e) => { e.preventDefault(); if (isMouChecked) handleDrop(e); }}
       >
+        {isMouChecked && (
+           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent -translate-x-full group-hover:animate-[scan_2s_ease-in-out_infinite]" />
+        )}
         <input
           type="file"
           className="hidden"
@@ -310,18 +316,22 @@ export default function UploadForm() {
           multiple
           accept=".csv, .xlsx, .xls, image/png, image/jpeg, image/jpg, application/pdf, .pdf"
         />
-        <div className="flex flex-col items-center gap-4">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isMouChecked ? 'bg-blue-100 dark:bg-slate-700' : 'bg-slate-200 dark:bg-slate-800'}`}>
-            {isMouChecked ? <UploadCloud className="w-8 h-8 text-blue-600 dark:text-blue-400" /> : <Lock className="w-8 h-8 text-slate-400" />}
-          </div>
+        <div className="flex flex-col items-center gap-5 relative z-10">
+          <motion.div 
+            animate={isMouChecked ? { y: [0, -5, 0] } : {}}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-sm ${isMouChecked ? 'bg-gradient-to-br from-blue-100 to-blue-200 dark:from-slate-700 dark:to-slate-600' : 'bg-slate-200 dark:bg-slate-800'}`}
+          >
+            {isMouChecked ? <UploadCloud className="w-10 h-10 text-blue-600 dark:text-blue-400" /> : <Lock className="w-10 h-10 text-slate-400" />}
+          </motion.div>
           <div>
-            <p className={`text-lg font-bold ${isMouChecked ? 'text-slate-900 dark:text-white' : 'text-slate-500'}`}>
+            <p className={`text-xl font-black tracking-tight ${isMouChecked ? 'text-slate-900 dark:text-white' : 'text-slate-500'}`}>
               {isMouChecked ? 'Klik atau seret file ke sini' : 'Centang MoU untuk mengunggah file'}
             </p>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Hanya mendukung: .csv, .xlsx, .pdf, .png, .jpg</p>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2">Format didukung: .csv, .xlsx, .pdf, .png, .jpg</p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {files.length > 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-surface border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm">

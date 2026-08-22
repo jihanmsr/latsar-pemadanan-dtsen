@@ -7,8 +7,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ClientLayout from "@/components/ClientLayout";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import FloatingFeedback from "@/components/FloatingFeedback";
+import Chatbot from "@/components/Chatbot";
 
-import { Poppins } from "next/font/google";
 
 const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700', '800', '900'],
@@ -33,13 +33,14 @@ export default function RootLayout({
       className={`${poppins.variable} font-sans h-full antialiased`}
     >
       <body className="h-full bg-background text-foreground transition-colors duration-300">
-        <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={true}>
           <AuthProvider>
             <MatchingProvider>
               <ClientLayout>
                 {children}
                 <FloatingWhatsApp />
                 <FloatingFeedback />
+                <Chatbot />
               </ClientLayout>
             </MatchingProvider>
           </AuthProvider>

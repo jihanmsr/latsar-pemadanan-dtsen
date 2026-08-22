@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Database, FileCheck, ShieldCheck, LayoutDashboard, X } from 'lucide-react';
+import { Database, FileCheck, ShieldCheck, LayoutDashboard, X, Search, BarChart2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
@@ -55,10 +55,20 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
         )}
         
         {isBps && (
-          <Link href="/admin/dashboard" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
-            <LayoutDashboard className="w-5 h-5 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
-            <span className="group-hover:translate-x-1 transition-transform duration-300">Dashboard BPS</span>
-          </Link>
+          <>
+            <Link href="/admin/dashboard" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
+              <LayoutDashboard className="w-5 h-5 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
+              <span className="group-hover:translate-x-1 transition-transform duration-300">Dashboard BPS</span>
+            </Link>
+            <Link href="/admin/search" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
+              <Search className="w-5 h-5 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
+              <span className="group-hover:translate-x-1 transition-transform duration-300">Pencarian Individu</span>
+            </Link>
+            <Link href="/admin/compare" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">
+              <BarChart2 className="w-5 h-5 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
+              <span className="group-hover:translate-x-1 transition-transform duration-300">Komparasi V2 & V3</span>
+            </Link>
+          </>
         )}
 
         <Link href="/sop" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50 text-muted hover:text-foreground font-semibold transition-all duration-300">

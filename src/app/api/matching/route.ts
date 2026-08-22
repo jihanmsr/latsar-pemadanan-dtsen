@@ -130,9 +130,9 @@ export async function POST(req: NextRequest) {
       let usulanMM = parsedUsulan?.mm;
       let usulanYY = parsedUsulan?.yy;
 
-      const rowTgl = parseInt(row.tgl_lahir ?? row.tanggal_lahir, 10);
-      const rowBln = parseInt(row.bln_lahir ?? row.bulan_lahir, 10);
-      const rowThn = parseInt(row.thn_lahir ?? row.tahun_lahir, 10);
+      const rowTgl = parseInt((row.tgl_lahir ?? row.tanggal_lahir) as string, 10);
+      const rowBln = parseInt((row.bln_lahir ?? row.bulan_lahir) as string, 10);
+      const rowThn = parseInt((row.thn_lahir ?? row.tahun_lahir) as string, 10);
       
       if (!isNaN(rowTgl) && !isNaN(rowBln) && !isNaN(rowThn)) {
         usulanDD = rowTgl;
@@ -214,7 +214,8 @@ export async function POST(req: NextRequest) {
               }
               if (bestScore === 100) break; // Perfect match found
             }
-        }
+        } // close for loop
+        } // close if (parsedUsulan)
         
         if (bestScore < 60) {
           // LAPIS 2: Jika Lapis 1 gagal (bestScore < 60) atau NIK/Tanggal Lahir usulan cacat, cari nama murni

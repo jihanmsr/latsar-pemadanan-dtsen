@@ -173,93 +173,99 @@ export default function TrackingTimeline() {
       )}
 
       {files.length > 0 && (
-        <div className="bg-surface border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm relative overflow-hidden">
+        <div className="bg-surface border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
           <div className="relative z-10">
-            <div className="absolute top-6 left-6 bottom-6 w-0.5 bg-slate-200 dark:bg-slate-700 -z-0 hidden sm:block"></div>
+            <div className="absolute top-8 left-8 bottom-8 w-[2px] bg-gradient-to-b from-blue-500/50 via-slate-200 dark:via-slate-700 to-transparent -z-0 hidden sm:block"></div>
             
-            <div className="space-y-8 relative z-10">
+            <div className="space-y-10 relative z-10">
               {steps.map((step, index) => (
-                <div key={step.id} className="flex flex-col sm:flex-row gap-4 sm:gap-6 relative">
+                <div key={step.id} className="flex flex-col sm:flex-row gap-6 relative">
                   <div className="flex items-center sm:items-start gap-4 z-10">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-4 border-surface ${
-                      step.status === 'completed' ? 'bg-success text-white' :
-                      step.status === 'current' ? 'bg-blue-600 text-white ring-4 ring-blue-600/20' :
+                    <motion.div 
+                      initial={false}
+                      animate={{ scale: step.status === 'current' ? [1, 1.1, 1] : 1 }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 border-4 border-surface shadow-sm ${
+                      step.status === 'completed' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 text-white' :
+                      step.status === 'current' ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-blue-500/30' :
                       'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
                     }`}>
-                      {step.status === 'completed' ? <CheckCircle2 className="w-6 h-6" /> : 
-                       step.status === 'current' ? <Clock className="w-6 h-6 animate-pulse" /> : 
-                       <Circle className="w-6 h-6" />}
-                    </div>
+                      {step.status === 'completed' ? <CheckCircle2 className="w-8 h-8" /> : 
+                       step.status === 'current' ? <Clock className="w-8 h-8" /> : 
+                       <Circle className="w-8 h-8" />}
+                    </motion.div>
                     {index !== steps.length - 1 && (
-                      <div className="w-0.5 h-full bg-slate-200 dark:bg-slate-700 sm:hidden mt-2 absolute left-6 -z-10"></div>
+                      <div className="w-[2px] h-full bg-slate-200 dark:bg-slate-700 sm:hidden mt-2 absolute left-8 -z-10"></div>
                     )}
                   </div>
                   
                   <div className={`pt-2 flex-1 ${step.status === 'pending' ? 'opacity-50' : ''} relative`}>
-                    <h3 className={`font-bold text-lg ${step.status === 'current' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-white'}`}>
+                    <h3 className={`font-black text-xl ${step.status === 'current' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-white'}`}>
                       {step.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-sm mt-1 font-bold text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center gap-2 text-sm mt-1.5 font-bold text-slate-500 dark:text-slate-400">
                       <Clock className="w-4 h-4" />
                       <span className="uppercase text-xs tracking-wider">{step.sla}</span>
                     </div>
                     
                     {/* Visualisasi per file di tahap Cek Variabel */}
                     {step.id === 2 && step.status !== 'pending' && (
-                      <div className="mt-4 space-y-2">
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-5 space-y-2">
                          {files.map(f => (
-                           <div key={f.id} className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-2 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-sm">
+                           <div key={f.id} className="flex items-center justify-between bg-white dark:bg-slate-900 p-3 px-4 rounded-xl border border-slate-100 dark:border-slate-800 text-sm shadow-sm">
                               <span className="font-bold text-slate-700 dark:text-slate-300 truncate max-w-[200px]">{f.name}</span>
-                              <div className="flex items-center gap-2">
-                                {f.status === 'success' ? <CheckCircle2 className="w-4 h-4 text-success" /> : <XCircle className="w-4 h-4 text-rose-500" />}
-                                <span className={`font-bold ${f.status === 'success' ? 'text-success' : 'text-rose-500'}`}>
+                              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 dark:bg-slate-800">
+                                {f.status === 'success' ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <XCircle className="w-4 h-4 text-rose-500" />}
+                                <span className={`font-bold ${f.status === 'success' ? 'text-emerald-600' : 'text-rose-500'}`}>
                                   {f.status === 'success' ? 'Valid' : 'Invalid'}
                                 </span>
                               </div>
                            </div>
                          ))}
-                      </div>
+                      </motion.div>
                     )}
 
                     {step.id === 3 && step.status !== 'pending' && (
-                      <div className="mt-4 space-y-4 relative">
-                        <div className="flex justify-between text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">
-                          <span>The Core Engine: Levenshtein Matching</span>
+                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-5 relative bg-white dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-100 dark:border-slate-800">
+                        <div className="flex justify-between text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">
+                          <span>Core Engine: Levenshtein Matching</span>
                           <span>{matchingProgress}%</span>
                         </div>
-                        <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                        <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden">
                           <motion.div 
-                            className="bg-blue-600 h-2.5 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.8)] relative"
+                            className="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)] relative"
                             initial={{ width: "20%" }}
                             animate={{ width: `${matchingProgress}%` }}
                             transition={{ duration: 0.5, ease: "easeInOut" }}
                           >
-                            <div className="absolute inset-0 bg-white/20 w-full animate-[scan_2s_linear_infinite]" />
+                            <div className="absolute inset-0 bg-white/30 w-full animate-[scan_2s_linear_infinite]" />
                           </motion.div>
                         </div>
                         
-                        <div className="space-y-2 mt-4 relative z-10">
+                        <div className="space-y-3 relative z-10">
                           {files.filter(f => f.status === 'success').map(f => (
-                            <div key={f.id} className="flex items-center justify-between flex-wrap gap-2 bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                              <div className="flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-slate-400" />
+                            <div key={f.id} className="flex items-center justify-between flex-wrap gap-2 bg-slate-50 dark:bg-slate-800/80 p-3 px-4 rounded-xl border border-slate-200/50 dark:border-slate-700 shadow-sm">
+                              <div className="flex items-center gap-3">
+                                <div className="p-1.5 bg-white dark:bg-slate-700 rounded-lg shadow-sm">
+                                  <FileText className="w-4 h-4 text-blue-500" />
+                                </div>
                                 <span className="font-bold text-sm text-slate-700 dark:text-slate-300 truncate max-w-[150px] sm:max-w-[200px]">{f.name}</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {f.matchScore ? (
                                   <>
-                                    <CheckCircle2 className={`w-4 h-4 ${f.matchScore >= 70 ? 'text-success' : 'text-amber-500'}`} />
-                                    <span className="font-bold text-sm text-slate-900 dark:text-white">{f.matchScore}%</span>
+                                    <CheckCircle2 className={`w-5 h-5 ${f.matchScore >= 70 ? 'text-emerald-500' : 'text-amber-500'}`} />
+                                    <span className="font-black text-sm text-slate-900 dark:text-white">{f.matchScore}%</span>
                                     {f.matchScore < 70 && (
-                                      <button className="ml-2 px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-bold shadow-sm transition-colors flex items-center gap-1">
+                                      <button className="ml-3 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold shadow-sm transition-all hover:scale-105 flex items-center gap-1">
                                         <AlertCircle className="w-3 h-3" /> Review
                                       </button>
                                     )}
                                   </>
                                 ) : (
                                   <>
-                                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-                                    <span className="text-sm font-bold text-blue-600">Proses...</span>
+                                    <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+                                    <span className="text-sm font-bold text-blue-600">Memproses...</span>
                                   </>
                                 )}
                               </div>
@@ -268,7 +274,7 @@ export default function TrackingTimeline() {
                         </div>
                         
                         {step.status === 'current' && <Particles />}
-                      </div>
+                      </motion.div>
                     )}
                   </div>
                 </div>
