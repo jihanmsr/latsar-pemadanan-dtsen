@@ -60,20 +60,33 @@ export default function RegisterPage() {
         </Link>
         
         {/* Background decorations */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-          <div className="absolute -bottom-[10%] -left-[10%] w-[70%] h-[70%] rounded-full bg-blue-600/10 blur-[120px]"></div>
-          <div className="absolute top-[20%] -right-[20%] w-[60%] h-[60%] rounded-full bg-indigo-600/10 blur-[100px]"></div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          {/* Animated Glowing Orbs */}
+          <motion.div 
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -bottom-[10%] -left-[10%] w-[70%] h-[70%] rounded-full bg-blue-600/20 blur-[120px]"
+          />
+          <motion.div 
+            animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute top-[20%] -right-[20%] w-[60%] h-[60%] rounded-full bg-indigo-500/20 blur-[120px]"
+          />
+          
+          {/* Subtle Futuristic Grid Pattern */}
+          <div 
+            className="absolute inset-0 opacity-[0.04]" 
+            style={{ 
+              backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', 
+              backgroundSize: '40px 40px',
+              maskImage: 'linear-gradient(to bottom, black 40%, transparent)'
+            }}
+          />
         </div>
 
         <div className="mt-20 max-w-xl mx-auto w-full relative z-10 flex-1 flex flex-col justify-center">
           <div className="mb-12">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-                  <FileCheck className="w-7 h-7" />
-                </div>
-                <h1 className="text-3xl font-black text-white tracking-tight">PAKEWA<span className="text-blue-500">.</span></h1>
-              </div>
               <p className="text-sm font-bold text-blue-400 uppercase tracking-widest">
                 Modul Pemadanan DTSEN
               </p>
