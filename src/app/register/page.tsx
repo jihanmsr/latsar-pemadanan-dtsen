@@ -11,13 +11,30 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+    
+    try {
+      const formData = new FormData(e.currentTarget);
+      
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert(data.message || 'Terjadi kesalahan');
+      }
+    } catch (error) {
+      alert('Gagal terhubung ke server');
+    } finally {
       setIsSubmitting(false);
-      setSubmitted(true);
-    }, 1500);
+    }
   };
 
   if (submitted) {
@@ -61,7 +78,6 @@ export default function RegisterPage() {
         
         {/* Background decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          {/* Animated Glowing Orbs */}
           <motion.div 
             animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
@@ -72,8 +88,6 @@ export default function RegisterPage() {
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
             className="absolute top-[20%] -right-[20%] w-[60%] h-[60%] rounded-full bg-indigo-500/20 blur-[120px]"
           />
-          
-          {/* Subtle Futuristic Grid Pattern */}
           <div 
             className="absolute inset-0 opacity-[0.04]" 
             style={{ 
@@ -154,7 +168,7 @@ export default function RegisterPage() {
                         Pilih Kategori Pemohon<span className="text-rose-500">*</span>:
                       </label>
                       <div className="relative">
-                        <select required className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm appearance-none outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium cursor-pointer">
+                        <select name="kategoriPemohon" required className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm appearance-none outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium cursor-pointer">
                           <option value="">-- pilih kategori instansi --</option>
                           <option value="kementerian">Kementerian / Lembaga</option>
                           <option value="provinsi">Pemerintah Provinsi</option>
@@ -169,10 +183,10 @@ export default function RegisterPage() {
                         Pilih Nama Instansi<span className="text-rose-500">*</span>:
                       </label>
                       <div className="relative">
-                        <select required className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm appearance-none outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium cursor-pointer">
+                        <select name="namaInstansi" required className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm appearance-none outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium cursor-pointer">
                           <option value="">-- pilih instansi --</option>
-                          <option value="1">Dinas Sosial Prov. Jawa Tengah</option>
-                          <option value="2">Bappeda Prov. Jawa Barat</option>
+                          <option value="Dinas Sosial Prov. Jawa Tengah">Dinas Sosial Prov. Jawa Tengah</option>
+                          <option value="Bappeda Prov. Jawa Barat">Bappeda Prov. Jawa Barat</option>
                         </select>
                         <ChevronDown className="absolute right-4 top-3.5 w-5 h-5 text-slate-400 pointer-events-none" />
                       </div>
@@ -182,21 +196,21 @@ export default function RegisterPage() {
                       <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                         Email Narahubung (*.go.id)<span className="text-rose-500">*</span>:
                       </label>
-                      <input type="email" required placeholder="admin@instansi.go.id" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                      <input name="emailNarahubung" type="email" required placeholder="admin@instansi.go.id" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
                     </div>
 
                     <div>
                       <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                         Nama Narahubung<span className="text-rose-500">*</span>:
                       </label>
-                      <input type="text" required placeholder="Nama Lengkap" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                      <input name="namaNarahubung" type="text" required placeholder="Nama Lengkap" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
                     </div>
 
                     <div>
                       <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                         No Handphone<span className="text-rose-500">*</span>:
                       </label>
-                      <input type="tel" required placeholder="08XX XXXX XXXX" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
+                      <input name="noHandphone" type="tel" required placeholder="08XX XXXX XXXX" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
                       <span className="text-xs text-slate-500 font-medium">Format: 08XX XXXX XXXX</span>
                     </div>
 
@@ -204,130 +218,146 @@ export default function RegisterPage() {
                       <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                         Lampiran Pengajuan Akun<span className="text-rose-500">*</span>:
                       </label>
-                      <div className="flex">
-                        <label className="px-5 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 border-r-0 rounded-l-xl text-sm font-bold text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                          Pilih File
-                          <input type="file" required accept=".pdf" className="hidden" />
-                        </label>
-                        <div className="flex-1 px-4 py-3 border border-slate-200 dark:border-slate-800 rounded-r-xl text-sm text-slate-400 bg-slate-50 dark:bg-slate-900 flex items-center overflow-hidden text-ellipsis whitespace-nowrap font-medium">
-                          Belum ada file dipilih...
+                      <div className="relative group">
+                        <input name="lampiran" type="file" required accept=".pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                        <div className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm flex items-center justify-between group-hover:border-blue-500 transition-colors">
+                          <span className="text-slate-400 group-hover:text-blue-500 font-medium flex items-center gap-2">
+                            <FileCheck className="w-4 h-4" /> Pilih File PDF
+                          </span>
+                          <span className="text-xs text-slate-500 bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded-md">Pilih File</span>
                         </div>
                       </div>
-                      <span className="text-xs text-slate-500 mt-2 block font-medium">Surat Pembuatan Akun (*.pdf) Maksimal 2 MB</span>
+                      <span className="text-[11px] text-slate-500 font-medium mt-1.5 block">Surat Pembuatan Akun (*.pdf) Maksimal 2 MB</span>
                     </div>
 
-                    <div className="pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
-                      <div className="p-4 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 rounded-xl flex items-center justify-between mb-8">
-                         <div className="flex items-center gap-3">
-                           <input type="checkbox" required className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                           <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Saya bukan robot</span>
-                         </div>
-                         <div className="text-center flex flex-col items-center opacity-80">
-                           <img src="/recaptcha-logo.png" width="30" alt="reCaptcha" />
-                           <span className="text-[10px] text-slate-500 mt-1 font-bold">reCAPTCHA</span>
-                         </div>
+                    <div className="pt-4">
+                      <div className="w-full border border-slate-200 dark:border-slate-800 p-4 rounded-xl flex items-center justify-between bg-white dark:bg-slate-900 shadow-sm">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input type="checkbox" required className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                          <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Saya bukan robot</span>
+                        </label>
+                        <div className="flex flex-col items-center gap-1">
+                          <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" width="30" alt="reCAPTCHA" className="opacity-80 dark:invert dark:opacity-50" />
+                          <span className="text-[9px] text-slate-400 font-medium">reCAPTCHA</span>
+                        </div>
                       </div>
-
-                      <button 
-                        type="submit" 
-                        disabled={isSubmitting}
-                        className="w-full py-4 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-70 text-white font-bold rounded-xl shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 text-base"
-                      >
-                        {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                        Kirim Pengajuan Pendaftaran
-                      </button>
                     </div>
+
+                    <button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="w-full py-4 px-6 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-xl font-bold transition-all disabled:opacity-70 flex items-center justify-center gap-2 shadow-lg"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Memproses Pengajuan...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" />
+                          Kirim Pengajuan Pendaftaran
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               </div>
 
-              {/* Form Pengguna (Tabs) */}
-              <div className="space-y-6">
+              {/* Form Data Pengguna */}
+              <div>
                 <h3 className="text-lg font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                   <span className="flex items-center justify-center w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs">2</span>
                   Data Pengguna Layanan (Minimal 2)
                 </h3>
-                
-                <div>
-                  <div className="border border-slate-200 dark:border-slate-800 rounded-t-2xl bg-slate-100 dark:bg-slate-900 flex overflow-hidden">
-                    {[1, 2, 3, 4].map(num => (
+
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                  {/* Tabs */}
+                  <div className="flex border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 overflow-x-auto no-scrollbar">
+                    {[1, 2, 3, 4].map((tab) => (
                       <button
-                        key={num}
+                        key={tab}
                         type="button"
-                        onClick={() => setActiveTab(num)}
-                        className={`flex-1 py-4 text-[11px] sm:text-xs font-black uppercase tracking-wider transition-colors ${
-                          activeTab === num 
-                          ? 'bg-white dark:bg-slate-950 text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' 
-                          : 'text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800 border-b-2 border-transparent'
-                        }`}
+                        onClick={() => setActiveTab(tab)}
+                        className={`flex-1 min-w-[90px] py-4 text-xs font-black uppercase tracking-wider transition-all border-b-2 ${activeTab === tab ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                       >
-                        User {num}{num <= 2 && <span className="text-rose-500 ml-0.5">*</span>}
+                        User {tab} {tab <= 2 && <span className="text-rose-500">*</span>}
                       </button>
                     ))}
                   </div>
-                  
-                  <div className="border-x border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 sm:p-8 rounded-b-2xl">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                          NIP/NIK:
-                        </label>
-                        <input type="text" placeholder="16 digit NIK atau NIP" required={activeTab <= 2} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                          Nama Unit Kerja:
-                        </label>
-                        <input type="text" placeholder="Biro / Bagian" required={activeTab <= 2} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
-                      </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                          Nama Lengkap:
-                        </label>
-                        <input type="text" placeholder="Nama Lengkap dengan Gelar" required={activeTab <= 2} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                  {/* Form Content (Dynamic) */}
+                  <div className="p-6 sm:p-8 relative">
+                    {[1, 2, 3, 4].map((tab) => (
+                      <div key={tab} className={`${activeTab === tab ? 'block animate-fade-in' : 'hidden'}`}>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+                          <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                              NIP/NIK:
+                            </label>
+                            <input name={`user${tab}_nip_nik`} type="text" placeholder="16 digit NIK atau NIP" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                              Nama Unit Kerja:
+                            </label>
+                            <input name={`user${tab}_nama_unit_kerja`} type="text" placeholder="Biro / Bagian" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+                          <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                              Nama Lengkap:
+                            </label>
+                            <input name={`user${tab}_nama_lengkap`} type="text" placeholder="Nama Lengkap dengan Gelar" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                              No Handphone:
+                            </label>
+                            <input name={`user${tab}_no_hp`} type="tel" placeholder="08XX XXXX XXXX" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
+                            <span className="text-[10px] text-slate-500 font-medium">Format: 08XX XXXX XXXX</span>
+                          </div>
+                        </div>
+                        <div className="mb-5">
+                          <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                            Email Pengguna (*.go.id):
+                          </label>
+                          <input name={`user${tab}_email`} type="email" placeholder="user@instansi.go.id" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                            Jabatan:
+                          </label>
+                          <input name={`user${tab}_jabatan`} type="text" placeholder="Nama Jabatan Lengkap" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
+                          <span className="text-[10px] text-slate-500 font-medium leading-relaxed block">Contoh: Kepala Badan Perencanaan Pembangunan Daerah Prov. Jateng</span>
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                          No Handphone:
-                        </label>
-                        <input type="tel" placeholder="08XX XXXX XXXX" required={activeTab <= 2} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
-                        <span className="text-xs text-slate-500 font-medium block">Format: 08XX XXXX XXXX</span>
-                      </div>
-                    </div>
-
-                    <div className="mb-6">
-                      <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                        Email Pengguna (*.go.id):
-                      </label>
-                      <input type="email" placeholder="user@instansi.go.id" required={activeTab <= 2} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
-                        Jabatan:
-                      </label>
-                      <input type="text" placeholder="Nama Jabatan Lengkap" required={activeTab <= 2} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
-                      <span className="text-xs text-slate-500 font-medium block">Contoh: Kepala Badan Perencanaan Pembangunan Daerah Prov. Jateng</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-blue-50 dark:bg-blue-900/10">
-                    <span className="block text-sm font-black text-blue-900 dark:text-blue-400 mb-2">Penting:</span>
-                    <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1.5 font-medium">
-                      <li>• Data <strong className="font-bold">User 1</strong> dan <strong className="font-bold">User 2</strong> wajib diisi sebagai syarat permohonan.</li>
-                      <li>• Field yang ditandai dengan bintang (<span className="text-rose-500">*</span>) wajib diisi.</li>
-                    </ul>
+                    ))}
                   </div>
                 </div>
-              </div>
 
+                <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900 p-6 rounded-2xl">
+                  <h4 className="font-black text-blue-900 dark:text-blue-400 mb-3 flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5" />
+                    Penting:
+                  </h4>
+                  <ul className="text-sm font-medium text-blue-800 dark:text-blue-300 space-y-2">
+                    <li className="flex gap-2">
+                      <span className="text-blue-500">•</span>
+                      <span>Data <strong>User 1</strong> dan <strong>User 2</strong> wajib diisi sebagai syarat permohonan.</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-blue-500">•</span>
+                      <span>Field yang ditandai dengan bintang (<span className="text-rose-500">*</span>) wajib diisi.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
             </form>
           </motion.div>
         </div>
-      </div>
       </div>
     </div>
   );

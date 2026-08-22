@@ -23,31 +23,25 @@ export default function PublicLandingPage() {
       <PublicNavbar />
 
       {/* HERO SECTION */}
-      <div className="relative overflow-hidden pt-12 pb-20 px-4 sm:px-8">
+      <div className="relative overflow-hidden pt-12 pb-28 px-4 sm:px-8 bg-[#0B1120] text-white shadow-[0_10px_30px_rgba(0,0,0,0.1)]">
         
         {/* Background decorations for Hero */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           {/* Animated Glowing Orbs */}
           <motion.div 
-            animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+            animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             className="absolute -top-[10%] -left-[5%] w-[50%] h-[50%] rounded-full bg-blue-600/30 blur-[120px]"
           />
           <motion.div 
-            animate={{ scale: [1, 1.5, 1], opacity: [0.05, 0.15, 0.05] }}
+            animate={{ scale: [1, 1.5, 1], opacity: [0.1, 0.3, 0.1] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
             className="absolute top-[30%] -right-[10%] w-[40%] h-[40%] rounded-full bg-indigo-500/30 blur-[120px]"
           />
           
-          {/* Subtle Futuristic Grid Pattern */}
-          <div 
-            className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" 
-            style={{ 
-              backgroundImage: 'linear-gradient(var(--grid-color, #000000) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color, #000000) 1px, transparent 1px)', 
-              backgroundSize: '40px 40px',
-              maskImage: 'linear-gradient(to bottom, black 20%, transparent)'
-            }}
-          />
+          {/* Login Page Grid Pattern */}
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-transparent to-transparent" />
         </div>
 
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 relative z-10">
@@ -58,42 +52,42 @@ export default function PublicLandingPage() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="w-full lg:w-1/2"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/50 dark:bg-blue-900/30 text-primary mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 mb-6">
               <Shield className="w-4 h-4" />
               <span className="text-xs font-bold uppercase tracking-wider">MODUL PEMADANAN RESMI</span>
             </div>
             
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white leading-tight mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6 tracking-tight drop-shadow-sm">
               Padanan Kesejahteraan Warga <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">(PAKEWA)</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]">(PAKEWA)</span>
             </h1>
             
-            <p className="text-slate-500 dark:text-slate-400 text-base mb-8 max-w-xl leading-relaxed">
-              Sistem informasi yang dirancang khusus untuk membantu Instansi Pusat dan Pemerintah Daerah (K/L/D) memvalidasi, menyinkronkan, dan memadankan data sasaran program dengan <strong>Data Tunggal Sosial dan Ekonomi Nasional (DTSEN)</strong>.
+            <p className="text-slate-300 text-base mb-8 max-w-xl leading-relaxed">
+              Sistem informasi yang dirancang khusus untuk membantu Instansi Pusat dan Pemerintah Daerah (K/L/D) memvalidasi, menyinkronkan, dan memadankan data sasaran program dengan <strong className="text-white">Data Tunggal Sosial dan Ekonomi Nasional (DTSEN)</strong>.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link href="/register" className="inline-flex justify-center items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-bold transition-all hover:-translate-y-0.5 shadow-lg shadow-indigo-500/30">
+              <Link href="/register" className="inline-flex justify-center items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-bold transition-all hover:-translate-y-0.5 shadow-[0_0_20px_rgba(79,70,229,0.4)]">
                 <UserPlus className="w-5 h-5" />
                 Daftar Instansi
               </Link>
-              <Link href="/sop" className="px-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2">
+              <Link href="/sop" className="px-6 py-3.5 bg-white/5 border border-white/10 text-white hover:bg-white/10 font-semibold rounded-lg transition-colors flex items-center gap-2 backdrop-blur-md">
                 <FileDown className="w-5 h-5" />
                 Panduan Sistem
               </Link>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 mb-8 text-sm font-medium text-slate-600 dark:text-slate-400">
+            <div className="flex flex-wrap items-center gap-6 mb-8 text-sm font-medium text-slate-300">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-success" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 Sinkronisasi NIK Otomatis
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-success" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 Terintegrasi DTSEN
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-success" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 100% Aman & Tersertifikasi
               </div>
             </div>
@@ -101,19 +95,19 @@ export default function PublicLandingPage() {
             <div className="flex items-center gap-4">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">KEAMANAN PORTAL:</span>
               <div className="flex gap-2">
-                <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-sm">
-                  <Shield className="w-4 h-4 text-blue-500" />
+                <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-md backdrop-blur-sm">
+                  <Shield className="w-4 h-4 text-blue-400" />
                   <div>
-                    <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300">TTE Tersertifikasi</div>
-                    <div className="text-[9px] text-slate-500">BSrE - BSSN</div>
+                    <div className="text-[10px] font-bold text-slate-200">TTE Tersertifikasi</div>
+                    <div className="text-[9px] text-slate-400">BSrE - BSSN</div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-sm">
-                  <Lock className="w-4 h-4 text-success" />
+                <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-md backdrop-blur-sm">
+                  <Lock className="w-4 h-4 text-emerald-400" />
                   <div>
-                    <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300">HTTPS Terenkripsi</div>
-                    <div className="text-[9px] text-slate-500">SSL/TLS Secured</div>
+                    <div className="text-[10px] font-bold text-slate-200">HTTPS Terenkripsi</div>
+                    <div className="text-[9px] text-slate-400">SSL/TLS Secured</div>
                   </div>
                 </div>
               </div>
