@@ -21,7 +21,7 @@ export default function PublicNavbar() {
 
   return (
     <>
-      <nav className={`w-full sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#0B1120]/90 backdrop-blur-xl border-b border-slate-800 shadow-lg' : 'bg-transparent border-transparent'}`}>
+      <nav className={`w-full sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm' : 'bg-transparent border-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
             <img
@@ -29,25 +29,23 @@ export default function PublicNavbar() {
               alt="Logo PAKEWA"
               width={40}
               height={40}
-              className="object-contain group-hover:scale-105 transition-transform filter brightness-0 invert"
+              className="object-contain group-hover:scale-105 transition-transform"
             />
-            <span className="font-extrabold text-2xl tracking-tight text-white ml-1">PAKEWA<span className="text-blue-500">.</span></span>
+            <span className="font-extrabold text-2xl tracking-tight text-slate-900 dark:text-white ml-1">PAKEWA<span className="text-blue-600">.</span></span>
           </Link>
           <div className="flex items-center gap-6">
-            <Link href="/" className="text-sm font-bold text-slate-300 hover:text-white transition-colors hidden sm:block">
+            <Link href="/" className="text-sm font-bold text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-colors hidden sm:block">
               Beranda
             </Link>
-            <button onClick={() => setShowDocsModal(true)} className="text-sm font-bold text-slate-300 hover:text-white transition-colors hidden md:block">
+            <button onClick={() => setShowDocsModal(true)} className="text-sm font-bold text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-colors hidden md:block">
               Dokumen Persyaratan
             </button>
-            <div className="w-px h-6 bg-slate-700 hidden sm:block"></div>
-            <div className="text-slate-300 hidden">
-              <ThemeToggle />
-            </div>
-            <Link href="/login" className="text-sm font-bold text-slate-300 hover:text-white transition-colors">
+            <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
+            <ThemeToggle />
+            <Link href="/login" className="text-sm font-bold text-slate-700 hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400 transition-colors">
               Masuk
             </Link>
-            <Link href="/register" className="text-sm font-bold px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all hover:scale-105">
+            <Link href="/register" className="text-sm font-bold px-5 py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 text-white rounded-full shadow-lg transition-all hover:scale-105">
               Daftar Instansi
             </Link>
           </div>
