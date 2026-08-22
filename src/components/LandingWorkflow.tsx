@@ -43,7 +43,15 @@ export default function LandingWorkflow() {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, type: "spring", stiffness: 50 } },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring" as any,
+        stiffness: 300,
+        damping: 24,
+      }
+    }
   };
 
   return (

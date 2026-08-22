@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive } from 'lucide-react';
+import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin } from 'lucide-react';
 import DashboardStats from '@/components/DashboardStats';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { toast } from 'sonner';
 
@@ -15,6 +16,23 @@ const mockArchives = [
   { id: 'DOC-455', instansi: 'Pemkab Donggala', type: 'MoU & NDA', date: '03 Mei 2024', url: '#' },
   { id: 'DOC-455-BAST', instansi: 'Pemkab Donggala', type: 'BAST', date: '05 Mei 2024', url: '#' },
   { id: 'DOC-889', instansi: 'Pemprov Sulteng', type: 'MoU & NDA', date: '10 Mei 2024', url: '#' },
+];
+
+const chartData = [
+  { name: 'Jan', volume: 4000 },
+  { name: 'Feb', volume: 3000 },
+  { name: 'Mar', volume: 2000 },
+  { name: 'Apr', volume: 2780 },
+  { name: 'Mei', volume: 1890 },
+  { name: 'Jun', volume: 2390 },
+  { name: 'Jul', volume: 3490 },
+];
+
+const activityLogs = [
+  { id: 1, time: '2 mnt lalu', text: 'Pemkot Palu mengunggah 1.254 data sasaran', status: 'upload' },
+  { id: 2, time: '10 mnt lalu', text: 'Pra-Validasi selesai untuk Pemkab Sigi', status: 'valid' },
+  { id: 3, time: '1 jam lalu', text: 'Admin menyetujui BAST Kota Palu', status: 'approve' },
+  { id: 4, time: '2 jam lalu', text: 'Pemkab Donggala mengajukan MoU baru', status: 'upload' },
 ];
 
 export default function AdminDashboard() {
@@ -75,15 +93,117 @@ export default function AdminDashboard() {
   if (!mounted || !user || user.role !== 'BPS_ADMIN') return null;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2 tracking-tight">Dashboard Admin BPS</h2>
-          <p className="text-slate-600 dark:text-slate-400">Pusat kendali verifikasi pengajuan dan arsip digital pemadanan data.</p>
+    <div className="max-w-7xl mx-auto space-y-6">
+      {/* 1. System Health Indicators */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-900 rounded-full text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+          <Server className="w-3.5 h-3.5 text-success" />
+          API DTSEN: <span className="text-success ml-1">Connected (24ms)</span>
         </div>
-        
-        {/* Tab Navigation */}
-        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-900 rounded-full text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+          <HardDrive className="w-3.5 h-3.5 text-amber-500" />
+          Storage: <span className="text-amber-600 ml-1">72% Terpakai</span>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-900 rounded-full text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+          <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+          Enkripsi Data: <span className="text-blue-600 ml-1">Aktif</span>
+        </div>
+      </div>
+
+      <DashboardStats />
+
+      {/* 2 & 3. Grid: Chart + Activity Log */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Live Traffic Chart */}
+        <div className="lg:col-span-2 glass rounded-2xl p-6 border border-border shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <Activity className="w-5 h-5 text-blue-500" /> Tren Volume Pemadanan
+              </h3>
+              <p className="text-xs text-muted mt-1">Lalu lintas data sasaran masuk (YTD)</p>
+            </div>
+            <div className="px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded text-xs font-bold border border-blue-200 dark:border-blue-800 animate-pulse">
+              Live
+            </div>
+          </div>
+          <div className="flex-1 min-h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: 'var(--fallback-b1,rgba(255,255,255,0.9))', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  itemStyle={{ color: '#3b82f6', fontWeight: 'bold' }}
+                />
+                <Area type="monotone" dataKey="volume" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorVolume)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Activity Feed */}
+        <div className="glass rounded-2xl p-6 border border-border shadow-sm flex flex-col">
+          <h3 className="text-lg font-bold text-foreground mb-1">Log Aktivitas</h3>
+          <p className="text-xs text-muted mb-6">Real-time system feed</p>
+          <div className="flex-1 space-y-5 overflow-y-auto pr-2">
+            {activityLogs.map((log) => (
+              <div key={log.id} className="relative pl-6">
+                <div className={`absolute left-0 top-1.5 w-2 h-2 rounded-full ${log.status === 'upload' ? 'bg-blue-500' : log.status === 'valid' ? 'bg-success' : 'bg-amber-500'}`}></div>
+                <div className="absolute left-[3px] top-4 bottom-[-16px] w-[2px] bg-slate-200 dark:bg-slate-700"></div>
+                <p className="text-sm font-semibold text-foreground leading-tight">{log.text}</p>
+                <p className="text-xs text-muted mt-1">{log.time}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Regional Leaderboard */}
+      <div className="glass rounded-2xl p-6 border border-border shadow-sm">
+        <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-rose-500" /> Progres Pemadanan Wilayah (Top 3)
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm font-bold text-foreground">
+              <span>Kota Palu</span>
+              <span>85%</span>
+            </div>
+            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
+              <div className="bg-blue-600 h-2 rounded-full" style={{ width: '85%' }}></div>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm font-bold text-foreground">
+              <span>Kab. Donggala</span>
+              <span>60%</span>
+            </div>
+            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
+              <div className="bg-blue-500 h-2 rounded-full" style={{ width: '60%' }}></div>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm font-bold text-foreground">
+              <span>Kab. Sigi</span>
+              <span>45%</span>
+            </div>
+            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
+              <div className="bg-blue-400 h-2 rounded-full" style={{ width: '45%' }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Navigation & Submissions Table */}
+      <div className="pt-4">
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 w-max mb-6">
           <button 
             onClick={() => setActiveTab('submissions')}
             className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'submissions' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
@@ -97,9 +217,6 @@ export default function AdminDashboard() {
             <FolderArchive className="w-4 h-4" /> Arsip Dokumen Digital
           </button>
         </div>
-      </div>
-
-      <DashboardStats />
 
       <motion.div
         key={activeTab}
@@ -230,6 +347,7 @@ export default function AdminDashboard() {
           </div>
         )}
       </motion.div>
+      </div>
     </div>
   );
 }
