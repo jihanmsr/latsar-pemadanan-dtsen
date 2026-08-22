@@ -40,30 +40,31 @@ export default function LandingWorkflow() {
           <p className="text-slate-500">Ikuti langkah-langkah berikut untuk mengajukan dan memproses pemadanan data sasaran dengan DTSEN.</p>
         </div>
 
-        <div className="relative">
-          {/* Vertical Line */}
-          <div className="absolute left-8 md:left-1/2 top-4 bottom-4 w-1 bg-gradient-to-b from-blue-500 to-rose-500 rounded-full md:-translate-x-1/2 opacity-20"></div>
+        <div className="relative mt-8">
+          {/* Horizontal Line for Desktop */}
+          <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-1 bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500 rounded-full opacity-20"></div>
 
-          <div className="space-y-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {steps.map((step, idx) => (
-              <div key={idx} className={`relative flex flex-col md:flex-row items-center ${idx % 2 === 0 ? 'md:flex-row-reverse' : ''} gap-8 group`}>
+              <div key={idx} className="relative group">
                 
-                {/* Timeline Node */}
-                <div className="absolute left-8 md:left-1/2 w-12 h-12 bg-white dark:bg-slate-900 rounded-full border-4 border-slate-50 dark:border-slate-900 shadow-xl flex items-center justify-center md:-translate-x-1/2 -translate-x-1/2 z-10 transition-transform group-hover:scale-110">
+                {/* Timeline Node Desktop */}
+                <div className="hidden lg:flex absolute top-12 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-slate-900 rounded-full border-4 border-slate-50 dark:border-slate-900 shadow-xl items-center justify-center z-10 transition-transform group-hover:scale-110">
                   <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${step.color} flex items-center justify-center text-white font-black text-sm`}>
                     {idx + 1}
                   </div>
                 </div>
 
                 {/* Content Box */}
-                <div className="w-full md:w-1/2 pl-20 md:pl-0 flex flex-col justify-center">
-                  <div className={`bg-white dark:bg-slate-950 p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-800 transition-all ${idx % 2 === 0 ? 'md:ml-12 md:text-left' : 'md:mr-12 md:text-right'}`}>
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${step.color} text-white flex items-center justify-center mb-6 shadow-md ${idx % 2 !== 0 && 'md:ml-auto'}`}>
-                      <step.icon className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{step.title}</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{step.desc}</p>
+                <div className="bg-white dark:bg-slate-950 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 lg:mt-20 h-full flex flex-col items-center text-center">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} text-white flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <step.icon className="w-7 h-7" />
                   </div>
+                  <div className="lg:hidden w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 text-slate-500 dark:text-slate-300 font-bold text-sm flex items-center justify-center mb-3">
+                    {idx + 1}
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{step.title}</h3>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{step.desc}</p>
                 </div>
 
               </div>
