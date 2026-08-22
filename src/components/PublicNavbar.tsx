@@ -10,8 +10,10 @@ import ThemeToggle from './ThemeToggle';
 export default function PublicNavbar() {
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -54,7 +56,7 @@ export default function PublicNavbar() {
 
       {/* MODAL DOKUMEN PERSYARATAN */}
       <AnimatePresence>
-        {showDocsModal && typeof document !== 'undefined' && createPortal(
+        {mounted && showDocsModal && createPortal(
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
             <motion.div 
               initial={{ opacity: 0 }}
@@ -87,6 +89,7 @@ export default function PublicNavbar() {
               <div className="p-6 sm:p-8 overflow-y-auto flex-1 bg-slate-50 dark:bg-slate-950">
                 <div className="space-y-3">
                   {[
+                    { title: "Petunjuk Teknis (Juknis) / Panduan Penggunaan Layanan DTSEN", url: "/juknis-panduan-penggunaan-layanan-dtsen.pdf" },
                     { title: "Surat Pengajuan Permintaan Data", url: "https://dtsen.data.go.id/download/ad35cdb4-d79e-42d3-9819-2d337560ae12.pdf" },
                     { title: "Kerangka Acuan Kerja (KAK) Pemanfaatan DTSEN", url: "https://dtsen.data.go.id/download/39aec116-0ff1-4159-8159-b2fec63e006c.pdf" },
                     { title: "Peraturan tentang Satu Data Indonesia", url: "https://dtsen.data.go.id/download/7e6fee67-3345-406f-ba52-eb06aa13390c.pdf" },
