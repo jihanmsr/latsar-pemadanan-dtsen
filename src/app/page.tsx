@@ -126,8 +126,8 @@ export default function PublicLandingPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="w-full lg:w-1/2 flex justify-center"
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="w-full lg:w-1/2 relative hidden lg:flex justify-center mt-12 lg:mt-0"
           >
             {/* Image Collage */}
             <div className="relative w-full max-w-lg aspect-square">
