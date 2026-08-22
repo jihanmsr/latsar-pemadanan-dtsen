@@ -46,16 +46,7 @@ export default function LoginPage() {
         <div className="max-w-xl mx-auto w-full relative z-10">
           <div className="mb-12">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <div className="flex items-center gap-3 mb-4">
-                <img
-                  src="/logo-pakewa.png"
-                  alt="Logo PAKEWA"
-                  width={48}
-                  height={48}
-                  className="object-contain"
-                />
-                <h1 className="text-3xl font-black text-white tracking-tight">PAKEWA<span className="text-blue-500">.</span></h1>
-              </div>
+
               <p className="text-sm font-bold text-blue-400 uppercase tracking-widest">
                 Modul Pemadanan DTSEN
               </p>
