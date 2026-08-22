@@ -1,89 +1,102 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { FileSignature, UploadCloud, FileSearch, Database, FileCheck } from 'lucide-react';
+import { FileSignature, DatabaseZap, ServerCog, MailCheck } from 'lucide-react';
 
 const steps = [
   {
-    id: 1,
-    title: "Cek MoU & Permohonan",
-    description: "Instansi harus memiliki Nota Kesepahaman (MoU) atau Perjanjian Kerja Sama dengan BPS serta melampirkan surat permohonan resmi.",
-    icon: <FileSignature className="w-8 h-8 text-indigo-500 dark:text-indigo-400" />,
-    color: "from-indigo-500 to-blue-500"
+    icon: FileSignature,
+    title: "Pengajuan & Penyerahan Data",
+    desc: "Pemerintah Daerah (K/L/D) mengajukan surat permohonan pemadanan ke BPS beserta dokumen kerja sama dan data sasaran.",
+    color: "from-blue-500 to-indigo-500"
   },
   {
-    id: 2,
-    title: "Upload Data & Metadata",
-    description: "Pengguna mengunggah dataset sasaran (CSV/Excel/Word/OCR) ke dalam portal beserta metadata terkait.",
-    icon: <UploadCloud className="w-8 h-8 text-blue-500 dark:text-blue-400" />,
-    color: "from-blue-500 to-cyan-500"
+    icon: DatabaseZap,
+    title: "Eksplorasi & Verifikasi",
+    desc: "Tim BPS melakukan pengecekan referensi, validasi variabel NIK, dan kesesuaian format metadata.",
+    color: "from-indigo-500 to-violet-500"
   },
   {
-    id: 3,
-    title: "Pengecekan Manifes & Format",
-    description: "Sistem melakukan validasi otomatis mendalam terhadap struktur data dan keabsahan NIK sesuai standar kependudukan.",
-    icon: <FileSearch className="w-8 h-8 text-cyan-500 dark:text-cyan-400" />,
-    color: "from-cyan-500 to-teal-500"
+    icon: ServerCog,
+    title: "Pemrosesan & Pemadanan",
+    desc: "Pemadanan individu secara deterministik (NIK), validasi data kependudukan, serta pemeringkatan kesejahteraan menggunakan DTSEN.",
+    color: "from-violet-500 to-fuchsia-500"
   },
   {
-    id: 4,
-    title: "Probabilistic Matching",
-    description: "Algoritma membandingkan dataset dengan master data DTSEN untuk menghasilkan skor kemiripan secara akurat.",
-    icon: <Database className="w-8 h-8 text-teal-500 dark:text-teal-400" />,
-    color: "from-teal-500 to-emerald-500"
-  },
-  {
-    id: 5,
-    title: "Serah Terima (BAST/NDA)",
-    description: "Setelah proses selesai, pengguna melampirkan dokumen NDA dan BAST terenkripsi untuk mengunduh balikan data.",
-    icon: <FileCheck className="w-8 h-8 text-emerald-500 dark:text-emerald-400" />,
-    color: "from-emerald-500 to-green-500"
+    icon: MailCheck,
+    title: "Pengiriman Data Balikan",
+    desc: "BPS mengirimkan data hasil padanan balikan beserta manifes, Berita Acara Serah Terima (BAST), dan NDA.",
+    color: "from-fuchsia-500 to-rose-500"
   }
 ];
 
 export default function SOPTimeline() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, type: "spring", stiffness: 50 } },
+  };
+
   return (
-    <div className="max-w-[1400px] mx-auto w-full">
-      {/* Storyboard Layout */}
+    <div className="max-w-[1400px] mx-auto w-full mb-16">
       <div className="relative mt-8 z-10">
         
-        {/* Horizontal Line (Desktop - 5 columns) */}
-        <div className="hidden lg:block absolute top-[48px] left-[10%] right-[10%] h-[3px] bg-gradient-to-r from-indigo-500 via-teal-500 to-emerald-500 z-0 rounded-full opacity-60" />
+        {/* Horizontal Line for Desktop with Moving Animation */}
+        <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+          <motion.div 
+            className="h-full bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500 rounded-full"
+            initial={{ width: "0%" }}
+            whileInView={{ width: "100%" }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+          />
+        </div>
 
-        {/* Grid Container */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          {steps.map((step, index) => (
-            <motion.div
-              key={step.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/40 dark:border-white/10 p-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative overflow-hidden group flex flex-col items-center text-center"
-            >
-              {/* Decorative gradient blob */}
-              <div className={`absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br ${step.color} rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity`} />
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+        >
+          {steps.map((step, idx) => (
+            <motion.div variants={itemVariants} key={idx} className="relative group">
               
-              {/* Step Number Badge */}
-              <div className={`w-12 h-12 rounded-full bg-gradient-to-tr ${step.color} flex items-center justify-center text-white font-black text-xl mb-5 shadow-lg transform group-hover:scale-110 transition-transform relative z-10`}>
-                {step.id}
+              {/* Timeline Node Desktop */}
+              <div className="hidden lg:flex absolute top-12 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-slate-900 rounded-full border-4 border-slate-50 dark:border-slate-900 shadow-xl items-center justify-center z-10 transition-transform group-hover:scale-110">
+                <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${step.color} flex items-center justify-center text-white font-black text-sm`}>
+                  {idx + 1}
+                </div>
               </div>
 
-              {/* Icon */}
-              <div className="p-4 bg-white/70 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl mb-5 group-hover:scale-110 transition-transform shadow-sm relative z-10">
-                {step.icon}
+              {/* Content Box */}
+              <div className="bg-white dark:bg-slate-950 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 lg:mt-20 h-full flex flex-col items-center text-center">
+                <motion.div 
+                  whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+                  transition={{ duration: 0.5 }}
+                  className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} text-white flex items-center justify-center mb-5 shadow-lg`}
+                >
+                  <step.icon className="w-7 h-7" />
+                </motion.div>
+                <div className="lg:hidden w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 text-slate-500 dark:text-slate-300 font-bold text-sm flex items-center justify-center mb-3">
+                  {idx + 1}
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{step.title}</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{step.desc}</p>
               </div>
 
-              <h3 className="text-lg font-black text-slate-800 dark:text-white tracking-tight mb-3 relative z-10 leading-tight">
-                {step.title}
-              </h3>
-              
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed font-medium text-sm relative z-10">
-                {step.description}
-              </p>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
