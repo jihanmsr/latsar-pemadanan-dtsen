@@ -70,7 +70,13 @@ export default function SopPage() {
         <PublicNavbar />
       )}
 
-      <div className={`max-w-[1400px] mx-auto space-y-16 px-4 sm:px-6 ${isDashboard ? "py-8" : "pt-32 pb-24"}`}>
+      {/* Background Pattern */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-blue-500 opacity-20 blur-[100px]"></div>
+      </div>
+
+      <div className={`relative z-10 max-w-[1400px] mx-auto space-y-8 px-4 sm:px-6 ${isDashboard ? "py-8" : "pt-24 pb-16"}`}>
         
         {/* Hero Section */}
         <motion.div
@@ -79,13 +85,13 @@ export default function SopPage() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center"
         >
-          <div className="inline-block px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold text-sm tracking-widest uppercase mb-6 shadow-sm border border-blue-200 dark:border-blue-800">
+          <div className="inline-block px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold text-xs tracking-widest uppercase mb-4 shadow-sm border border-blue-200 dark:border-blue-800">
             Panduan Resmi
           </div>
-          <h1 className="text-5xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-6 leading-tight">
-            Standar Operasional <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Pemadanan Data</span>
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
+            Standar Operasional <br className="hidden sm:block" /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Pemadanan Data</span>
           </h1>
-          <p className="text-xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto font-medium leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed">
             Alur kerja yang aman, transparan, dan terstandarisasi untuk menjamin akurasi data sasaran kesejahteraan sosial dari hulu ke hilir.
           </p>
         </motion.div>
