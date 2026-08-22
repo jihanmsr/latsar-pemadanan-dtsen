@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Database, FileCheck, ShieldCheck, LayoutDashboard, X, Search, BarChart2 } from 'lucide-react';
+import { Database, FileCheck, ShieldCheck, LayoutDashboard, X, Search, BarChart2, Bot } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
@@ -76,6 +76,7 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
             <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard BPS" />
             <NavItem href="/admin/search" icon={Search} label="Pencarian Individu" />
             <NavItem href="/admin/compare" icon={BarChart2} label="Komparasi V2 & V3" />
+            <NavItem href="/admin/chatbot" icon={Bot} label="Manajemen AI" />
           </>
         )}
 
