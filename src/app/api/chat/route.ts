@@ -86,8 +86,13 @@ function getSimulatedReply(message: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  let message = '';
+  let history = [];
+  
   try {
-    const { message, history } = await req.json();
+    const body = await req.json();
+    message = body.message;
+    history = body.history;
 
     if (!message) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
@@ -133,7 +138,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Chat API Error:', error);
     // Fallback ke mode simulasi jika Gemini gagal
-    const { message } = await req.json().catch(() => ({ message: '' }));
     if (message) {
       const reply = getSimulatedReply(message);
       return NextResponse.json({ reply });
