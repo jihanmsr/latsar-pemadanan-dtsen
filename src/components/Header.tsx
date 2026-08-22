@@ -43,7 +43,9 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
         >
           <Menu className="w-5 h-5" />
         </button>
-        <h2 className="text-xl font-bold text-foreground hidden sm:block tracking-tight">Dashboard Instansi</h2>
+        <h2 className="text-xl font-bold text-foreground hidden sm:block tracking-tight">
+          {user?.role === 'BPS_ADMIN' ? 'Dashboard Admin BPS' : 'Dashboard Instansi'}
+        </h2>
       </div>
       <div className="flex items-center gap-2 sm:gap-4">
         {mounted && (

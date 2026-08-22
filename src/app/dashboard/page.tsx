@@ -17,12 +17,26 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-full h-full pb-16 animate-fade-in bg-white dark:bg-slate-950">
+    <div className="w-full h-full pb-16 animate-fade-in bg-slate-50 dark:bg-slate-950 relative">
       
+      {/* Background decorations for Instansi Dashboard (Red Theme) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <motion.div 
+          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-[10%] -right-[5%] w-[50%] h-[50%] rounded-full bg-rose-600/30 blur-[120px]"
+        />
+        <motion.div 
+          animate={{ scale: [1, 1.5, 1], opacity: [0.05, 0.15, 0.05] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute top-[20%] -left-[10%] w-[40%] h-[40%] rounded-full bg-orange-500/20 blur-[120px]"
+        />
+      </div>
+
       {/* HERO SECTION */}
       <div className="relative overflow-hidden mb-16 pt-12 pb-20 px-4 sm:px-8">
         
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 relative z-10">
           
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -30,14 +44,14 @@ export default function Home() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="w-full lg:w-1/2"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 dark:bg-rose-900/30 text-primary mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-100/50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 mb-6 border border-rose-200 dark:border-rose-800">
               <Shield className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase tracking-wider">PLATFORM DATA RESMI NASIONAL</span>
+              <span className="text-xs font-bold uppercase tracking-wider">Dashboard Instansi Daerah</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.1] mb-6 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-800 dark:text-white leading-[1.1] mb-6 tracking-tight">
               Dashboard Pemadanan <br/>
-              <span className="text-primary">PAKEWA &times; DTSEN</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-orange-500">PAKEWA &times; DTSEN</span>
             </h1>
             
             <p className="text-slate-500 dark:text-slate-400 text-lg mb-8 max-w-xl leading-relaxed">

@@ -78,7 +78,7 @@ export default function AdminDashboard() {
     <div className="max-w-6xl mx-auto space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">Dashboard Admin BPS</h2>
+          <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2 tracking-tight">Dashboard Admin BPS</h2>
           <p className="text-slate-600 dark:text-slate-400">Pusat kendali verifikasi pengajuan dan arsip digital pemadanan data.</p>
         </div>
         
