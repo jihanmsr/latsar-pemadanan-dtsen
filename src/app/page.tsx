@@ -19,7 +19,7 @@ export default function PublicLandingPage() {
   }, []);
 
   return (
-    <div className="w-full min-h-screen pb-16 animate-fade-in bg-white dark:bg-slate-950">
+    <div className="w-full min-h-screen pb-16 animate-fade-in bg-slate-50 dark:bg-slate-950">
       <PublicNavbar />
 
       {/* HERO SECTION */}
@@ -58,12 +58,12 @@ export default function PublicLandingPage() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="w-full lg:w-1/2"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/50 dark:bg-blue-900/30 text-primary mb-6">
               <Shield className="w-4 h-4" />
               <span className="text-xs font-bold uppercase tracking-wider">MODUL PEMADANAN RESMI</span>
             </div>
             
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white leading-tight mb-6 tracking-tight">
               Padanan Kesejahteraan Warga <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">(PAKEWA)</span>
             </h1>
