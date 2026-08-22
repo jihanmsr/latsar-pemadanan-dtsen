@@ -24,7 +24,33 @@ export default function PublicLandingPage() {
 
       {/* HERO SECTION */}
       <div className="relative overflow-hidden mb-16 pt-12 pb-20 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+        
+        {/* Background decorations for Hero */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          {/* Animated Glowing Orbs */}
+          <motion.div 
+            animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-[10%] -left-[5%] w-[50%] h-[50%] rounded-full bg-blue-600/30 blur-[120px]"
+          />
+          <motion.div 
+            animate={{ scale: [1, 1.5, 1], opacity: [0.05, 0.15, 0.05] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute top-[30%] -right-[10%] w-[40%] h-[40%] rounded-full bg-indigo-500/30 blur-[120px]"
+          />
+          
+          {/* Subtle Futuristic Grid Pattern */}
+          <div 
+            className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" 
+            style={{ 
+              backgroundImage: 'linear-gradient(var(--grid-color, #000000) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color, #000000) 1px, transparent 1px)', 
+              backgroundSize: '40px 40px',
+              maskImage: 'linear-gradient(to bottom, black 20%, transparent)'
+            }}
+          />
+        </div>
+
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 relative z-10">
           
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
