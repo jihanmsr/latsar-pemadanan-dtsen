@@ -40,13 +40,12 @@ export default function PublicLandingPage() {
           />
           
           {/* Login Page Grid Pattern - Clearly visible with Blue Tint */}
-          <div 
-            className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.12] dark:opacity-20 invert dark:invert-0" 
-            style={{ 
-              filter: 'invert(30%) sepia(100%) saturate(300%) hue-rotate(190deg) brightness(95%) contrast(100%)',
-              maskImage: 'linear-gradient(to bottom, black 50%, transparent)' 
-            }}
-          />
+          <div className="absolute inset-0" style={{ maskImage: 'linear-gradient(to bottom, black 50%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent)' }}>
+            <div 
+              className="absolute inset-0 bg-blue-600 opacity-[0.15] dark:opacity-[0.25]" 
+              style={{ maskImage: 'url(/grid.svg)', WebkitMaskImage: 'url(/grid.svg)' }} 
+            />
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-transparent dark:from-slate-950" />
         </div>
 
