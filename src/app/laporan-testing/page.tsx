@@ -7,8 +7,8 @@ import PublicNavbar from "@/components/PublicNavbar";
 
 const roleData = [
   {
-    id: "publik",
-    label: "Role Publik",
+    id: "pemda",
+    label: "Role Pemda",
     icon: <UserCheck className="w-5 h-5" />,
     modules: [
       {
@@ -28,8 +28,8 @@ const roleData = [
     ]
   },
   {
-    id: "pemda",
-    label: "Role Instansi / PEMDA",
+    id: "internalbps",
+    label: "Role Internal BPS",
     icon: <FileText className="w-5 h-5" />,
     modules: [
       {
@@ -51,7 +51,7 @@ const roleData = [
   },
   {
     id: "admin",
-    label: "Role Internal BPS (ADMIN)",
+    label: "Role Admin",
     icon: <Settings className="w-5 h-5" />,
     modules: [
       {

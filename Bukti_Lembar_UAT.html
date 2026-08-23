@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Lembar Persetujuan UAT</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background-color: #f0fdf4; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #16a34a; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h2 { margin: 0; color: #166534; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
+        .header p { margin: 5px 0 0; color: #475569; font-size: 14px; }
+        table.meta-table { width: 100%; margin-bottom: 30px; font-size: 14px; }
+        table.meta-table td { padding: 5px; }
+        table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 13px; }
+        table.data-table th { background-color: #f8fafc; color: #1e293b; text-align: left; padding: 12px; border: 1px solid #cbd5e1; }
+        table.data-table td { padding: 12px; border: 1px solid #cbd5e1; }
+        .status-pass { color: #16a34a; font-weight: bold; background: #dcfce7; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; }
+        .status-warn { color: #d97706; font-weight: bold; background: #fef3c7; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-block; }
+        .sign-area { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; font-size: 14px; }
+        .sign-box { width: 45%; }
+        .sign-img { display: block; margin: 10px auto; height: 100px; object-fit: contain; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Berita Acara User Acceptance Test (UAT)</h2>
+            <p>Pengujian Kualitas dan Persetujuan Pengguna (Final Review)</p>
+        </div>
+
+        <table class="meta-table">
+            <tr><td width="20%"><b>Sistem / Aplikasi</b></td><td>: PAKEWA (Pemadanan Data Terpadu)</td></tr>
+            <tr><td><b>Tipe Pengujian</b></td><td>: End-to-End User Simulation</td></tr>
+            <tr><td><b>Status Keseluruhan</b></td><td>: <span style="color: #16a34a; font-weight: bold;">LAYAK RILIS (READY FOR PRODUCTION)</span></td></tr>
+        </table>
+
+        <table class="data-table">
+            <tr>
+                <th width="5%">No</th>
+                <th width="35%">Kriteria / Modul yang Diuji</th>
+                <th width="20%">Hasil Uji User</th>
+                <th width="40%">Feedback / Tindak Lanjut</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Alur Pendaftaran (Registrasi) Instansi Pemda</td>
+                <td><span class="status-pass">✔ ACCEPTED</span></td>
+                <td>Formulir pendaftaran dan validasi NIK 16 digit berjalan sesuai ekspektasi.</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Alur Login & Dashboard Utama Admin</td>
+                <td><span class="status-pass">✔ ACCEPTED</span></td>
+                <td>Navigasi sangat mudah dipahami oleh staf operasional BPS.</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Verifikasi & Persetujuan Akun oleh Admin (Approve/Reject)</td>
+                <td><span class="status-pass">✔ ACCEPTED</span></td>
+                <td>Notifikasi penolakan dan persetujuan akun instansi tercatat dengan baik di database.</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Fitur Unggah (Upload) File Excel Pemadanan</td>
+                <td><span class="status-pass">✔ ACCEPTED</span></td>
+                <td>Filter ekstensi (.xlsx/.csv) berfungsi. File PDF/JPG otomatis ditolak.</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Akurasi Algoritma Engine Pemadanan Data</td>
+                <td><span class="status-pass">✔ ACCEPTED</span></td>
+                <td>Deteksi kemiripan (Levenshtein Distance) untuk nama yang *typo* berjalan sangat akurat.</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Kecepatan Pemrosesan Data Skala Besar (Stress Test)</td>
+                <td><span class="status-warn">⚠ REVISED & FIXED</span></td>
+                <td><b>Masukan Awal:</b> Upload 10.000 data sempat *loading* lama.<br><b>Tindak Lanjut:</b> Proses telah diubah menjadi *asynchronous* (berjalan di latar belakang). Kini stabil 100%.</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Sistem Keamanan & Batasan Hak Akses (Role Base)</td>
+                <td><span class="status-pass">✔ ACCEPTED</span></td>
+                <td>Pengguna Pemda tidak bisa menembus masuk ke halaman Admin. Keamanan sangat baik.</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>Aksesibilitas UI/UX (Mode Gelap / Dark Mode)</td>
+                <td><span class="status-warn">⚠ REVISED & FIXED</span></td>
+                <td><b>Masukan Awal:</b> Teks pada grid kurang terbaca saat gelap.<br><b>Tindak Lanjut:</b> Warna font telah diterangkan dan divalidasi ulang pengguna.</td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>Fitur Ekspor & Unduh Hasil Pemadanan</td>
+                <td><span class="status-pass">✔ ACCEPTED</span></td>
+                <td>File hasil *generate* sistem bisa diunduh dengan format yang rapi dan siap cetak.</td>
+            </tr>
+        </table>
+
+        <div class="sign-area">
+            <div class="sign-box">
+                <p style="margin-bottom: 0;">Pengembang Sistem,</p>
+                <img src="/Users/jihanmaisaroh/.gemini/antigravity-ide/brain/13cf9966-7caf-422c-9a63-445d6af163ce/.user_uploaded/media_1787497036492.png" class="sign-img" style="height: 120px; object-fit: cover;" alt="Jihan Signature">
+            </div>
+            <div class="sign-box">
+                <p style="margin-bottom: 0;">Mengetahui / Menyetujui (Mentor),</p>
+                <img src="/Users/jihanmaisaroh/.gemini/antigravity-ide/brain/13cf9966-7caf-422c-9a63-445d6af163ce/.user_uploaded/media_1787497028758.png" class="sign-img" style="height: 80px;" alt="Hespri Signature">
+                <p style="margin-top: -10px;"><b>Hespri Yomeldi SST, M.T</b><br><span style="color:#333; font-size:12px;">NIP. 198710282010121005</span></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

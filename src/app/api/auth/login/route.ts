@@ -55,10 +55,10 @@ export async function POST(request: Request) {
         headers: { 'Set-Cookie': cookie }
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { message: 'Terjadi kesalahan pada server' },
+      { message: 'Terjadi kesalahan pada server: ' + (error?.message || String(error)) },
       { status: 500 }
     );
   }
