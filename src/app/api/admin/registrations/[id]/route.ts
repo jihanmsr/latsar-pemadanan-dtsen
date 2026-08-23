@@ -4,10 +4,11 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { action, reason } = await request.json(); // "approve" or "reject"
-    const id = params.id;
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
 
     const reg = await prisma.registration_requests.findUnique({
       where: { id },
