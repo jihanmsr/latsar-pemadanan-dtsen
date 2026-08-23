@@ -69,20 +69,19 @@ export default function FAQ() {
           <motion.div 
             key={index} 
             initial={false}
-            animate={{ backgroundColor: openIndex === index ? "rgba(248, 250, 252, 1)" : "rgba(255, 255, 255, 1)" }}
-            className={`border rounded-2xl overflow-hidden shadow-sm transition-colors ${openIndex === index ? 'border-primary/20 dark:border-primary/30 dark:bg-slate-900' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950'}`}
+            className={`border rounded-2xl overflow-hidden shadow-sm transition-colors duration-300 ${openIndex === index ? 'border-primary/20 dark:border-primary/30 bg-slate-50 dark:bg-slate-900' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950'}`}
           >
             <button 
               onClick={() => toggleFAQ(index)}
               className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
             >
-              <span className={`font-bold text-lg ${openIndex === index ? 'text-primary dark:text-primary-light' : 'text-slate-900 dark:text-slate-200'}`}>
+              <span className={`font-semibold text-lg ${openIndex === index ? 'text-primary dark:text-primary-light' : 'text-slate-900 dark:text-slate-200'}`}>
                 {faq.q}
               </span>
               <motion.div
                 animate={{ rotate: openIndex === index ? 180 : 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${openIndex === index ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}
+                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 ${openIndex === index ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}
               >
                 <ChevronDown className="w-5 h-5" />
               </motion.div>
