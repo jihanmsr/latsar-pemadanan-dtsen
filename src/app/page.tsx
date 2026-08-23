@@ -64,11 +64,11 @@ export default function PublicLandingPage() {
             <div className="absolute -left-4 sm:-left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500/50 via-sky-400/10 to-transparent rounded-r"></div>
 
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 mb-6 shadow-sm">
-              <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <img src="/logo-pakewa.png" alt="Logo" className="w-4 h-4 object-contain" />
               <span className="text-xs font-bold uppercase tracking-wider">MODUL PEMADANAN RESMI</span>
             </div>
             
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
               Padanan Kesejahteraan Warga <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-700 drop-shadow-sm">(PAKEWA)</span>
             </h1>
