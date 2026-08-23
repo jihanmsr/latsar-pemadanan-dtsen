@@ -20,14 +20,14 @@ async function main() {
 
   // ── ADMIN BPS ────────────────────────────────────────────────────────────
   const adminPassword = await bcrypt.hash('Admin@BPS2024!', 10);
-  
+
   // Upsert Admin BPS
   await conn.query(`
     INSERT INTO users (id, email, password, name, role, instansi) 
     VALUES (UUID(), ?, ?, 'Admin BPS', 'ADMIN', 'BPS Provinsi/Kabupaten')
     ON DUPLICATE KEY UPDATE password = ?, name = 'Admin BPS'
   `, ['admin@bps.go.id', adminPassword, adminPassword]);
-  
+
   console.log('  ✅ Admin BPS: admin@bps.go.id');
 
   const pemdaPassword = await bcrypt.hash('Pemda@12345!', 10);
@@ -123,7 +123,7 @@ async function main() {
 
   // Upsert agar tidak duplikat jika seed dijalankan ulang
   let seededCount = 0;
-  
+
   // Use batch for better performance
   const batchData = [];
   for (const data of masterData) {
@@ -133,7 +133,7 @@ async function main() {
     ]);
     seededCount++;
   }
-  
+
   await conn.batch(`
     INSERT INTO master_dtsen (nik, nama_lengkap, alamat_lengkap, is_active)
     VALUES (?, ?, ?, ?)
@@ -143,7 +143,7 @@ async function main() {
 
   console.log('\n🎉 Seeding selesai!');
   console.log('\n📝 Akun yang bisa digunakan:');
-  console.log('  👑 BPS Admin  : admin@bps.go.id       | Admin@BPS2024!');
+  console.log('  👑 BPS Admin  : admin@bps.go.id       | eruba');
   console.log('  🏛️  PEMDA Palu  : pemda.palu@sulteng.go.id | Pemda@12345!');
   console.log('  🏛️  PEMDA Sigi  : pemda.sigi@sulteng.go.id | Pemda@12345!');
   console.log('  🏛️  PEMDA Dongg : pemda.donggala@sulteng.go.id | Pemda@12345!');

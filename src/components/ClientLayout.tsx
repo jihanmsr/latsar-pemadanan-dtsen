@@ -15,7 +15,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const { user, isLoading } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const isPublicPage = pathname === "/" || pathname === "/login" || pathname === "/register" || (pathname === "/sop" && !user);
+  const isPublicPage = pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/laporan-testing" || (pathname === "/sop" && !user);
 
   if (isLoading) {
     return (

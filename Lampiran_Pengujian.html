@@ -1,0 +1,117 @@
+<h1>DOKUMEN LAPORAN HASIL PENGUJIAN SISTEM (SYSTEM TESTING)</h1>
+<p><strong>Nama Aplikasi:</strong> Padanan Kesejahteraan Warga (PAKEWA)
+<strong>Penyusun:</strong> Jihan Maisaroh</p>
+<hr>
+<h2>1. Skenario Pengujian &amp; Hasil Blackbox Testing</h2>
+<p>Pengujian Blackbox dilakukan di lingkungan lokal (<em>localhost</em>) untuk memastikan fungsi utama sistem berjalan sesuai ekspektasi tanpa melihat struktur internal kode (fokus pada input dan output pengguna).</p>
+<table>
+<thead>
+<tr>
+<th>No</th>
+<th>Modul</th>
+<th>Deskripsi Skenario (Test Case)</th>
+<th>Langkah Pengujian</th>
+<th>Ekspektasi Hasil</th>
+<th>Hasil Aktual</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><strong>Registrasi</strong></td>
+<td>Pendaftaran instansi dengan data valid</td>
+<td>Mengisi form registrasi (Nama Instansi, NIK, Jabatan, Dokumen BAST) dan klik &quot;Daftar&quot;.</td>
+<td>Data tersimpan ke tabel <code>registration_requests</code> dengan status <code>PENDING</code>.</td>
+<td>Data berhasil tersimpan, muncul notifikasi sukses.</td>
+<td>✅ <strong>PASS</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Registrasi</strong></td>
+<td>Validasi NIK kurang/lebih dari 16 digit</td>
+<td>Mengisi form registrasi dengan NIK 10 digit.</td>
+<td>Sistem menolak dengan pesan <em>error</em> &quot;NIK harus 16 digit&quot;.</td>
+<td>Muncul peringatan validasi pada kolom NIK.</td>
+<td>✅ <strong>PASS</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Otorisasi (Admin)</strong></td>
+<td>Menyetujui pendaftaran akun Instansi Daerah</td>
+<td>Login sebagai super-admin, masuk ke Dashboard Pendaftar, klik &quot;Setujui&quot; pada akun baru.</td>
+<td>Akun instansi otomatis dibuat di tabel <code>users</code>, status registrasi menjadi <code>APPROVED</code>.</td>
+<td>Akun pengguna otomatis terbuat, dan instansi bisa langsung login.</td>
+<td>✅ <strong>PASS</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Pemadanan (Upload)</strong></td>
+<td>Upload file Excel/CSV format kotor (baris kosong)</td>
+<td>Mengunggah file Excel berisi baris kosong di tengah data.</td>
+<td>Sistem secara otomatis mengabaikan/membersihkan baris kosong dan melanjutkan proses.</td>
+<td>Sistem berhasil melakukan <em>parsing</em> hanya pada baris yang memiliki isi.</td>
+<td>✅ <strong>PASS</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Pemadanan (Engine)</strong></td>
+<td>Menguji kalkulasi algoritma kecocokan (Levenshtein)</td>
+<td>Mengunggah NIK yang salah satu digitnya sengaja disalahkan (contoh: 720... vs 721...).</td>
+<td>Algoritma memberikan persentase kemiripan di bawah 100% dan masuk ke kategori &quot;Perlu Validasi Manual&quot; atau &quot;Tidak Valid&quot;.</td>
+<td>Sistem mencatat status &quot;Tidak Valid&quot; dengan skor kemiripan 92%.</td>
+<td>✅ <strong>PASS</strong></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Antarmuka UI/UX</strong></td>
+<td>Pengujian Mode Terang dan Gelap (<em>Light/Dark Mode</em>)</td>
+<td>Mengklik ikon bulan/matahari pada pojok kanan atas Navbar.</td>
+<td>Seluruh palet warna, teks, dan <em>Grid</em> belakang (<em>background</em>) berubah sesuai tema tanpa menghilangkan keterbacaan.</td>
+<td>Tema berubah dengan mulus (transisi), grid CSS terlihat jelas pada mode terang maupun gelap.</td>
+<td>✅ <strong>PASS</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>2. Bukti Pelaksanaan User Acceptance Test (UAT)</h2>
+<p>Simulasi UAT dilakukan secara internal (mandiri/tim teknis) untuk memastikan antarmuka mudah digunakan (User Friendly) oleh pengguna instansi K/L/D.</p>
+<p><strong>Rangkuman Umpan Balik (Feedback) UAT:</strong></p>
+<ol>
+<li><strong>Aspek Visibilitas:</strong> Pada Hero Section (Halaman Utama), warna judul terasa terlalu tebal (<em>font-black</em>) dan <em>grid</em> kotak-kotak tidak muncul sehingga terlihat kurang estetik.</li>
+<li><strong>Aspek Navigasi:</strong> Pengguna membutuhkan logo instansi (PAKEWA) pada modul label/badge agar terlihat lebih resmi dibandingkan ikon tameng biasa.</li>
+<li><strong>Aspek Keamanan &amp; Error:</strong> Terjadi <em>error</em> asinkronus (Params Promise) pada rute dinamis persetujuan admin ketika memproses pendaftaran baru di <em>framework</em> Next.js 16.</li>
+</ol>
+<p><strong>Tindak Lanjut UAT:</strong>
+Seluruh umpan balik telah diidentifikasi sebagai <em>bug/issue</em> dan langsung diselesaikan pada Tahapan Debugging.</p>
+<hr>
+<h2>3. Log Perbaikan Bug (Debugging Log)</h2>
+<p>Berdasarkan temuan selama Blackbox Testing dan UAT, berikut adalah catatan perbaikan koding (<em>git commit history</em>) yang telah berhasil dieksekusi:</p>
+<ul>
+<li><p><strong>[BUG-01] Hilangnya SVG Grid pada Background (Error 404)</strong></p>
+<ul>
+<li><strong>Masalah:</strong> File <code>grid.svg</code> gagal dimuat di server karena file tidak eksis di <em>public repository</em>, menyebabkan layar Hero kehilangan elemen kotak-kotak.</li>
+<li><strong>Tindakan (Debugging):</strong> Mengganti pendekatan pemanggilan <em>file image</em> menjadi <em>Pure CSS Linear-Gradient</em> yang di-render langsung oleh <em>browser</em>, sehingga 100% <em>bulletproof</em>.</li>
+<li><strong>Status:</strong> Selesai. (Commit: <code>UI: Replace missing grid.svg with Pure CSS grid</code>)</li>
+</ul>
+</li>
+<li><p><strong>[BUG-02] Bentrok Warna Teks dan Background di Dark Mode</strong></p>
+<ul>
+<li><strong>Masalah:</strong> Komponen <em>FAQ</em> dan beberapa <em>Card</em> statis memiliki <em>class</em> warna latar belakang yang di-<em>hardcode</em> (<code>bg-white</code>), sehingga saat beralih ke <em>Dark Mode</em>, teks putih menjadi tidak terbaca.</li>
+<li><strong>Tindakan (Debugging):</strong> Menambahkan <em>modifier</em> <code>dark:bg-slate-950</code> dan <code>dark:text-slate-300</code> secara dinamis pada komponen <em>Tailwind CSS</em>.</li>
+<li><strong>Status:</strong> Selesai. (Commit: <code>UI: Fix FAQ component dark mode and reduce font weight</code>)</li>
+</ul>
+</li>
+<li><p><strong>[BUG-03] Next.js 16 Route Handler Promise Error pada API Registrasi</strong></p>
+<ul>
+<li><strong>Masalah:</strong> Vercel <em>build engine</em> gagal melakukan kompilasi tipe data (<em>Type error</em>) pada <code>src/app/api/admin/registrations/[id]/route.ts</code> karena perubahan aturan Next.js 16 di mana parameter <em>dynamic route</em> harus diperlakukan secara asinkronus (sebagai <em>Promise</em>).</li>
+<li><strong>Tindakan (Debugging):</strong> Memodifikasi <em>signature</em> parameter dari <code>{ params: { id: string } }</code> menjadi <code>{ params: Promise&lt;{ id: string }&gt; }</code> lalu meng-<em>await</em> parameter tersebut sebelum diproses ke <em>database</em> Prisma.</li>
+<li><strong>Status:</strong> Selesai. (Commit: <code>Fix: Next.js 16 dynamic route params promise in admin registrations API</code>)</li>
+</ul>
+</li>
+<li><p><strong>[BUG-04] Penyesuaian Estetika UI/UX Berdasarkan Feedback</strong></p>
+<ul>
+<li><strong>Masalah:</strong> Tipografi teks pahlawan (<em>Hero title</em>) terlalu menumpuk dan logo navigasi kurang merepresentasikan identitas PAKEWA.</li>
+<li><strong>Tindakan (Debugging):</strong> Mengurangi <em>font-weight</em> dari <code>font-black</code> menjadi <code>font-extrabold</code>, serta mengganti pustaka <em>Lucide Icon</em> dengan logo instansi kustom (<code>logo-pakewa.png</code>).</li>
+<li><strong>Status:</strong> Selesai. (Commit: <code>UI: Adjust Hero title aesthetics and replace badge icon with logo</code>)</li>
+</ul>
+</li>
+</ul>

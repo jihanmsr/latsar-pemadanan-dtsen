@@ -1,20 +1,14 @@
-const mariadb = require('mariadb');
-const pool = mariadb.createPool({
-  host: "control.capella.idgx.net",
-  port: 3306,
-  user: "u12228jhr_dtsen",
-  password: "inidatapenting123",
-  database: "u12228jhr_dtsen",
-  connectionLimit: 5,
-  connectTimeout: 30000,
-});
-pool.getConnection()
-  .then(conn => {
-    console.log("Connected successfully");
-    conn.release();
-    process.exit(0);
-  })
-  .catch(err => {
-    console.error("Connection failed:", err);
-    process.exit(1);
-  });
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
+
+async function main() {
+  try {
+    const data = await prisma.registration_requests.findMany()
+    console.log("Success! Found:", data.length)
+  } catch(e) {
+    console.error(e)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+main()

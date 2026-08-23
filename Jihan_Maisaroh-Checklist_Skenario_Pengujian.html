@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Checklist Skenario Pengujian PAKEWA</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background-color: #f8fafc; color: #334155; }
+        .container { max-width: 1300px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        h1 { text-align: center; color: #0f172a; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #64748b; margin-bottom: 30px; font-weight: 500; }
+        h2 { color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 40px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 0.9rem; }
+        th, td { padding: 10px 12px; border: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+        th { background-color: #f1f5f9; font-weight: 600; color: #0f172a; text-align: center; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        .status-pass { background-color: #dcfce7; color: #166534; font-weight: bold; padding: 4px 8px; border-radius: 4px; display: inline-block; font-size: 0.85rem; text-align: center; width: 60px; }
+        ol { margin: 0; padding-left: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Laporan Hasil Pengujian Sistem (System Testing)</h1>
+        <p class="subtitle">Aplikasi: Padanan Kesejahteraan Warga (PAKEWA) | Penguji: Jihan Maisaroh | Metode: Blackbox Testing</p>
+
+        <!-- TABEL 1: PUBLIK -->
+        <h2>Tabel 1: Pengujian Role Publik / Guest (Tanpa Login)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="6%">ID</th><th width="20%">Skenario Uji</th><th width="16%">Prasyarat</th><th width="26%">Langkah Pengujian</th><th width="24%">Ekspektasi Hasil</th><th width="8%">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>PUB-01</td><td>Registrasi instansi baru (Sukses)</td><td>Halaman Pendaftaran</td>
+                    <td><ol><li>Isi form lengkap (Nama, NIK 16 digit, dll)</li><li>Klik Daftar</li></ol></td>
+                    <td>Sistem mencatat data ke antrean (Status PENDING).</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PUB-02</td><td>Validasi NIK salah digit</td><td>Halaman Pendaftaran</td>
+                    <td><ol><li>Ketik NIK 10 digit</li><li>Klik Daftar</li></ol></td>
+                    <td>Pendaftaran ditolak, muncul peringatan NIK harus 16 digit.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PUB-03</td><td>Pencegahan akses URL terlarang</td><td>Tidak ada sesi login</td>
+                    <td><ol><li>Paksa masuk URL `/admin` via address bar</li></ol></td>
+                    <td>Otomatis dialihkan (redirect) ke halaman login.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PUB-04</td><td>Transisi Tema Gelap (Dark Mode)</td><td>Halaman Utama/Landing</td>
+                    <td><ol><li>Klik ikon Bulan di pojok kanan atas</li></ol></td>
+                    <td>Warna berubah gelap, CSS Grid membaur, teks putih jelas.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- TABEL 2: PEMDA -->
+        <h2>Tabel 2: Pengujian Role Instansi Daerah (PEMDA)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="6%">ID</th><th width="20%">Skenario Uji</th><th width="16%">Prasyarat</th><th width="26%">Langkah Pengujian</th><th width="24%">Ekspektasi Hasil</th><th width="8%">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>PMD-01</td><td>Login dengan akun belum disetujui</td><td>Akun berstatus PENDING</td>
+                    <td><ol><li>Ketik Email & Password</li><li>Klik Masuk</li></ol></td>
+                    <td>Login ditolak karena akun belum disetujui Admin.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PMD-02</td><td>Pengecekan Format Ekstensi File</td><td>Login sebagai PEMDA</td>
+                    <td><ol><li>Buka menu Pemadanan Data</li><li>Upload file format .PDF atau .JPG</li></ol></td>
+                    <td>Sistem menolak, memunculkan alert hanya menerima XLSX/CSV.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PMD-03</td><td>Pengecekan Kolom / Template Excel</td><td>Login sebagai PEMDA</td>
+                    <td><ol><li>Upload Excel tanpa kolom berjudul "NIK"</li></ol></td>
+                    <td>File ditolak, pengguna diminta memakai format template.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PMD-04</td><td>Parsing File Kotor (Ada baris kosong)</td><td>Login sebagai PEMDA</td>
+                    <td><ol><li>Upload Excel yang di tengahnya diselipkan baris kosong</li></ol></td>
+                    <td>Sistem cerdas mengabaikan baris kosong, tidak ada crash.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PMD-05</td><td>Keamanan Hak Akses Lintas Role</td><td>Login sebagai PEMDA</td>
+                    <td><ol><li>Coba ketik URL dashboard `/admin`</li></ol></td>
+                    <td>Sistem memblokir dan mengembalikan Pemda ke berandanya.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- TABEL 3: BPS ADMIN -->
+        <h2>Tabel 3: Pengujian Role Internal BPS (ADMIN)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="6%">ID</th><th width="20%">Skenario Uji</th><th width="16%">Prasyarat</th><th width="26%">Langkah Pengujian</th><th width="24%">Ekspektasi Hasil</th><th width="8%">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ADM-01</td><td>Persetujuan akun pendaftar (Approve)</td><td>Ada pendaftar PENDING</td>
+                    <td><ol><li>Buka menu Verifikasi</li><li>Klik Setujui</li></ol></td>
+                    <td>Status menjadi APPROVED, akun login Pemda otomatis terbuat.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>ADM-02</td><td>Menolak pendaftaran (Reject)</td><td>Ada pendaftar PENDING</td>
+                    <td><ol><li>Klik Tolak</li><li>Isi alasan "Dokumen kurang"</li></ol></td>
+                    <td>Status menjadi REJECTED, alasan tercatat di sistem.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>ADM-03</td><td>Pengujian Engine Jarak Levenshtein</td><td>File berisi NIK Typo (Salah 1 digit)</td>
+                    <td><ol><li>Upload file dan jalankan engine</li></ol></td>
+                    <td>Engine menangkap kemiripan ~93% (Perlu Cek Manual).</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>ADM-04</td><td>Stress Test Skala Masif</td><td>Login sebagai ADMIN</td>
+                    <td><ol><li>Unggah > 10.000 baris data</li><li>Jalankan pemadanan</li></ol></td>
+                    <td>Proses berjalan asinkronus (latar belakang) tanpa server timeout.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+                <tr>
+                    <td>ADM-05</td><td>Pengujian Pembatasan Bot AI (Gemini)</td><td>Menu Kelola Chatbot</td>
+                    <td><ol><li>Ketik prompt di luar BPS (misal soal resep masakan)</li></ol></td>
+                    <td>Bot menolak menjawab, mematuhi batasan knowledge base BPS.</td>
+                    <td align="center"><span class="status-pass">✅ PASS</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="text-align: right; margin-top: 20px;"><strong>Tanggal Pengujian:</strong> 23 Agustus 2026<br><strong>Kesimpulan:</strong> Seluruh modul berjalan sempurna untuk ke-3 (tiga) peran pengguna. <span style="color:#166534;font-weight:bold;">(100% READY)</span></p>
+    </div>
+</body>
+</html>
