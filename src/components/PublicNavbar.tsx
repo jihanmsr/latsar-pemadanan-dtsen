@@ -54,7 +54,7 @@ export default function PublicNavbar() {
 
       {/* MODAL DOKUMEN PERSYARATAN */}
       <AnimatePresence>
-        {mounted && showDocsModal && (
+        {mounted && showDocsModal && createPortal(
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
             <motion.div 
               initial={{ opacity: 0 }}
@@ -118,7 +118,8 @@ export default function PublicNavbar() {
                 </div>
               </div>
             </motion.div>
-          </div>
+          </div>,
+          document.body
         )}
       </AnimatePresence>
     </>
