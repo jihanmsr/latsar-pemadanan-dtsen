@@ -1,138 +1,129 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { Shield, FileText, CheckCircle2, Lock, FileDown, UploadCloud, Search } from 'lucide-react';
+import { Shield, FileText, CheckCircle2, Lock, FileDown, UploadCloud, Search, Calendar, User, ArrowRight } from 'lucide-react';
 import UploadForm from '@/components/UploadForm';
-import FAQ from '@/components/FAQ';
 import DashboardStats from '@/components/DashboardStats';
-import SOPTimeline from '@/components/SOPTimeline';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-export default function Home() {
+export default function DashboardInstansi() {
   const [mounted, setMounted] = useState(false);
+  
+  // Use a fixed date format or simple string initially to avoid hydration mismatch, then update
+  const [currentDate, setCurrentDate] = useState('');
 
   useEffect(() => {
     setMounted(true);
+    setCurrentDate(new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
   }, []);
 
+  if (!mounted) return null;
+
   return (
-    <div className="w-full h-full pb-16 animate-fade-in bg-white dark:bg-slate-950">
+    <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 animate-fade-in">
       
-      {/* HERO SECTION */}
-      <div className="relative overflow-hidden mb-16 pt-12 pb-20 px-4 sm:px-8">
-        
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 relative z-10">
-          
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="w-full lg:w-1/2"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary mb-6">
-              <Shield className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase tracking-wider">PLATFORM DATA RESMI NASIONAL</span>
+      {/* HEADER / GREETING SECTION */}
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 pt-8 pb-8 px-6 sm:px-8 shadow-sm">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-1">
+              <Calendar className="w-4 h-4" />
+              <span>{currentDate}</span>
             </div>
-            
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.1] mb-6 tracking-tight">
-              Dashboard Pemadanan <br/>
-              <span className="text-primary">PAKEWA &times; DTSEN</span>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              Selamat Datang, Operator Instansi
             </h1>
-            
-            <p className="text-slate-500 dark:text-slate-400 text-lg mb-8 max-w-xl leading-relaxed">
-              Modul PAKEWA memfasilitasi K/L/D untuk melakukan pra-validasi dan sinkronisasi data kesejahteraan sosial secara cerdas sebelum diintegrasikan secara penuh dengan basis data DTSEN.
+            <p className="text-slate-500 text-sm mt-1">
+              Pantau statistik pemadanan dan kelola data sasaran instansi Anda.
             </p>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/dashboard/test-match" className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm">
+              <Search className="w-4 h-4" />
+              Simulator PAKEWA
+            </Link>
+            <Link href="#upload-section" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm">
+              <UploadCloud className="w-4 h-4" />
+              Unggah Data Baru
+            </Link>
+          </div>
+        </div>
+      </div>
 
-            <div className="flex flex-wrap items-center gap-4 mb-10">
-              <Link href="#upload-section" className="px-6 py-3.5 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2">
-                <UploadCloud className="w-5 h-5" />
-                Mulai Padankan Data
-              </Link>
-              <Link href="/dashboard/test-match" className="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg shadow-sm shadow-indigo-200 dark:shadow-none transition-colors flex items-center gap-2">
-                <Search className="w-5 h-5" />
-                Simulator PAKEWA
-              </Link>
-              <Link href="/sop" className="px-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2">
-                <FileDown className="w-5 h-5" />
-                Panduan Sistem
-              </Link>
+      {/* DASHBOARD STATS */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 -mt-6 relative z-10">
+        <DashboardStats />
+      </div>
+
+      {/* MAIN WORKSPACE */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 mt-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
+        
+        {/* Left Column: Upload Area */}
+        <div className="xl:col-span-2 space-y-6">
+          <div id="upload-section" className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <UploadCloud className="w-5 h-5 text-blue-500" />
+                  Area Unggah Data Sasaran
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">Sistem akan melakukan pra-validasi cerdas setelah file diunggah.</p>
+              </div>
             </div>
+            <UploadForm />
+          </div>
+        </div>
 
-            <div className="flex flex-wrap items-center gap-6 mb-8 text-sm font-medium text-slate-600 dark:text-slate-400">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-success" />
-                Inpres No. 4 Tahun 2025
+        {/* Right Column: Info & Security */}
+        <div className="space-y-6">
+          <div className="bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-900 dark:to-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              Status Pra-Validasi
+            </h3>
+            <div className="space-y-4">
+              <div className="bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Berkas Terakhir:</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">Dinsos_Palu_2025.csv</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-success" />
-                Permen PPN No. 7 Tahun 2025
+              <div className="bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Total Baris:</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">1.254 Data</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-success" />
-                Terintegrasi Satu Data Indonesia
+              <div className="bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Status Padan:</span>
+                <span className="text-xs font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded">85% Sukses</span>
               </div>
             </div>
+            
+            <Link href="/dashboard/tracking" className="mt-5 w-full flex justify-center items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">
+              Lihat Detail Progres <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
 
-            <div className="flex items-center gap-4">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">KEAMANAN PORTAL:</span>
-              <div className="flex gap-2">
-                <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-sm">
-                  <Shield className="w-4 h-4 text-blue-500" />
-                  <div>
-                    <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300">TTE Tersertifikasi</div>
-                    <div className="text-[9px] text-slate-500">BSrE - BSSN</div>
-                  </div>
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Keamanan Sistem</h3>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-100 dark:border-slate-800">
+                <Shield className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+                <div>
+                  <div className="text-xs font-bold text-slate-700 dark:text-slate-300">TTE Tersertifikasi</div>
+                  <div className="text-[10px] text-slate-500 leading-tight mt-0.5">Dokumen BAST dilindungi segel digital BSrE BSSN.</div>
                 </div>
-                <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-sm">
-                  <Lock className="w-4 h-4 text-success" />
-                  <div>
-                    <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300">HTTPS Terenkripsi</div>
-                    <div className="text-[9px] text-slate-500">SSL/TLS Secured</div>
-                  </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-100 dark:border-slate-800">
+                <Lock className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Enkripsi End-to-End</div>
+                  <div className="text-[10px] text-slate-500 leading-tight mt-0.5">Seluruh lalu lintas pemadanan dienkripsi SSL/TLS 256-bit.</div>
                 </div>
               </div>
             </div>
-
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="w-full lg:w-1/2 flex justify-center"
-          >
-            {/* Placeholder for illustration */}
-            <div className="relative w-full max-w-md aspect-square bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center border-8 border-white dark:border-slate-950 shadow-2xl">
-               <img src="/logo-pakewa.png" alt="Logo PAKEWA" className="w-48 h-48 object-contain drop-shadow-xl opacity-90" />
-               <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-full mix-blend-multiply"></div>
-            </div>
-          </motion.div>
-
+          </div>
         </div>
-      </div>
 
-      <div className="border-t border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-        <div className="max-w-7xl mx-auto py-10 px-4 sm:px-8">
-          <DashboardStats />
-        </div>
-      </div>
-
-      {/* STORYBOARD SECTION */}
-      <div className="max-w-7xl mx-auto py-16 px-4 sm:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Standar Operasional Prosedur</h2>
-          <p className="text-slate-500 mt-3">Alur kerja pemadanan data dari hulu ke hilir</p>
-        </div>
-        <SOPTimeline />
-      </div>
-      
-      <div id="upload-section" className="max-w-7xl mx-auto py-10 px-4 sm:px-8">
-        <UploadForm />
-      </div>
-
-      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-8">
-        <FAQ />
       </div>
     </div>
   );
