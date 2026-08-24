@@ -30,8 +30,8 @@ export default function DashboardInstansi() {
             <Calendar className="w-4 h-4" />
             <span>{currentDate}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-            Selamat Datang, Operator Instansi
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Selamat Datang, Pengelola Data Instansi
           </h1>
           <p className="text-slate-500 text-sm mt-1">
             Pantau statistik pemadanan dan kelola data sasaran instansi Anda.
