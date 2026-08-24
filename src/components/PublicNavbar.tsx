@@ -53,16 +53,17 @@ export default function PublicNavbar() {
       </nav>
 
       {/* MODAL DOKUMEN PERSYARATAN */}
-      <AnimatePresence>
-        {mounted && showDocsModal && createPortal(
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
-              onClick={() => setShowDocsModal(false)}
-            ></motion.div>
+      {mounted && createPortal(
+        <AnimatePresence>
+          {showDocsModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
+                onClick={() => setShowDocsModal(false)}
+              ></motion.div>
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -118,10 +119,11 @@ export default function PublicNavbar() {
                 </div>
               </div>
             </motion.div>
-          </div>,
-          document.body
-        )}
-      </AnimatePresence>
+          </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }
