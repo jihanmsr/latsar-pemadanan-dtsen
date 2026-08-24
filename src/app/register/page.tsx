@@ -183,12 +183,57 @@ export default function RegisterPage() {
                           Pilih Nama Instansi<span className="text-rose-500">*</span>:
                         </label>
                         <div className="relative">
-                          <select name="namaInstansi" required className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm appearance-none outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium cursor-pointer">
-                            <option value="">-- pilih instansi --</option>
-                            <option value="Dinas Sosial Prov. Jawa Tengah">Dinas Sosial Prov. Jawa Tengah</option>
-                            <option value="Bappeda Prov. Jawa Barat">Bappeda Prov. Jawa Barat</option>
-                          </select>
-                          <ChevronDown className="absolute right-4 top-3.5 w-5 h-5 text-slate-400 pointer-events-none" />
+                          <input 
+                            list="instansi-list"
+                            name="namaInstansi" 
+                            required 
+                            placeholder="Ketik atau pilih instansi..." 
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" 
+                          />
+                          <datalist id="instansi-list">
+                            <option value="Badan Kepegawaian Daerah" />
+                            <option value="Badan Kesatuan Bangsa" />
+                            <option value="Badan Penanggulangan Bencana Daerah" />
+                            <option value="Badan Pendapatan Daerah" />
+                            <option value="Badan Riset Dan Inovasi Daerah" />
+                            <option value="Badan Pengelolaan Keuangan Dan Aset Daerah" />
+                            <option value="Badan Pengembangan Sumber Daya Manusia" />
+                            <option value="Badan Penghubung Provinsi" />
+                            <option value="Badan Perencanaan Pembangunan Daerah" />
+                            <option value="Dinas Binamarga Dan Penataan Ruang" />
+                            <option value="Dinas Cipta Karya Dan Sumberdaya Air" />
+                            <option value="Dinas Energi Dan Sumber Daya Mineral" />
+                            <option value="Dinas Kebudayaan" />
+                            <option value="Dinas Kehutanan" />
+                            <option value="Dinas Kelautan Dan Perikanan" />
+                            <option value="Dinas Kependudukan Dan Pencatatan Sipil" />
+                            <option value="Dinas Kesehatan" />
+                            <option value="Dinas Komunikasi, Informatika, Persandian Dan Statistik" />
+                            <option value="Dinas Koperasi, Usaha Kecil Dan Menengah" />
+                            <option value="Dinas Lingkungan Hidup" />
+                            <option value="Dinas Pangan" />
+                            <option value="Dinas Pariwisata" />
+                            <option value="Dinas Pemberdayaan Masyarakat Dan Desa" />
+                            <option value="Dinas Pemberdayaan Perempuan Dan Perlindungan Anak" />
+                            <option value="Dinas Pemuda Dan Olahraga" />
+                            <option value="Dinas Penanaman Modal Dan Pelayanan Terpadu Satu Pintu" />
+                            <option value="Dinas Pendidikan" />
+                            <option value="Dinas Pengendalian Penduduk Dan Keluarga Berencana" />
+                            <option value="Dinas Perhubungan" />
+                            <option value="Dinas Perindustrian Dan Perdagangan" />
+                            <option value="Dinas Perkebunan Dan Peternakan" />
+                            <option value="Dinas Perpustakaan Dan Kearsipan" />
+                            <option value="Dinas Perumahan, Kawasan Pemukiman Dan Pertanahan" />
+                            <option value="Dinas Sosial" />
+                            <option value="Dinas Tanaman Pangan Dan Holtikultura" />
+                            <option value="Dinas Tenaga Kerja Dan Transmigrasi" />
+                            <option value="Inspektorat Daerah" />
+                            <option value="RSUD Madani" />
+                            <option value="RSUD Undata" />
+                            <option value="Satuan Polisi Pamong Praja" />
+                            <option value="Sekretariat Daerah / Biro Pimpinan Daerah" />
+                            <option value="Sekretariat Dewan Perwakilan Rakyat" />
+                          </datalist>
                         </div>
                       </div>
 
