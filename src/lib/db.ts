@@ -27,11 +27,21 @@ if (process.env.NODE_ENV !== 'production') {
   globalForDb.mysqlPool = pool;
 }
 
-export async function query(sql: string, values?: any[]): Promise<any> {
+export async function query(sql: string, values?: any[], retries = 3): Promise<any> {
   try {
     const [rows] = await pool.query(sql, values);
     return rows;
   } catch (err: any) {
+    if (retries > 0 && (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET' || err.message.includes('Connection lost'))) {
+      console.warn(`[DB] Connection lost, retrying... (${retries} left)`);
+      // Force recreate pool if connections are completely stale
+      if (retries === 1) {
+         console.warn(`[DB] Recreating pool completely...`);
+         globalForDb.mysqlPool = undefined;
+         Object.assign(pool, mysql.createPool(dbConfig));
+      }
+      return query(sql, values, retries - 1);
+    }
     console.error("[DB Query Error]", err);
     throw err;
   }
