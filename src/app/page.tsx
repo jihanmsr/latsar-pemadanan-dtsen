@@ -136,12 +136,21 @@ export default function PublicLandingPage() {
                {/* Background Glow */}
                <div className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full animate-pulse duration-3000"></div>
                
+               {/* Futuristic Spinning Rings */}
+               <div className="absolute inset-0 sm:inset-4 rounded-full border-[1.5px] border-blue-500/30 border-dashed animate-[spin_20s_linear_infinite] z-0 shadow-[0_0_30px_rgba(59,130,246,0.1)]"></div>
+               <div className="absolute inset-8 sm:inset-12 rounded-full border-2 border-sky-400/20 border-dotted animate-[spin_15s_linear_infinite_reverse] z-0"></div>
+               <div className="absolute inset-2 sm:inset-0 rounded-full border border-indigo-500/20 animate-[spin_25s_linear_infinite] z-0">
+                 <div className="absolute -top-1 left-1/2 w-2.5 h-2.5 bg-blue-400 rounded-full shadow-[0_0_15px_3px_#60a5fa]"></div>
+                 <div className="absolute top-1/2 -right-1 w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_10px_2px_#34d399]"></div>
+               </div>
+               
                {/* Decorative dots pattern */}
-               <div className="absolute -top-10 -right-10 w-40 h-40 bg-[radial-gradient(#cbd5e1_2px,transparent_2px)] dark:bg-[radial-gradient(#334155_2px,transparent_2px)] [background-size:16px_16px] opacity-60 z-0"></div>
+               <div className="absolute -top-10 -right-10 w-40 h-40 bg-[radial-gradient(#cbd5e1_2px,transparent_2px)] dark:bg-[radial-gradient(#334155_2px,transparent_2px)] [background-size:16px_16px] opacity-60 z-0 animate-pulse"></div>
                
                <div className="relative w-full h-full">
                  {/* Image 1 (Bottom/Left) - with floating effect */}
-                 <div className="absolute bottom-0 left-0 w-[70%] h-[70%] rounded-2xl overflow-hidden border-8 border-white dark:border-slate-950 shadow-2xl z-10 animate-float hover:z-30 transition-all duration-300 hover:scale-105">
+                 <div className="absolute bottom-0 left-0 w-[70%] h-[70%] rounded-2xl overflow-hidden border border-blue-500/20 shadow-[0_0_40px_rgba(59,130,246,0.15)] z-10 animate-float hover:z-30 transition-all duration-300 hover:scale-105">
+                   <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-transparent z-20 pointer-events-none mix-blend-overlay"></div>
                    <Image 
                      src="/images/kantor1.jpg" 
                      alt="Kantor Pemerintahan" 
@@ -154,7 +163,8 @@ export default function PublicLandingPage() {
                  </div>
                  
                  {/* Image 2 (Top/Right) - with delayed floating effect */}
-                 <div className="absolute top-4 right-0 w-[65%] h-[65%] rounded-2xl overflow-hidden border-8 border-white dark:border-slate-950 shadow-2xl z-20 animate-float-delayed hover:z-30 transition-all duration-300 hover:scale-105">
+                 <div className="absolute top-4 right-0 w-[65%] h-[65%] rounded-2xl overflow-hidden border border-sky-400/20 shadow-[0_0_40px_rgba(56,189,248,0.15)] z-20 animate-float-delayed hover:z-30 transition-all duration-300 hover:scale-105">
+                   <div className="absolute inset-0 bg-gradient-to-bl from-indigo-500/20 to-transparent z-20 pointer-events-none mix-blend-overlay"></div>
                    <Image 
                      src="/images/kantor2.jpg" 
                      alt="Aktivitas Pemadanan Data" 
@@ -166,17 +176,26 @@ export default function PublicLandingPage() {
                  </div>
 
                  {/* Floating Glassmorphism Badge */}
-                 <div className="absolute bottom-20 -right-8 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/50 dark:border-slate-700 animate-float-fast">
-                   <div className="flex items-center gap-3">
-                     <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center text-success">
-                       <CheckCircle2 className="w-6 h-6" />
+                 <motion.div 
+                    animate={{ y: [10, -10, 10] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute bottom-20 -right-4 sm:-right-8 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-4 sm:p-5 rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.2)] border border-white/50 dark:border-slate-700/50"
+                 >
+                   <div className="flex items-center gap-4">
+                     <div className="relative">
+                       <div className="absolute inset-0 bg-emerald-500 blur-md opacity-40 animate-pulse"></div>
+                       <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 relative z-10 border border-emerald-200 dark:border-emerald-800/50">
+                         <CheckCircle2 className="w-7 h-7" />
+                       </div>
                      </div>
                      <div>
-                       <div className="text-xs font-bold text-slate-500 dark:text-slate-400">Status Sistem</div>
-                       <div className="text-sm font-black text-slate-900 dark:text-white">Terintegrasi Aktif</div>
+                       <div className="text-[11px] font-black tracking-widest text-slate-500 dark:text-slate-400 uppercase">Status Integrasi</div>
+                       <div className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                         AKTIF <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+                       </div>
                      </div>
                    </div>
-                 </div>
+                 </motion.div>
                </div>
             </div>
           </motion.div>
