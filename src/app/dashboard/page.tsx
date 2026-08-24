@@ -104,7 +104,7 @@ export default function Home() {
           >
             {/* Placeholder for illustration */}
             <div className="relative w-full max-w-md aspect-square bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center border-8 border-white dark:border-slate-950 shadow-2xl">
-               <FileText className="w-32 h-32 text-slate-300 dark:text-slate-700" />
+               <img src="/logo-pakewa.png" alt="Logo PAKEWA" className="w-48 h-48 object-contain drop-shadow-xl opacity-90" />
                <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-full mix-blend-multiply"></div>
             </div>
           </motion.div>

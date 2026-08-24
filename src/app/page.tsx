@@ -68,21 +68,21 @@ export default function PublicLandingPage() {
               <span className="text-xs font-bold uppercase tracking-wider">MODUL PEMADANAN RESMI</span>
             </div>
             
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
-              Padanan Kesejahteraan Warga <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-700 drop-shadow-sm">(PAKEWA)</span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-[1.3] sm:leading-tight mb-4 sm:mb-6 tracking-tight">
+              Padanan Kesejahteraan Warga <br className="hidden sm:block"/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-700 drop-shadow-sm inline-block mt-1 sm:mt-0">(PAKEWA)</span>
             </h1>
             
             <p className="text-slate-600 dark:text-slate-300 text-base mb-8 max-w-xl leading-relaxed font-medium">
               Sistem informasi yang dirancang khusus untuk membantu Instansi Pusat dan Pemerintah Daerah (K/L/D) memvalidasi, menyinkronkan, dan memadankan data sasaran program dengan <strong className="text-slate-900 dark:text-white font-bold">Data Tunggal Sosial dan Ekonomi Nasional (DTSEN)</strong>.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link href="/register" className="inline-flex justify-center items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-bold transition-all hover:-translate-y-0.5 shadow-[0_10px_20px_-10px_rgba(37,99,235,0.5)]">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-10 sm:mb-12">
+              <Link href="/register" className="inline-flex justify-center items-center gap-2 px-6 sm:px-8 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-bold transition-all hover:-translate-y-0.5 shadow-[0_10px_20px_-10px_rgba(37,99,235,0.5)]">
                 <UserPlus className="w-5 h-5" />
                 Daftar Instansi
               </Link>
-              <Link href="/sop" className="px-6 py-3.5 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-200 dark:hover:border-blue-900 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 font-bold rounded-xl shadow-sm transition-all flex items-center gap-2">
+              <Link href="/sop" className="px-6 py-3.5 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-200 dark:hover:border-blue-900 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 font-bold rounded-xl shadow-sm transition-all flex justify-center items-center gap-2">
                 <FileDown className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 Panduan Sistem
               </Link>

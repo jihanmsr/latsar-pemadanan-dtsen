@@ -27,13 +27,13 @@ export default function PublicNavbar() {
             <img
               src="/logo-pakewa.png"
               alt="Logo PAKEWA"
-              width={40}
-              height={40}
-              className="object-contain group-hover:scale-105 transition-transform"
+              width={36}
+              height={36}
+              className="object-contain group-hover:scale-105 transition-transform sm:w-10 sm:h-10"
             />
-            <span className="font-extrabold text-2xl tracking-tight text-slate-900 dark:text-white ml-1">PAKEWA<span className="text-blue-600">.</span></span>
+            <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 dark:text-white ml-1">PAKEWA<span className="text-blue-600">.</span></span>
           </Link>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 sm:gap-6">
             <Link href="/" className="text-sm font-bold text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-colors hidden sm:block">
               Beranda
             </Link>
@@ -42,10 +42,10 @@ export default function PublicNavbar() {
             </button>
             <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
             <ThemeToggle />
-            <Link href="/login" className="text-sm font-bold text-slate-700 hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400 transition-colors">
+            <Link href="/login" className="text-xs sm:text-sm font-bold text-slate-700 hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400 transition-colors">
               Masuk
             </Link>
-            <Link href="/register" className="text-sm font-bold px-5 py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 text-white rounded-full shadow-lg transition-all hover:scale-105">
+            <Link href="/register" className="text-xs sm:text-sm font-bold px-3 py-2 sm:px-5 sm:py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 text-white rounded-full shadow-lg transition-all hover:scale-105 whitespace-nowrap">
               Daftar Instansi
             </Link>
           </div>

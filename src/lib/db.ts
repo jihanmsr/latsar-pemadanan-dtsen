@@ -12,6 +12,8 @@ const dbConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
 };
 
 // Use a global pool to prevent connection leaks during Next.js hot reloads
