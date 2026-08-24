@@ -3,6 +3,7 @@
 import { FileText, X, Download } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
@@ -11,6 +12,7 @@ export default function PublicNavbar() {
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -34,8 +36,11 @@ export default function PublicNavbar() {
             <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 dark:text-white ml-1">PAKEWA<span className="text-blue-600">.</span></span>
           </Link>
           <div className="flex items-center gap-3 sm:gap-6">
-            <Link href="/" className="text-sm font-bold text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-colors hidden sm:block">
+            <Link href="/" className={`relative text-sm font-bold transition-colors hidden sm:block ${pathname === '/' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400'}`}>
               Beranda
+              {pathname === '/' && (
+                <div className="h-1 w-full bg-blue-600 dark:bg-blue-400 rounded-full absolute -bottom-1 left-0"></div>
+              )}
             </Link>
             <button onClick={() => setShowDocsModal(true)} className="text-sm font-bold text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-colors hidden md:block">
               Dokumen Persyaratan
