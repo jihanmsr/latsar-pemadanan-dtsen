@@ -9,7 +9,7 @@ const JWT_SECRET = new TextEncoder().encode(
 export interface AuthPayload {
   id: number;
   email: string;
-  role: 'PEMDA' | 'BPS_ADMIN';
+  role: 'PEMDA' | 'BPS_ADMIN' | 'BPS_PEGAWAI';
   name: string;
   instansi?: string;
 }
@@ -46,7 +46,7 @@ export async function verifyAuth(req?: NextRequest): Promise<AuthResult> {
     const user: AuthPayload = {
       id: payload.id as number,
       email: payload.email as string,
-      role: payload.role as 'PEMDA' | 'BPS_ADMIN',
+      role: payload.role as 'PEMDA' | 'BPS_ADMIN' | 'BPS_PEGAWAI',
       name: payload.name as string,
       instansi: payload.instansi as string | undefined,
     };

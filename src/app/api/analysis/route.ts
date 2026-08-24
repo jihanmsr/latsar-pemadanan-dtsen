@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   if (!user) return unauthorizedResponse(error ?? undefined);
 
   // ── 2. ROLE CHECK: hanya BPS_ADMIN ────────────────────────────────────
-  if (user.role !== 'BPS_ADMIN') {
+  if ((user.role !== 'BPS_ADMIN' && user.role !== 'BPS_PEGAWAI')) {
     return forbiddenResponse('Statistik analisis hanya tersedia untuk Admin BPS.');
   }
 

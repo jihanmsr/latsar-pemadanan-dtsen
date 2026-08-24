@@ -1,6 +1,8 @@
 import mysql from 'mysql2/promise';
 
-const dbUrl = process.env.DATABASE_URL || "mysql://u12228jhr_dtsen:inidatapenting123@103.5.51.154:3306/u12228jhr_dtsen";
+// Force use IndoGlobal database URL directly because the user's terminal 
+// has an old Railway DATABASE_URL global env var that overrides .env
+const dbUrl = "mysql://u12228jhr_dtsen:inidatapenting123@103.5.51.154:3306/u12228jhr_dtsen";
 const parsed = new URL(dbUrl);
 
 const dbConfig = {

@@ -7,7 +7,7 @@ interface User {
   id: number;
   email: string;
   name: string;
-  role: 'PEMDA' | 'BPS_ADMIN';
+  role: 'PEMDA' | 'BPS_ADMIN' | 'BPS_PEGAWAI';
   instansi?: string;
 }
 
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (res.ok) {
         setUser(data.user);
-        if (data.user.role === 'BPS_ADMIN') {
+        if (data.user.role === 'BPS_ADMIN' || data.user.role === 'BPS_PEGAWAI') {
           router.push('/admin/dashboard');
         } else {
           router.push('/dashboard');

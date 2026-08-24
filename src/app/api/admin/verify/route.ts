@@ -6,7 +6,7 @@ import { decrypt, encrypt } from '@/lib/encryption';
 
 export async function POST(req: NextRequest) {
   const { user, error } = await verifyAuth(req);
-  if (!user || user.role !== 'BPS_ADMIN') return unauthorizedResponse(error ?? 'Hanya Admin BPS yang bisa melakukan verifikasi.');
+  if (!user || (user.role !== 'BPS_ADMIN' && user.role !== 'BPS_PEGAWAI')) return unauthorizedResponse(error ?? 'Hanya Admin BPS yang bisa melakukan verifikasi.');
 
   try {
     const body = await req.json() as { submissionId: string };

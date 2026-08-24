@@ -55,7 +55,7 @@ export default function AdminRegistrationsPage() {
     }
   };
 
-  if (user?.role !== "BPS_ADMIN") {
+  if ((user?.role !== 'BPS_ADMIN' && user?.role !== 'BPS_PEGAWAI')) {
     return <div className="p-8 text-center">Akses Ditolak. Halaman ini hanya untuk Admin BPS.</div>;
   }
 

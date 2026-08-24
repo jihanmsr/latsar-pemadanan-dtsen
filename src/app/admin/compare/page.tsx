@@ -23,7 +23,7 @@ const mockTrendData = [
 export default function ComparePage() {
   const { user } = useAuth();
 
-  if (!user || user.role !== 'BPS_ADMIN') return null;
+  if (!user || (user.role !== 'BPS_ADMIN' && user.role !== 'BPS_PEGAWAI')) return null;
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">

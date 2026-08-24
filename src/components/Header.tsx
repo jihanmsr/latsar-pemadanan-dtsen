@@ -44,13 +44,13 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
           <Menu className="w-5 h-5" />
         </button>
         <div className="hidden sm:flex items-center gap-2">
-          {user?.role === 'BPS_ADMIN' ? (
+          {(user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI') ? (
             <div className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-bold border border-blue-200 dark:border-blue-800 tracking-tight flex items-center gap-2 shadow-sm">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
               </span>
-              <span>Dashboard Admin BPS</span>
+              <span>{user?.name === 'Pegawai BPS' ? 'Dashboard Pegawai BPS' : 'Dashboard Admin BPS'}</span>
             </div>
           ) : (
             <div className="px-3 py-1.5 bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 rounded-lg text-sm font-bold border border-rose-200 dark:border-rose-800 tracking-tight flex items-center gap-2 shadow-sm">
@@ -130,7 +130,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
               {user ? (user.name === 'Admin BPS Pusat' ? 'Admin BPS' : user.name) : 'Tamu'}
             </p>
             <p className="text-xs text-muted font-medium leading-none">
-              {user?.role === 'BPS_ADMIN' ? 'BPS Administrator' : (user?.instansi || 'Perwakilan Pemda')}
+              {(user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI') ? (user.name === 'Pegawai BPS' ? 'Staf Validasi BPS' : 'BPS Administrator') : (user?.instansi || 'Perwakilan Pemda')}
             </p>
           </div>
           <UserCircle className="w-9 h-9 text-primary-light" />

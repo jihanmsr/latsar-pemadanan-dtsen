@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 
 export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIsOpen?: (val: boolean) => void }) {
   const { user } = useAuth();
-  const isBps = user?.role === 'BPS_ADMIN';
+  const isBps = (user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI');
 
   const pathname = usePathname();
 

@@ -57,7 +57,7 @@ export default function SopPage() {
 
   const getBackUrl = () => {
     if (!user) return "/login";
-    return user.role === 'BPS_ADMIN' ? "/admin/dashboard" : "/";
+    return (user.role === 'BPS_ADMIN' || user.role === 'BPS_PEGAWAI') ? "/admin/dashboard" : "/";
   };
 
   const backUrl = getBackUrl();

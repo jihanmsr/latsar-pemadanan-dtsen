@@ -82,7 +82,7 @@ export default function LoginPage() {
             </h2>
             <div className="space-y-6 text-slate-300 text-lg leading-relaxed font-light">
               <p>
-                Platform resmi untuk sinkronisasi dan pemadanan data sasaran program K/L/D dengan <strong>Data Tunggal Sosial dan Ekonomi Nasional (DTSEN)</strong>.
+                Platform resmi untuk sinkronisasi dan pemadanan data sasaran program Pemerintah Daerah (Pemda) dengan <strong>Data Tunggal Sosial dan Ekonomi Nasional (DTSEN)</strong>.
               </p>
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
                 <div className="w-1.5 h-12 bg-blue-500 rounded-full"></div>

@@ -32,7 +32,7 @@ export default function SearchPage() {
     }
   };
 
-  if (!user || user.role !== 'BPS_ADMIN') return null;
+  if (!user || (user.role !== 'BPS_ADMIN' && user.role !== 'BPS_PEGAWAI')) return null;
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">

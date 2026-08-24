@@ -94,6 +94,7 @@ enum submissions_status {
 enum users_role {
   PEMDA
   BPS_ADMIN
+  BPS_PEGAWAI
 }
 
 enum matching_results_status_padan {

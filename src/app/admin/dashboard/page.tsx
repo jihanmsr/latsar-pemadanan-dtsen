@@ -60,9 +60,9 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setMounted(true);
-    if (user && user.role !== 'BPS_ADMIN') {
+    if (user && (user.role !== 'BPS_ADMIN' && user.role !== 'BPS_PEGAWAI')) {
       router.push('/');
-    } else if (user && user.role === 'BPS_ADMIN') {
+    } else if (user && (user.role === 'BPS_ADMIN' || user.role === 'BPS_PEGAWAI')) {
       fetchSubmissions();
     }
   }, [user, router]);
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
     }
   };
 
-  if (!mounted || !user || user.role !== 'BPS_ADMIN') return null;
+  if (!mounted || !user || (user.role !== 'BPS_ADMIN' && user.role !== 'BPS_PEGAWAI')) return null;
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
