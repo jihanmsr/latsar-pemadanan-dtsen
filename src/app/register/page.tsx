@@ -10,6 +10,15 @@ export default function RegisterPage() {
   const [activeTab, setActiveTab] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFileName(e.target.files[0].name);
+    } else {
+      setFileName(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -241,7 +250,7 @@ export default function RegisterPage() {
                         <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                           Email Narahubung (*.go.id)<span className="text-rose-500">*</span>:
                         </label>
-                        <input name="emailNarahubung" type="email" required placeholder="admin@instansi.go.id" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                        <input name="emailNarahubung" type="email" required pattern=".*\.go\.id$" title="Gunakan email resmi pemerintahan berakhiran .go.id" placeholder="admin@instansi.go.id" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
                       </div>
 
                       <div>
@@ -264,12 +273,15 @@ export default function RegisterPage() {
                           Lampiran Pengajuan Akun<span className="text-rose-500">*</span>:
                         </label>
                         <div className="relative group">
-                          <input name="lampiran" type="file" required accept=".pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                          <div className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm flex items-center justify-between group-hover:border-blue-500 transition-colors">
-                            <span className="text-slate-400 group-hover:text-blue-500 font-medium flex items-center gap-2">
-                              <FileCheck className="w-4 h-4" /> Pilih File PDF
+                          <input name="lampiran" type="file" required accept=".pdf" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                          <div className={`w-full px-4 py-3 border rounded-xl text-sm flex items-center justify-between transition-colors ${fileName ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 group-hover:border-blue-500'}`}>
+                            <span className={`font-medium flex items-center gap-2 truncate pr-4 ${fileName ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 group-hover:text-blue-500'}`}>
+                              <FileCheck className="w-4 h-4 shrink-0" /> 
+                              {fileName ? fileName : 'Pilih File PDF'}
                             </span>
-                            <span className="text-xs text-slate-500 bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded-md">Pilih File</span>
+                            <span className="text-xs text-slate-500 bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded-md shrink-0">
+                              {fileName ? 'Ganti File' : 'Pilih File'}
+                            </span>
                           </div>
                         </div>
                         <span className="text-[11px] text-slate-500 font-medium mt-1.5 block">Surat Pembuatan Akun (*.pdf) Maksimal 2 MB</span>
@@ -340,13 +352,13 @@ export default function RegisterPage() {
                               <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                                 NIP/NIK:
                               </label>
-                              <input name={`user${tab}_nip_nik`} type="text" placeholder="16 digit NIK atau NIP" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                              <input name={`user${tab}_nip_nik`} type="text" required={tab <= 2} placeholder="16 digit NIK atau NIP" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
                             </div>
                             <div>
                               <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                                 Nama Unit Kerja:
                               </label>
-                              <input name={`user${tab}_nama_unit_kerja`} type="text" placeholder="Biro / Bagian" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                              <input name={`user${tab}_nama_unit_kerja`} type="text" required={tab <= 2} placeholder="Biro / Bagian" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
                             </div>
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
@@ -354,13 +366,13 @@ export default function RegisterPage() {
                               <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                                 Nama Lengkap:
                               </label>
-                              <input name={`user${tab}_nama_lengkap`} type="text" placeholder="Nama Lengkap dengan Gelar" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                              <input name={`user${tab}_nama_lengkap`} type="text" required={tab <= 2} placeholder="Nama Lengkap dengan Gelar" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
                             </div>
                             <div>
                               <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                                 No Handphone:
                               </label>
-                              <input name={`user${tab}_no_hp`} type="tel" placeholder="08XX XXXX XXXX" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
+                              <input name={`user${tab}_no_hp`} type="tel" required={tab <= 2} placeholder="08XX XXXX XXXX" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
                               <span className="text-[10px] text-slate-500 font-medium">Format: 08XX XXXX XXXX</span>
                             </div>
                           </div>
@@ -368,13 +380,13 @@ export default function RegisterPage() {
                             <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                               Email Pengguna (*.go.id):
                             </label>
-                            <input name={`user${tab}_email`} type="email" placeholder="user@instansi.go.id" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
+                            <input name={`user${tab}_email`} type="email" required={tab <= 2} pattern=".*\.go\.id$" title="Gunakan email resmi pemerintahan berakhiran .go.id" placeholder="user@instansi.go.id" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" />
                           </div>
                           <div>
                             <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                               Jabatan:
                             </label>
-                            <input name={`user${tab}_jabatan`} type="text" placeholder="Nama Jabatan Lengkap" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
+                            <input name={`user${tab}_jabatan`} type="text" required={tab <= 2} placeholder="Nama Jabatan Lengkap" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
                             <span className="text-[10px] text-slate-500 font-medium leading-relaxed block">Contoh: Kepala Badan Perencanaan Pembangunan Daerah Prov. Jateng</span>
                           </div>
                         </div>
