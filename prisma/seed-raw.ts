@@ -99,6 +99,7 @@ async function main() {
 
     const users = [
       { email: 'admin@bps.go.id', password: adminPass, name: 'Admin BPS', role: 'BPS_ADMIN', instansi: 'BPS Provinsi/Kabupaten' },
+      { email: 'pegawai@bps.go.id', password: adminPass, name: 'Pegawai BPS', role: 'BPS_ADMIN', instansi: 'BPS Provinsi/Kabupaten' },
       { email: 'pemda.palu@sulteng.go.id', password: pemdaPass, name: 'Operator Dinas Palu', role: 'PEMDA', instansi: 'Dinas Sosial Kota Palu' },
       { email: 'pemda.sigi@sulteng.go.id', password: pemdaPass, name: 'Operator Dinas Sigi', role: 'PEMDA', instansi: 'Dinas Sosial Kab. Sigi' },
       { email: 'pemda.donggala@sulteng.go.id', password: pemdaPass, name: 'Operator Dinas Donggala', role: 'PEMDA', instansi: 'Dinas Sosial Kab. Donggala' },
@@ -129,10 +130,11 @@ async function main() {
 
     console.log('\n🎉 Seeding selesai!');
     console.log('\n📝 Akun yang bisa digunakan:');
-    console.log('  👑 BPS Admin  : admin@bps.go.id           | Admin@BPS2024!');
-    console.log('  🏛️  PEMDA Palu  : pemda.palu@sulteng.go.id  | Pemda@12345!');
-    console.log('  🏛️  PEMDA Sigi  : pemda.sigi@sulteng.go.id  | Pemda@12345!');
-    console.log('  🏛️  PEMDA Dongg : pemda.donggala@sulteng.go.id | Pemda@12345!');
+    console.log('  👑 Kepala/Admin BPS : admin@bps.go.id           | Admin@BPS2024!');
+    console.log('  👨‍💻 Pegawai BPS      : pegawai@bps.go.id         | Admin@BPS2024!');
+    console.log('  🏛️  PEMDA Palu      : pemda.palu@sulteng.go.id  | Pemda@12345!');
+    console.log('  🏛️  PEMDA Sigi      : pemda.sigi@sulteng.go.id  | Pemda@12345!');
+    console.log('  🏛️  PEMDA Dongg     : pemda.donggala@sulteng.go.id | Pemda@12345!');
 
   } finally {
     conn.release();

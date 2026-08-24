@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin } from 'lucide-react';
+import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin, FileDown, UploadCloud, Send } from 'lucide-react';
 import DashboardStats from '@/components/DashboardStats';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -38,7 +38,7 @@ const activityLogs = [
 export default function AdminDashboard() {
   const { user } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'submissions' | 'archives'>('submissions');
+  const [activeTab, setActiveTab] = useState<'submissions' | 'archives' | 'requests'>('submissions');
   const [mounted, setMounted] = useState(false);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -216,6 +216,12 @@ export default function AdminDashboard() {
           >
             <FolderArchive className="w-4 h-4" /> Arsip Dokumen Digital
           </button>
+          <button 
+            onClick={() => setActiveTab('requests')}
+            className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'requests' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+          >
+            <FileDown className="w-4 h-4" /> Permintaan Missing NIK
+          </button>
         </div>
 
       <motion.div
@@ -343,6 +349,51 @@ export default function AdminDashboard() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'requests' && (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden p-6">
+            <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-2">
+              <Send className="w-5 h-5 text-blue-600" /> Form Permintaan Kelengkapan Data (Missing NIK)
+            </h3>
+            <p className="text-sm text-slate-500 mb-6">Kirimkan format dokumen untuk dilengkapi oleh instansi daerah terkait daftar NIK yang belum ditemukan/valid dari hasil pra-validasi sebelumnya.</p>
+            
+            <div className="max-w-2xl bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Instansi Tujuan</label>
+                <select className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 dark:text-slate-300">
+                  <option value="">-- Pilih Instansi Daerah --</option>
+                  <option value="palu">Dinas Sosial Kota Palu</option>
+                  <option value="sigi">Dinas Sosial Kab. Sigi</option>
+                  <option value="donggala">Dinas Sosial Kab. Donggala</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Unggah Format Template (Cth: Missing NIK.xlsx)</label>
+                <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                   <UploadCloud className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                   <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Klik atau drag file template format kemari</p>
+                   <p className="text-xs text-slate-500 mt-1">Format didukung: .xlsx, .csv</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Catatan Tambahan (Opsional)</label>
+                <textarea className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none min-h-[80px] text-slate-700 dark:text-slate-300" placeholder="Mohon lengkapi NIK warga yang kosong sesuai format terlampir..."></textarea>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button 
+                  onClick={() => toast.success('Permintaan kelengkapan data berhasil dikirim ke instansi terkait!')}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm"
+                >
+                  <Send className="w-4 h-4" />
+                  Kirim Permintaan Ke Pemda
+                </button>
+              </div>
             </div>
           </div>
         )}

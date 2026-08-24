@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { Shield, FileText, CheckCircle2, Lock, FileDown, UploadCloud, Search, Calendar, User, ArrowRight } from 'lucide-react';
+import { Shield, FileText, CheckCircle2, Lock, FileDown, UploadCloud, Search, Calendar, User, ArrowRight, AlertTriangle, Download, Upload } from 'lucide-react';
 import UploadForm from '@/components/UploadForm';
 import DashboardStats from '@/components/DashboardStats';
 import { useEffect, useState } from 'react';
@@ -97,6 +97,40 @@ export default function DashboardInstansi() {
             <Link href="/dashboard/tracking" className="mt-5 w-full flex justify-center items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">
               Lihat Detail Progres <ArrowRight className="w-4 h-4" />
             </Link>
+          </div>
+
+          {/* Missing NIK Task Panel */}
+          <div className="glass rounded-2xl p-6 border border-amber-200 dark:border-amber-900/50 shadow-sm bg-gradient-to-br from-amber-50/50 to-transparent dark:from-amber-900/10 dark:to-transparent">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-amber-900 dark:text-amber-400 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+                Tugas dari BPS
+              </h3>
+              <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 text-[10px] font-black rounded uppercase tracking-wider animate-pulse">Action Required</span>
+            </div>
+            <p className="text-xs text-amber-700 dark:text-amber-300/80 mb-4 font-medium leading-relaxed">
+              Terdapat NIK yang kosong/tidak valid pada hasil pra-validasi sebelumnya. Harap lengkapi format berikut dan unggah kembali (Format V4).
+            </p>
+            
+            <div className="space-y-3">
+              <a href="#" className="w-full flex items-center justify-between px-3 py-2 bg-white/60 dark:bg-slate-900/60 hover:bg-white dark:hover:bg-slate-800 border border-amber-200/50 dark:border-amber-800/50 rounded-lg transition-colors group">
+                <div className="flex items-center gap-2">
+                  <FileDown className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-amber-600 transition-colors">Unduh: Missing NIK.xlsx</span>
+                </div>
+                <Download className="w-4 h-4 text-slate-400 group-hover:text-amber-600 transition-colors" />
+              </a>
+              
+              <button onClick={() => document.getElementById('upload-v4')?.click()} className="w-full flex items-center justify-between px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors shadow-sm">
+                <div className="flex items-center gap-2">
+                  <Upload className="w-4 h-4" />
+                  <span className="text-xs font-bold">Unggah Hasil (V4.xlsx)</span>
+                </div>
+              </button>
+              <input type="file" id="upload-v4" className="hidden" accept=".xlsx,.csv" onChange={(e) => {
+                 if(e.target.files?.length) alert('File Hasil_Pemadanan_V4.xlsx berhasil diunggah dan dikirim ke BPS!');
+              }} />
+            </div>
           </div>
 
           <div className="glass rounded-2xl p-6 border border-border shadow-sm">
