@@ -6,9 +6,9 @@ import { FileSignature, DatabaseZap, ServerCog, MailCheck } from 'lucide-react';
 const steps = [
   {
     icon: FileSignature,
-    title: "Pengajuan & Penyerahan Data",
-    desc: "Pemerintah Daerah (K/L/D) mengajukan surat permohonan pemadanan ke BPS beserta dokumen kerja sama dan data sasaran.",
-    color: "from-blue-500 to-indigo-500"
+    title: "Permohonan",
+    desc: "Pemerintah Daerah (Pemda) mengajukan surat permohonan pemadanan ke BPS beserta dokumen kerja sama dan data sasaran.",
+    color: "from-blue-500 to-blue-600"
   },
   {
     icon: DatabaseZap,

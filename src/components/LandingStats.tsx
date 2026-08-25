@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function LandingStats() {
   const stats = [
-    { icon: Building2, value: "1", label: "K/L Pemrakarsa", color: "text-rose-600", bg: "bg-rose-100 dark:bg-rose-900/30" },
+    { icon: Building2, value: "1", label: "Pemda Terdaftar", color: "text-rose-600", bg: "bg-rose-100 dark:bg-rose-900/30" },
     { icon: Map, value: "1", label: "Jumlah Provinsi", color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/30" },
     { icon: MapPin, value: "13", label: "Jumlah Kab/Kota", color: "text-emerald-600", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
     { icon: Database, value: "138", label: "Variabel Data", color: "text-blue-600", bg: "bg-blue-100 dark:bg-blue-900/30" },

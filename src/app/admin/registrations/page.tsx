@@ -83,7 +83,7 @@ export default function AdminRegistrationsPage() {
                 Verifikasi Instansi
               </h1>
               <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-                Kelola pengajuan pendaftaran akun instansi (K/L/D) baru.
+                Kelola pengajuan pendaftaran akun instansi (Pemda) baru.
               </p>
             </div>
           </div>

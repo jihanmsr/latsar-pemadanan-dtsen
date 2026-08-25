@@ -37,7 +37,7 @@
   {
     "id": 8,
     "keywords": ["kemiskinan ekstrem", "miskin ekstrem", "desil", "p0", "angka kemiskinan"],
-    "reply": "Kemiskinan ekstrem adalah kondisi ketidakmampuan individu dalam memenuhi kebutuhan dasar minimal (makanan, air bersih, sanitasi, kesehatan).\n\nIndonesia menargetkan kemiskinan ekstrem **0%** pada tahun 2024 (Perpres No. 67/2021).\n\nDTSEN memuat data desil pengeluaran per kapita yang membantu K/L/D mengidentifikasi kelompok paling rentan untuk menjadi penerima bantuan prioritas."
+    "reply": "Kemiskinan ekstrem adalah kondisi ketidakmampuan individu dalam memenuhi kebutuhan dasar minimal (makanan, air bersih, sanitasi, kesehatan).\n\nIndonesia menargetkan kemiskinan ekstrem **0%** pada tahun 2024 (Perpres No. 67/2021).\n\nDTSEN memuat data desil pengeluaran per kapita yang membantu Pemda mengidentifikasi kelompok paling rentan untuk menjadi penerima bantuan prioritas."
   },
   {
     "id": 9,
@@ -47,12 +47,12 @@
   {
     "id": 10,
     "keywords": ["siapa", "pengguna", "user", "pemda", "siapa yang bisa", "bisa digunakan", "instansi"],
-    "reply": "PAKEWA dapat digunakan oleh:\n\n🏛️ Pemerintah Daerah (Pemda)\nK/L/D yang memiliki program bantuan sosial dan ingin memadankan data sasaran dengan DTSEN.\n\n🔵 BPS Admin\nPetugas BPS yang melakukan verifikasi, pengelolaan, dan monitoring seluruh proses pemadanan.\n\nUntuk mendaftar, klik tombol **\"Daftar Instansi\"** di halaman utama."
+    "reply": "PAKEWA dapat digunakan oleh:\n\n🏛️ Pemerintah Daerah (Pemda)\nPemda yang memiliki program bantuan sosial dan ingin memadankan data sasaran dengan DTSEN.\n\n🔵 BPS Admin\nPetugas BPS yang melakukan verifikasi, pengelolaan, dan monitoring seluruh proses pemadanan.\n\nUntuk mendaftar, klik tombol **\"Daftar Instansi\"** di halaman utama."
   },
   {
     "id": 11,
     "keywords": ["biaya", "bayar", "gratis", "tarif", "harga", "berbayar"],
-    "reply": "PAKEWA adalah layanan **GRATIS** yang disediakan oleh BPS sebagai bagian dari tugas pokok dan fungsi (tupoksi) dalam penyediaan data statistik nasional. Tidak ada biaya apapun yang dikenakan kepada K/L/D pengguna sistem ini."
+    "reply": "PAKEWA adalah layanan **GRATIS** yang disediakan oleh BPS sebagai bagian dari tugas pokok dan fungsi (tupoksi) dalam penyediaan data statistik nasional. Tidak ada biaya apapun yang dikenakan kepada Pemda pengguna sistem ini."
   },
   {
     "id": 12,
