@@ -147,7 +147,7 @@ export default function RegisterPage() {
       setTimeout(() => {
         setInputValue('kategoriPemohon', 'bps_kabkota');
         setInputValue('namaInstansi', 'BPS Kota Palu');
-        setInputValue('emailNarahubung', 'admin@palu.go.id');
+        setInputValue('emailNarahubung', 'jihanmaisaroh@bps.go.id');
         setInputValue('namaNarahubung', 'Budi Santoso');
         setInputValue('noHandphone', '0812 3456 7890');
         
