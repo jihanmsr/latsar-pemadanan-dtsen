@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { Building2, FileCheck2, Loader2, CheckCircle2, XCircle, Search, FileText } from "lucide-react";
+import { Building2, FileCheck2, Loader2, CheckCircle2, XCircle, Search, FileText, X } from "lucide-react";
 import Link from "next/link";
 import Header from "@/components/Header";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminRegistrationsPage() {
   const { user } = useAuth();
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [selectedPdfUrl, setSelectedPdfUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRegistrations();
@@ -119,15 +121,13 @@ export default function AdminRegistrationsPage() {
                           <div className="text-xs text-slate-500">{reg.no_hp_narahubung}</div>
                         </td>
                         <td className="px-6 py-4">
-                          <a 
-                            href={reg.surat_permohonan_path} 
-                            target="_blank" 
-                            rel="noreferrer"
+                          <button 
+                            onClick={() => setSelectedPdfUrl(reg.surat_permohonan_path)}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 transition-colors text-xs font-bold"
                           >
                             <FileText className="w-3.5 h-3.5" />
                             Lihat PDF
-                          </a>
+                          </button>
                         </td>
                         <td className="px-6 py-4 text-center">
                           {reg.status === "PENDING" && (
@@ -188,6 +188,48 @@ export default function AdminRegistrationsPage() {
             </div>
           </div>
 
+      {/* PDF Preview Modal */}
+      <AnimatePresence>
+        {selectedPdfUrl && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedPdfUrl(null)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-5xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+              style={{ height: '85vh' }}
+            >
+              <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
+                <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-blue-500" />
+                  Pratinjau Dokumen
+                </h3>
+                <button 
+                  onClick={() => setSelectedPdfUrl(null)}
+                  className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex-1 w-full bg-slate-100 dark:bg-slate-950 p-2 sm:p-4">
+                <iframe 
+                  src={selectedPdfUrl} 
+                  className="w-full h-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white"
+                  title="PDF Preview"
+                />
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
