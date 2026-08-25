@@ -32,7 +32,7 @@ export default function JumpingMascot() {
               exit={{ opacity: 0, scale: 0.8, y: -10 }}
               className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-32 bg-white dark:bg-slate-800 text-slate-800 dark:text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 pointer-events-none text-center"
             >
-              Halo Kak! Aku asisten PAKEWA! 🚀
+              Halo! Aku Asisten PAKEWA
               <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white dark:bg-slate-800 border-t border-l border-slate-200 dark:border-slate-700 rotate-45" />
             </motion.div>
           )}
