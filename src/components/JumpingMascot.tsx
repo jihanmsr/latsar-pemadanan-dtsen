@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { Bot, MessageSquare, BookOpen } from "lucide-react";
 
 export default function JumpingMascot() {
   const [isHovered, setIsHovered] = useState(false);
@@ -111,9 +112,6 @@ export default function JumpingMascot() {
             exit={{ opacity: 0, scale: 0.8, x: -20, y: -20 }}
             className="absolute top-24 left-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-2 w-48 flex flex-col gap-1"
           >
-            <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Pusat Bantuan</span>
-            </div>
             
             <button
               onClick={() => {
@@ -122,8 +120,8 @@ export default function JumpingMascot() {
               }}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
             >
-              <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
-                <span className="text-blue-600 dark:text-blue-400 text-sm">🤖</span>
+              <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <Bot className="w-4 h-4" />
               </div>
               <span className="text-xs font-bold">Tanya AI PAKEWA</span>
             </button>
@@ -135,8 +133,8 @@ export default function JumpingMascot() {
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-green-50 dark:hover:bg-green-900/30 text-slate-700 dark:text-slate-200 hover:text-green-600 dark:hover:text-green-400 transition-colors text-left"
             >
-              <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
-                <span className="text-green-600 dark:text-green-400 text-sm">💬</span>
+              <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400">
+                <MessageSquare className="w-4 h-4" />
               </div>
               <span className="text-xs font-bold">Live Chat WA</span>
             </a>
@@ -146,8 +144,8 @@ export default function JumpingMascot() {
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/30 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-left"
             >
-              <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
-                <span className="text-purple-600 dark:text-purple-400 text-sm">📖</span>
+              <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                <BookOpen className="w-4 h-4" />
               </div>
               <span className="text-xs font-bold">Buku Panduan</span>
             </a>
