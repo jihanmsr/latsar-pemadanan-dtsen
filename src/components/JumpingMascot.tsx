@@ -7,7 +7,7 @@ export default function JumpingMascot() {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 pointer-events-auto">
+    <div className="fixed bottom-24 left-8 z-50 pointer-events-auto scale-110 sm:scale-125 origin-bottom-left">
       <motion.div
         animate={{
           y: isHovered ? [-20, 0, -20] : [0, -10, 0],
