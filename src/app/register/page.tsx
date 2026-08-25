@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2, Check, ChevronDown, Send, ShieldCheck, FileCheck } from 'lucide-react';
+import { ArrowLeft, Loader2, Check, ChevronDown, Send, ShieldCheck, FileCheck, Info } from 'lucide-react';
 import PublicNavbar from '@/components/PublicNavbar';
 
 export default function RegisterPage() {
@@ -11,6 +11,30 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [kategori, setKategori] = useState('');
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, ''); 
+    if (val.length > 0) {
+      if (val.startsWith('0')) {
+        val = val.substring(0, 13);
+        let formatted = '';
+        if (val.length > 4) {
+          formatted += val.substring(0, 4) + ' ';
+          if (val.length > 8) {
+            formatted += val.substring(4, 8) + ' ' + val.substring(8);
+          } else {
+            formatted += val.substring(4);
+          }
+        } else {
+          formatted = val;
+        }
+        e.target.value = formatted;
+      } else {
+        e.target.value = val;
+      }
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -72,6 +96,45 @@ export default function RegisterPage() {
       </div>
     );
   }
+
+  const fillDummyData = () => {
+    const form = document.querySelector('form');
+    if (form) {
+      const setInputValue = (name: string, value: string) => {
+        const input = form.querySelector(`[name="${name}"]`) as HTMLInputElement | HTMLSelectElement;
+        if (input) {
+          input.value = value;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      };
+      
+      setKategori('bps_kabkota');
+      setTimeout(() => {
+        setInputValue('kategoriPemohon', 'bps_kabkota');
+        setInputValue('namaInstansi', 'BPS Kota Palu');
+        setInputValue('emailNarahubung', 'admin@palu.go.id');
+        setInputValue('namaNarahubung', 'Budi Santoso');
+        setInputValue('noHandphone', '0812 3456 7890');
+        
+        // User 1
+        setInputValue('user1_nip_nik', '19870808 199801 1 002');
+        setInputValue('user1_nama_unit_kerja', 'Biro Perencanaan');
+        setInputValue('user1_nama_lengkap', 'Gasena, S.Sos');
+        setInputValue('user1_no_hp', '0857 7890 0000');
+        setInputValue('user1_email', 'gasena@palu.go.id');
+        setInputValue('user1_jabatan', 'Kepala Bidang Perlindungan');
+        
+        // User 2
+        setInputValue('user2_nip_nik', '19870808 199801 1 003');
+        setInputValue('user2_nama_unit_kerja', 'Biro Teknis');
+        setInputValue('user2_nama_lengkap', 'Kingjar, S.Kel');
+        setInputValue('user2_no_hp', '0857 7890 0001');
+        setInputValue('user2_email', 'kingjar@palu.go.id');
+        setInputValue('user2_jabatan', 'Kepala Dinas Ketahanan');
+      }, 0);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -161,6 +224,10 @@ export default function RegisterPage() {
                 <p className="text-sm text-slate-500 font-medium">Lengkapi data di bawah ini untuk melakukan registrasi akun</p>
               </div>
 
+
+
+
+
               <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
                 {/* Form Instansi */}
@@ -177,11 +244,12 @@ export default function RegisterPage() {
                           Pilih Kategori Pemohon<span className="text-rose-500">*</span>:
                         </label>
                         <div className="relative">
-                          <select name="kategoriPemohon" required className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm appearance-none outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium cursor-pointer">
+                          <select name="kategoriPemohon" required value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm appearance-none outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium cursor-pointer">
                             <option value="">-- pilih kategori instansi --</option>
                             <option value="kementerian">Kementerian / Lembaga</option>
                             <option value="provinsi">Pemerintah Provinsi</option>
                             <option value="kabkota">Pemerintah Kabupaten/Kota</option>
+                            <option value="bps_kabkota">BPS Kabupaten/Kota (Sulteng)</option>
                           </select>
                           <ChevronDown className="absolute right-4 top-3.5 w-5 h-5 text-slate-400 pointer-events-none" />
                         </div>
@@ -200,7 +268,25 @@ export default function RegisterPage() {
                             className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium" 
                           />
                           <datalist id="instansi-list">
-                            <option value="Badan Kepegawaian Daerah" />
+                            {kategori === 'bps_kabkota' ? (
+                              <>
+                                <option value="BPS Kabupaten Banggai" />
+                                <option value="BPS Kabupaten Banggai Kepulauan" />
+                                <option value="BPS Kabupaten Banggai Laut" />
+                                <option value="BPS Kabupaten Buol" />
+                                <option value="BPS Kabupaten Donggala" />
+                                <option value="BPS Kabupaten Morowali" />
+                                <option value="BPS Kabupaten Morowali Utara" />
+                                <option value="BPS Kabupaten Parigi Moutong" />
+                                <option value="BPS Kabupaten Poso" />
+                                <option value="BPS Kabupaten Sigi" />
+                                <option value="BPS Kabupaten Tojo Una-Una" />
+                                <option value="BPS Kabupaten Tolitoli" />
+                                <option value="BPS Kota Palu" />
+                              </>
+                            ) : (
+                              <>
+                                <option value="Badan Kepegawaian Daerah" />
                             <option value="Badan Kesatuan Bangsa" />
                             <option value="Badan Penanggulangan Bencana Daerah" />
                             <option value="Badan Pendapatan Daerah" />
@@ -242,6 +328,8 @@ export default function RegisterPage() {
                             <option value="Satuan Polisi Pamong Praja" />
                             <option value="Sekretariat Daerah / Biro Pimpinan Daerah" />
                             <option value="Sekretariat Dewan Perwakilan Rakyat" />
+                              </>
+                            )}
                           </datalist>
                         </div>
                       </div>
@@ -264,7 +352,7 @@ export default function RegisterPage() {
                         <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                           No Handphone<span className="text-rose-500">*</span>:
                         </label>
-                        <input name="noHandphone" type="tel" required placeholder="08XX XXXX XXXX" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
+                        <input name="noHandphone" type="tel" required placeholder="08XX XXXX XXXX" maxLength={15} onChange={handlePhoneChange} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
                         <span className="text-xs text-slate-500 font-medium">Format: 08XX XXXX XXXX</span>
                       </div>
 
@@ -294,7 +382,7 @@ export default function RegisterPage() {
                             <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Saya bukan robot</span>
                           </label>
                           <div className="flex flex-col items-center gap-1">
-                            <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" width="30" alt="reCAPTCHA" className="opacity-80 dark:invert dark:opacity-50" />
+                            <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" width="30" alt="reCAPTCHA" className="opacity-90 hover:opacity-100 transition-opacity" />
                             <span className="text-[9px] text-slate-400 font-medium">reCAPTCHA</span>
                           </div>
                         </div>
@@ -323,9 +411,22 @@ export default function RegisterPage() {
 
                 {/* Form Data Pengguna */}
                 <div>
-                  <h3 className="text-lg font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs">2</span>
-                    Data Pengguna Layanan (Minimal 2)
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white mb-6 flex items-start sm:items-center gap-2">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs shrink-0 mt-0.5 sm:mt-0">2</span>
+                    <span className="leading-tight">
+                      Data Pengguna Layanan{' '}
+                      <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                        (Minimal 2)
+                        <div className="relative group inline-block">
+                          <Info className="w-4 h-4 text-slate-400 hover:text-blue-500 cursor-help transition-colors" />
+                          <div className="absolute left-0 sm:left-1/2 sm:-translate-x-1/2 top-full mt-2 hidden group-hover:block w-64 p-3 bg-slate-900 text-white text-xs rounded-lg shadow-xl z-50 whitespace-normal font-normal">
+                            <div className="absolute -top-1 left-2 sm:left-1/2 sm:-translate-x-1/2 w-2 h-2 bg-slate-900 rotate-45"></div>
+                            <p className="font-bold mb-1">Kenapa wajib 2 orang?</p>
+                            <p className="text-slate-300 font-medium leading-relaxed">Untuk mitigasi risiko (backup) jika salah satu berhalangan, serta pemisahan peran antara Penanggung Jawab dan Operator Teknis.</p>
+                          </div>
+                        </div>
+                      </span>
+                    </span>
                   </h3>
 
                   <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
@@ -372,7 +473,7 @@ export default function RegisterPage() {
                               <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                                 No Handphone:
                               </label>
-                              <input name={`user${tab}_no_hp`} type="tel" required={tab <= 2} placeholder="08XX XXXX XXXX" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
+                              <input name={`user${tab}_no_hp`} type="tel" required={tab <= 2} placeholder="08XX XXXX XXXX" maxLength={15} onChange={handlePhoneChange} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium mb-1.5" />
                               <span className="text-[10px] text-slate-500 font-medium">Format: 08XX XXXX XXXX</span>
                             </div>
                           </div>
@@ -413,6 +514,12 @@ export default function RegisterPage() {
                 </div>
 
               </form>
+
+              <div className="flex justify-end mt-10">
+                <button type="button" onClick={fillDummyData} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-900/30 text-slate-400 dark:text-slate-500 text-[10px] font-bold rounded hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors opacity-50 hover:opacity-100">
+                  Isi Data Dummy (Demo)
+                </button>
+              </div>
             </motion.div>
           </div>
         </div>

@@ -25,28 +25,26 @@ export async function GET(req: NextRequest) {
     const offset = parseInt(searchParams.get('offset') ?? '0');
 
     // ── 2. BANGUN WHERE CLAUSE (role-aware) ──────────────────────────────
+    const conditions: string[] = [];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: Record<string, any> = {};
+    const values: any[] = [];
 
     if (user.role === 'PEMDA') {
-      where.user_id = user.id; // PEMDA hanya lihat submission sendiri
+      conditions.push('s.user_id = ?');
+      values.push(user.id);
+    } else if (user.role === 'BPS_PEGAWAI') {
+      // Ekstrak nama wilayah dari "BPS Kota Palu" jadi "Kota Palu"
+      let region = user.instansi || '';
+      region = region.replace('BPS', '').trim();
+      if (region) {
+        conditions.push('u.instansi LIKE ?');
+        values.push(`%${region}%`);
+      }
     }
-    // BPS_ADMIN tidak ada filter user_id → lihat semua
 
     if (status) {
-      where.status = status;
-    }
-
-    // ── 3. QUERY ──────────────────────────────────────────────────────────
-    const conditions: string[] = [];
-    const values: any[] = [];
-    if (where.user_id) {
-      conditions.push('s.user_id = ?');
-      values.push(where.user_id);
-    }
-    if (where.status) {
       conditions.push('s.status = ?');
-      values.push(where.status);
+      values.push(status);
     }
 
     const whereSql = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';

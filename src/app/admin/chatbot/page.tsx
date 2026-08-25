@@ -86,7 +86,7 @@ export default function ChatbotManagement() {
     }
   };
 
-  if (!mounted || !user || (user.role !== 'BPS_ADMIN' && user.role !== 'BPS_PEGAWAI')) return null;
+  if (!mounted || !user || (user.role !== 'BPS_ADMIN')) return null;
 
   const filteredList = knowledgeList.filter(k => 
     k.keywords.join(', ').toLowerCase().includes(searchQuery.toLowerCase()) || 

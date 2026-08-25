@@ -74,10 +74,10 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
         {isBps && (
           <>
             <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard BPS" />
-            <NavItem href="/admin/registrations" icon={Building2} label="Verifikasi Instansi" />
+            {user?.role === 'BPS_ADMIN' && <NavItem href="/admin/registrations" icon={Building2} label="Verifikasi Instansi" />}
             <NavItem href="/admin/search" icon={Search} label="Pencarian Individu" />
             <NavItem href="/admin/compare" icon={BarChart2} label="Komparasi V2 & V3" />
-            <NavItem href="/admin/chatbot" icon={Bot} label="Manajemen AI" />
+            {user?.role === 'BPS_ADMIN' && <NavItem href="/admin/chatbot" icon={Bot} label="Manajemen AI" />}
           </>
         )}
 

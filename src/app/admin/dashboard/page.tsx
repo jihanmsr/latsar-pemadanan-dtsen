@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin, FileDown, UploadCloud, Send } from 'lucide-react';
+import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin, FileDown, UploadCloud, Send, Table as TableIcon, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import DashboardStats from '@/components/DashboardStats';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -38,11 +38,40 @@ const activityLogs = [
 export default function AdminDashboard() {
   const { user } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'submissions' | 'archives' | 'requests'>('submissions');
+  const [activeTab, setActiveTab] = useState<'submissions' | 'archives' | 'requests' | 'results'>('submissions');
   const [mounted, setMounted] = useState(false);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [verifyingId, setVerifyingId] = useState<number | null>(null);
+
+  // Excel Table States
+  const [excelType, setExcelType] = useState<'desil' | 'v4'>('desil');
+  const [excelData, setExcelData] = useState<{headers: string[], rows: any[], total: number, page: number, totalPages: number} | null>(null);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelPage, setExcelPage] = useState(1);
+
+  const fetchExcelData = async (type: 'desil' | 'v4', page: number) => {
+    setExcelLoading(true);
+    try {
+      const res = await fetch(`/api/admin/excel-data?type=${type}&page=${page}&limit=50`);
+      const json = await res.json();
+      if (json.success) {
+        setExcelData(json.data);
+      } else {
+        toast.error(json.message);
+      }
+    } catch (e) {
+      toast.error('Gagal mengambil data Excel');
+    } finally {
+      setExcelLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'results' && user?.role === 'BPS_ADMIN') {
+      fetchExcelData(excelType, excelPage);
+    }
+  }, [activeTab, excelType, excelPage, user]);
 
   const fetchSubmissions = async () => {
     try {
@@ -222,6 +251,14 @@ export default function AdminDashboard() {
           >
             <FileDown className="w-4 h-4" /> Permintaan Missing NIK
           </button>
+          {user?.role === 'BPS_ADMIN' && (
+            <button 
+              onClick={() => setActiveTab('results')}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'results' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+            >
+              <TableIcon className="w-4 h-4" /> Tabel Hasil Analisis
+            </button>
+          )}
         </div>
 
       <motion.div
@@ -395,6 +432,100 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'results' && user?.role === 'BPS_ADMIN' && (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden flex flex-col h-[600px]">
+            <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <TableIcon className="w-5 h-5 text-blue-600" /> Data Hasil Analisis & Pemadanan
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">Pembacaan dinamis langsung dari file Excel master.</p>
+              </div>
+              
+              <div className="flex gap-2 bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                <button
+                  onClick={() => { setExcelType('desil'); setExcelPage(1); }}
+                  className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors ${excelType === 'desil' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                >
+                  Cek Desil All
+                </button>
+                <button
+                  onClick={() => { setExcelType('v4'); setExcelPage(1); }}
+                  className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors ${excelType === 'v4' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                >
+                  Pemadanan V4
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-auto bg-white dark:bg-slate-900 relative">
+              {excelLoading && (
+                <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm z-10 flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                </div>
+              )}
+              
+              {!excelData ? null : (
+                <table className="w-full text-xs text-left whitespace-nowrap">
+                  <thead className="bg-slate-100 dark:bg-slate-800 sticky top-0 z-0">
+                    <tr>
+                      <th className="px-4 py-3 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">No.</th>
+                      {excelData.headers.map((h, i) => (
+                        <th key={i} className="px-4 py-3 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                    {excelData.rows.map((row, i) => (
+                      <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                        <td className="px-4 py-2 border-r border-slate-100 dark:border-slate-800/50 text-slate-400 text-[10px]">
+                          {(excelPage - 1) * 50 + i + 1}
+                        </td>
+                        {excelData.headers.map((h, j) => (
+                          <td key={j} className="px-4 py-2 border-r border-slate-100 dark:border-slate-800/50 text-slate-700 dark:text-slate-300">
+                            {row[h] !== null && row[h] !== undefined ? String(row[h]) : '-'}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                    {excelData.rows.length === 0 && (
+                      <tr>
+                        <td colSpan={excelData.headers.length + 1} className="px-4 py-12 text-center text-slate-500">
+                          Data kosong atau tidak ditemukan.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {excelData && (
+              <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center shrink-0">
+                <span className="text-xs font-medium text-slate-500">
+                  Menampilkan {(excelPage - 1) * 50 + 1}-{Math.min(excelPage * 50, excelData.total)} dari {excelData.total.toLocaleString('id-ID')} baris
+                </span>
+                <div className="flex gap-2">
+                  <button 
+                    disabled={excelPage <= 1}
+                    onClick={() => setExcelPage(p => Math.max(1, p - 1))}
+                    className="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button 
+                    disabled={excelPage >= excelData.totalPages}
+                    onClick={() => setExcelPage(p => Math.min(excelData.totalPages, p + 1))}
+                    className="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </motion.div>

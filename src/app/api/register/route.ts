@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     
     // Extract basic info
-    const kategoriInstansi = formData.get("kategoriInstansi") as string;
+    const kategoriInstansi = formData.get("kategoriPemohon") as string || formData.get("kategoriInstansi") as string;
     const namaInstansi = formData.get("namaInstansi") as string;
     const emailNarahubung = formData.get("emailNarahubung") as string;
     const namaNarahubung = formData.get("namaNarahubung") as string;

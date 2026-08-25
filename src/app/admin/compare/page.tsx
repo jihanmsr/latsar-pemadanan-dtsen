@@ -3,7 +3,8 @@
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { ArrowUpRight, ArrowDownRight, AlertCircle, Database } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, AlertCircle, Database, Lock, ShieldAlert } from 'lucide-react';
+import { toast } from 'sonner';
 
 const mockDesilData = [
   { name: 'Desil 1', v2: 124000, v3: 135000 },
@@ -109,6 +110,33 @@ export default function ComparePage() {
             </ResponsiveContainer>
           </div>
         </motion.div>
+      </div>
+
+      {/* Simulasi Data Individu / Detail Komparasi */}
+      <div className="mt-8">
+        <h3 className="font-bold text-lg mb-4 text-foreground">Detail Data Individu (P3KE)</h3>
+        {user.role === 'BPS_PEGAWAI' ? (
+          <div className="glass p-12 rounded-2xl shadow-sm border border-border flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+              <Lock className="w-8 h-8 text-slate-400" />
+            </div>
+            <h4 className="text-xl font-bold text-foreground mb-2">Akses Terbatas</h4>
+            <p className="text-muted max-w-md mb-6">
+              Sesuai dengan SOP Keamanan Data, Staf Operasional tidak dapat melihat data NIK dan rincian individu secara langsung.
+            </p>
+            <button 
+              onClick={() => toast.success('Permintaan akses berhasil dikirim ke Admin BPS Provinsi.')}
+              className="px-6 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl flex items-center gap-2 transition-all shadow-sm"
+            >
+              <ShieldAlert className="w-5 h-5" />
+              Request Akses Detail ke Admin Provinsi
+            </button>
+          </div>
+        ) : (
+          <div className="glass p-6 rounded-2xl shadow-sm border border-border">
+            <p className="text-muted italic text-center py-8">Tabel detail individu (BPS_ADMIN only) dapat dilihat pada Tab "Tabel Hasil Analisis" di Dashboard.</p>
+          </div>
+        )}
       </div>
     </div>
   );

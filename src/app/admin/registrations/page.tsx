@@ -55,16 +55,12 @@ export default function AdminRegistrationsPage() {
     }
   };
 
-  if ((user?.role !== 'BPS_ADMIN' && user?.role !== 'BPS_PEGAWAI')) {
+  if ((user?.role !== 'BPS_ADMIN')) {
     return <div className="p-8 text-center">Akses Ditolak. Halaman ini hanya untuk Admin BPS.</div>;
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-slate-900">
-      <Header />
-      
-      <main className="flex-1 overflow-y-auto p-6 lg:p-8">
-        <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
             <div>
               <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight flex items-center gap-2 mb-2">
@@ -192,8 +188,6 @@ export default function AdminRegistrationsPage() {
             </div>
           </div>
 
-        </div>
-      </main>
     </div>
   );
 }

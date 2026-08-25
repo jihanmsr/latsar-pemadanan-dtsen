@@ -60,14 +60,15 @@ export default function PublicLandingPage() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="w-full lg:w-1/2 relative"
           >
-            {/* Blue Decorative Frame Line */}
-            <div className="absolute -left-4 sm:-left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500/50 via-sky-400/10 to-transparent rounded-r"></div>
-
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 mb-6 shadow-sm">
-              <img src="/logo-pakewa.png" alt="Logo" className="w-4 h-4 object-contain" />
-              <span className="text-xs font-bold uppercase tracking-wider">MODUL PEMADANAN RESMI</span>
-            </div>
-            
+            {/* Animated Blue Decorative Frame Line */}
+            <motion.div 
+              animate={{ 
+                y: ["-2%", "2%", "-2%"],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -left-4 sm:-left-8 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-400/30 via-blue-500/60 to-blue-600/30 dark:from-blue-500/50 dark:via-sky-400/80 dark:to-blue-600/30 rounded-r shadow-[0_0_15px_rgba(59,130,246,0.2)] dark:shadow-[0_0_20px_rgba(59,130,246,0.8)]"
+            />
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-[1.3] sm:leading-tight mb-4 sm:mb-6 tracking-tight">
               Padanan Kesejahteraan Warga <br className="hidden sm:block"/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-700 drop-shadow-sm inline-block mt-1 sm:mt-0">(PAKEWA)</span>
@@ -211,15 +212,27 @@ export default function PublicLandingPage() {
         <FAQ />
       </div>
 
-      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-8 text-center border-t border-slate-200 dark:border-slate-800 mt-16 pt-16">
-        <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Sudah Memiliki Akun?</h2>
-        <p className="text-slate-500 mb-8 max-w-xl mx-auto">Masuk ke dalam dashboard instansi Anda untuk mulai memadankan data sasaran atau memantau progres pra-validasi dan persentase keberhasilan.</p>
-        <Link href="/login" className="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-lg hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors">
-          Masuk ke Dashboard
-          <ArrowRight className="w-5 h-5" />
-        </Link>
+      <div className="relative overflow-hidden mt-16 border-t border-slate-200 dark:border-slate-800">
+        {/* CSS Grid Pattern - Fades out towards the top */}
+        <div 
+          className="absolute inset-0 opacity-[0.15] dark:opacity-[0.25] z-0 pointer-events-none" 
+          style={{ 
+            backgroundImage: 'linear-gradient(#3b82f6 1.5px, transparent 1.5px), linear-gradient(90deg, #3b82f6 1.5px, transparent 1.5px)', 
+            backgroundSize: '48px 48px',
+            maskImage: 'linear-gradient(to top, black 30%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to top, black 30%, transparent)'
+          }}
+        />
+        
+        <div className="max-w-7xl mx-auto py-16 px-4 sm:px-8 text-center relative z-10">
+          <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Sudah Memiliki Akun?</h2>
+          <p className="text-slate-500 mb-8 max-w-xl mx-auto">Masuk ke dalam dashboard instansi Anda untuk mulai memadankan data sasaran atau memantau progres pra-validasi dan persentase keberhasilan.</p>
+          <Link href="/login" className="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-lg hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors">
+            Masuk ke Dashboard
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+        </div>
       </div>
-
     </div>
   );
 }

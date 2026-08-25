@@ -71,7 +71,7 @@ export default function Chatbot() {
             className="fixed bottom-6 right-6 z-40 group"
           >
             <div className="relative w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:scale-110 transition-all duration-200">
-              <MessageSquare className="w-6 h-6" />
+              <Bot className="w-7 h-7" />
               {/* Pulse indicator */}
               <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
             </div>

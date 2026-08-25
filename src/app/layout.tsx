@@ -31,7 +31,7 @@ export default function RootLayout({
       className={`${poppins.variable} font-sans h-full antialiased`}
     >
       <body className="h-full bg-background text-foreground transition-colors duration-300">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={true}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <AuthProvider>
             <MatchingProvider>
               <ClientLayout>
