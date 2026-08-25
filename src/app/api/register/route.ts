@@ -45,14 +45,18 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     
-    const uploadDir = path.join(process.cwd(), "public/uploads/registrations");
-    await mkdir(uploadDir, { recursive: true });
-
     const uniqueId = uuidv4();
     const fileName = `${uniqueId}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-    const filePath = path.join(uploadDir, fileName);
-    await writeFile(filePath, buffer);
     const relativeFilePath = `/uploads/registrations/${fileName}`;
+    
+    // Vercel Serverless functions have a read-only filesystem (except /tmp).
+    // For this prototype, we'll bypass the actual file write if deployed on Vercel.
+    if (!process.env.VERCEL) {
+      const uploadDir = path.join(process.cwd(), "public/uploads/registrations");
+      await mkdir(uploadDir, { recursive: true });
+      const filePath = path.join(uploadDir, fileName);
+      await writeFile(filePath, buffer);
+    }
 
     // Save to Database using Prisma
     const newRequest = await prisma.registration_requests.create({
