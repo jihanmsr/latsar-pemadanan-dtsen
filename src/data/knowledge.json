@@ -41,8 +41,8 @@
   },
   {
     "id": 9,
-    "keywords": ["keamanan", "aman", "privasi", "enkripsi", "data bocor", "kerahasiaan", "perlindungan data", "gdpr", "pdp"],
-    "reply": "Keamanan data di PAKEWA dirancang berlapis:\n\n🔐 Autentikasi JWT (JSON Web Token)\n🔒 Koneksi HTTPS terenkripsi\n👁️ Kontrol akses berbasis peran (PEMDA / BPS Admin)\n📋 Data sensitif hanya diproses di server BPS\n🚫 Data tidak disimpan di cloud publik\n\nSeluruh proses tunduk pada UU PDP (Perlindungan Data Pribadi) No. 27 Tahun 2022."
+    "keywords": ["keamanan", "aman", "privasi", "enkripsi", "data bocor", "kerahasiaan", "perlindungan data", "gdpr", "pdp", "krusial", "penting"],
+    "reply": "PAKEWA menangani data DTSEN yang sangat krusial karena memuat informasi sosial ekonomi tingkat individu berskala nasional. Oleh karena itu, sistem ini dirancang dengan standar keamanan tinggi:\n\n🔐 Autentikasi JWT (JSON Web Token) & enkripsi password (bcrypt)\n🔒 Koneksi HTTPS terenkripsi\n👁️ Kontrol akses ketat berbasis peran (Role-Based Access Control)\n🚫 Data sensitif hanya diproses secara internal dan tidak disimpan di public cloud sembarangan\n\nSistem ini dirancang untuk patuh pada prinsip kerahasiaan statistik dan UU Perlindungan Data Pribadi (PDP)."
   },
   {
     "id": 10,
@@ -67,11 +67,16 @@
   {
     "id": 14,
     "keywords": ["arti pakewa", "makna pakewa", "bahasa", "kaili", "asal kata", "asal usul", "senjata", "singkatan"],
-    "reply": "Selain sebagai singkatan dari **Padanan Kesejahteraan Warga**, nama **PAKEWA** diambil dari bahasa **Kaili** (Suku asli Sulawesi Tengah) yang berarti **'Alat'** atau **'Senjata'**.\n\nFilosofinya, PAKEWA hadir sebagai 'alat/senjata' yang ampuh bagi pemerintah daerah untuk menanggulangi kemiskinan dengan basis data yang akurat! 🚀"
+    "reply": "Kata PAKEWA berasal dari bahasa Kaili (Sulawesi Tengah) yang berarti **memadukan, mencocokkan, atau menyelaraskan sesuatu agar pas dan serasi**.\n\nBiasanya kata ini dipakai saat seseorang mencocokkan warna, ukuran, atau memasangkan sesuatu agar terlihat cocok. Bentuk awalan sering ditambahkan seperti *nompakewa* yang artinya sedang memadukan atau mencocokkan.\n\nIni sangat selaras dengan fungsi aplikasi PAKEWA yang bertugas **memadankan** data sasaran Pemda dengan data DTSEN BPS."
   },
   {
     "id": 15,
     "keywords": ["versi", "versi 2", "versi 3", "database master", "master data", "dtsen versi", "v2", "v3", "versi berapa"],
     "reply": "Sebagai informasi, PAKEWA saat ini menggunakan **DTSEN Versi 2** dan **Versi 3** sebagai rujukan *Database Master* nasional.\n\nData pada versi ini telah melalui proses verifikasi dan validasi mutakhir oleh BPS, sehingga proses pemadanan data sasaran program bantuan dari Pemda dapat berjalan dengan akurasi tinggi dan tepat sasaran."
+  },
+  {
+    "id": 16,
+    "keywords": ["bahasa pemrograman", "framework", "teknologi", "dibuat pakai apa", "tech stack", "coding", "dibuat menggunakan", "sistem dibuat dengan"],
+    "reply": "Sistem PAKEWA dikembangkan menggunakan tumpukan teknologi modern (Modern Tech Stack) yang tangguh dan cepat:\n\n⚛️ **Next.js (React)** untuk antarmuka web (Frontend)\n🎨 **Tailwind CSS** untuk desain tampilan\n🛠️ **TypeScript** untuk keamanan penulisan kode\n🗄️ **Prisma ORM & MySQL** untuk pengelolaan database (Backend)\n\nKombinasi teknologi ini menjamin aplikasi berjalan cepat, responsif, dan aman."
   }
 ]
