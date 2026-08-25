@@ -41,7 +41,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
               instansi: reg.nama_instansi
             }
           });
+          // Kirim email kredensial ke user
+          if (process.env.SMTP_EMAIL && process.env.SMTP_PASSWORD) {
+            import('@/lib/email').then(({ sendUserWelcomeEmail }) => {
+              sendUserWelcomeEmail(u.email, u.nama_lengkap, reg.nama_instansi).catch(console.error);
+            });
+          }
         }
+      }
+
+      // Kirim email persetujuan ke narahubung
+      if (process.env.SMTP_EMAIL && process.env.SMTP_PASSWORD) {
+        import('@/lib/email').then(({ sendInstitutionApprovalEmail }) => {
+          sendInstitutionApprovalEmail(reg.email_narahubung, reg.nama_instansi).catch(console.error);
+        });
       }
 
     } else if (action === "reject") {
@@ -52,11 +65,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           alasan_penolakan: reason || null
         }
       });
+
+      // Kirim email penolakan ke narahubung
+      if (process.env.SMTP_EMAIL && process.env.SMTP_PASSWORD) {
+        import('@/lib/email').then(({ sendInstitutionRejectionEmail }) => {
+          sendInstitutionRejectionEmail(reg.email_narahubung, reg.nama_instansi, reason || "Tidak memenuhi syarat").catch(console.error);
+        });
+      }
     }
 
     return NextResponse.json({ 
       success: true, 
-      message: action === "approve" ? "Pendaftaran disetujui dan akun telah dibuat." : "Pendaftaran ditolak."
+      message: action === "approve" ? "Pendaftaran disetujui, akun telah dibuat, dan email dikirim." : "Pendaftaran ditolak dan email pemberitahuan dikirim."
     });
 
   } catch (error: any) {
