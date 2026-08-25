@@ -41,6 +41,49 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Minimal User 1 dan User 2 wajib diisi." }, { status: 400 });
     }
 
+    // Cek apakah ada email yang sudah digunakan di user aktif
+    const emailsToCheck = users.map(u => u.email);
+    const existingUsers = await prisma.users.findMany({
+      where: {
+        email: {
+          in: emailsToCheck
+        }
+      }
+    });
+
+    if (existingUsers.length > 0) {
+      const usedEmails = existingUsers.map(u => u.email).join(', ');
+      return NextResponse.json({ 
+        success: false, 
+        message: `Email berikut sudah terdaftar di sistem PAKEWA: ${usedEmails}. Silakan gunakan email lain.` 
+      }, { status: 400 });
+    }
+
+    // Cek apakah ada email yang sedang dalam proses pengajuan (pending/approved)
+    const pendingUsers = await prisma.registration_users.findMany({
+      where: {
+        email: {
+          in: emailsToCheck
+        },
+        request: {
+          status: {
+            in: ['PENDING', 'APPROVED']
+          }
+        }
+      },
+      include: {
+        request: true
+      }
+    });
+
+    if (pendingUsers.length > 0) {
+      const pendingEmails = pendingUsers.map(u => u.email).join(', ');
+      return NextResponse.json({ 
+        success: false, 
+        message: `Email berikut sedang dalam proses pengajuan pendaftaran (Pending/Disetujui): ${pendingEmails}. Silakan gunakan email lain atau hubungi admin.` 
+      }, { status: 400 });
+    }
+
     // Save File
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
