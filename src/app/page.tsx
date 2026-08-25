@@ -266,6 +266,21 @@ export default function PublicLandingPage() {
       </div>
       {/* Floating Elements */}
       <JumpingMascot />
+
+      {/* Footer */}
+      <footer className="w-full bg-slate-50 dark:bg-slate-900/30 border-t border-slate-200 dark:border-slate-800 mt-20 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 py-8 sm:py-10">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-blue-600" />
+              <span className="font-bold text-slate-800 dark:text-slate-200">PAKEWA</span>
+            </div>
+            <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 text-center sm:text-right">
+              &copy; {new Date().getFullYear()} <strong>Badan Pusat Statistik (BPS) Provinsi Sulawesi Tengah</strong>.<br className="sm:hidden" /> Hak Cipta Dilindungi.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
