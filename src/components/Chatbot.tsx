@@ -11,6 +11,9 @@ export default function Chatbot() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showTicketForm, setShowTicketForm] = useState(false);
+  const [ticketData, setTicketData] = useState({ nama: '', email: '', pesan: '' });
+  const [ticketStatus, setTicketStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -49,6 +52,36 @@ export default function Chatbot() {
       setMessages(prev => [...prev, { role: 'bot', text: 'Koneksi terputus. Silakan coba lagi nanti.' }]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSubmitTicket = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTicketStatus('loading');
+    
+    try {
+      const response = await fetch('/api/support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticketData)
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        setTicketStatus('success');
+        setMessages(prev => [...prev, { role: 'bot', text: 'Pesan Anda telah berhasil dikirim ke Admin PAKEWA! Balasan akan dikirim ke email Anda.' }]);
+        setTimeout(() => {
+          setShowTicketForm(false);
+          setTicketStatus('idle');
+          setTicketData({ nama: '', email: '', pesan: '' });
+        }, 3000);
+      } else {
+        setTicketStatus('error');
+        alert(data.message || 'Gagal mengirim pesan.');
+      }
+    } catch {
+      setTicketStatus('error');
+      alert('Koneksi terputus.');
     }
   };
 
@@ -134,9 +167,44 @@ export default function Chatbot() {
                       : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-bl-sm'
                   }`}>
                     {m.text}
+                    {m.role === 'bot' && m.text.includes('Hubungi Kami') && !showTicketForm && (
+                      <button 
+                        onClick={() => setShowTicketForm(true)}
+                        className="mt-3 w-full py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 font-bold rounded-lg transition-colors text-xs flex items-center justify-center gap-1.5"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        Tinggalkan Pesan ke Admin
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
+              
+              {showTicketForm && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-2xl shadow-sm text-sm"
+                >
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="font-bold text-slate-900 dark:text-white">Kirim Pesan ke Admin</h4>
+                    <button onClick={() => setShowTicketForm(false)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+                  </div>
+                  {ticketStatus === 'success' ? (
+                    <div className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-xl text-center font-medium text-xs">
+                      Pesan berhasil terkirim!
+                    </div>
+                  ) : (
+                    <form onSubmit={handleSubmitTicket} className="space-y-3">
+                      <input type="text" placeholder="Nama Anda" required className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:ring-1 focus:ring-blue-500" value={ticketData.nama} onChange={e => setTicketData({...ticketData, nama: e.target.value})} />
+                      <input type="email" placeholder="Email Anda" required className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:ring-1 focus:ring-blue-500" value={ticketData.email} onChange={e => setTicketData({...ticketData, email: e.target.value})} />
+                      <textarea placeholder="Tulis pesan atau keluhan..." required rows={3} className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:ring-1 focus:ring-blue-500 resize-none" value={ticketData.pesan} onChange={e => setTicketData({...ticketData, pesan: e.target.value})} />
+                      <button type="submit" disabled={ticketStatus === 'loading'} className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors flex justify-center items-center">
+                        {ticketStatus === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Kirim Pesan'}
+                      </button>
+                    </form>
+                  )}
+                </motion.div>
+              )}
               {isLoading && (
                 <div className="flex justify-start items-end gap-2">
                   <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-md">

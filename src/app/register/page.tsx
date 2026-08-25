@@ -10,8 +10,10 @@ export default function RegisterPage() {
   const [activeTab, setActiveTab] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [requestId, setRequestId] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [kategori, setKategori] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, ''); 
@@ -59,6 +61,7 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (response.ok) {
+        setRequestId(data.requestId);
         setSubmitted(true);
       } else {
         alert(data.message || 'Terjadi kesalahan');
@@ -85,12 +88,43 @@ export default function RegisterPage() {
               <Check className="w-10 h-10" />
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">Pendaftaran Berhasil!</h2>
-            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium leading-relaxed">
-              Data registrasi instansi Anda telah kami terima. Tim PAKEWA akan melakukan verifikasi dokumen dan mengirimkan konfirmasi akun melalui email narahubung.
+            <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium leading-relaxed">
+              Data registrasi instansi Anda telah kami terima. Tim PAKEWA akan melakukan verifikasi dokumen dan mengirimkan konfirmasi akun.
             </p>
-            <Link href="/login" className="inline-flex w-full items-center justify-center py-3.5 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-xl font-bold transition-all hover:-translate-y-0.5 shadow-lg">
-              Kembali ke Halaman Login
-            </Link>
+
+            {requestId && (
+              <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-4 mb-8 text-left">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Nomor Tiket (Request ID)</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-sm font-mono text-slate-800 dark:text-slate-200 break-all">
+                    {requestId}
+                  </code>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(requestId);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 rounded-lg transition-colors shrink-0 flex items-center justify-center w-10 h-10"
+                    title="Copy ID"
+                  >
+                    {copied ? <Check className="w-5 h-5 text-emerald-500" /> : <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>}
+                  </button>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-2 font-medium">
+                  *Simpan ID ini untuk mengecek status pendaftaran Anda.
+                </p>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link href="/cek-status" className="flex-1 inline-flex items-center justify-center py-3.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-400 rounded-xl font-bold transition-all shadow-sm">
+                Cek Status
+              </Link>
+              <Link href="/login" className="flex-1 inline-flex items-center justify-center py-3.5 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg">
+                Halaman Login
+              </Link>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -118,20 +152,20 @@ export default function RegisterPage() {
         setInputValue('noHandphone', '0812 3456 7890');
         
         // User 1
-        setInputValue('user1_nip_nik', '19870808 199801 1 002');
+        setInputValue('user1_nip_nik', '19980101 202401 2 001');
         setInputValue('user1_nama_unit_kerja', 'Biro Perencanaan');
-        setInputValue('user1_nama_lengkap', 'Gasena, S.Sos');
-        setInputValue('user1_no_hp', '0857 7890 0000');
-        setInputValue('user1_email', 'gasena@palu.go.id');
-        setInputValue('user1_jabatan', 'Kepala Bidang Perlindungan');
+        setInputValue('user1_nama_lengkap', 'Jihan Maisaroh');
+        setInputValue('user1_no_hp', '0812 3456 7891');
+        setInputValue('user1_email', 'jihanmaisaroh@bps.go.id');
+        setInputValue('user1_jabatan', 'Pranata Komputer');
         
         // User 2
-        setInputValue('user2_nip_nik', '19870808 199801 1 003');
-        setInputValue('user2_nama_unit_kerja', 'Biro Teknis');
-        setInputValue('user2_nama_lengkap', 'Kingjar, S.Kel');
-        setInputValue('user2_no_hp', '0857 7890 0001');
-        setInputValue('user2_email', 'kingjar@palu.go.id');
-        setInputValue('user2_jabatan', 'Kepala Dinas Ketahanan');
+        setInputValue('user2_nip_nik', '19870808 199801 1 002');
+        setInputValue('user2_nama_unit_kerja', 'Pusat Data dan Informasi');
+        setInputValue('user2_nama_lengkap', 'Catur Pri');
+        setInputValue('user2_no_hp', '0812 3456 7892');
+        setInputValue('user2_email', 'catur.pri@bps.go.id');
+        setInputValue('user2_jabatan', 'Kepala Bidang Infrastruktur');
       }, 0);
     }
   };

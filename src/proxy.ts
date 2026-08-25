@@ -13,6 +13,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/api/chat') ||
     pathname.startsWith('/api/register') ||
+    pathname.startsWith('/api/cek-status') ||
     pathname === '/favicon.ico' ||
     pathname.startsWith('/images') // assuming public images
   ) {
@@ -20,7 +21,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // 2. Allow public pages
-  if (pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/laporan-testing' || pathname === '/sop' || pathname === '/dashboard/test-match') {
+  if (pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/cek-status' || pathname === '/laporan-testing' || pathname === '/sop' || pathname === '/dashboard/test-match') {
     return NextResponse.next();
   }
 
@@ -45,5 +46,5 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // Protect all routes except those filtered out
-  matcher: ['/((?!api/auth|api/chat|api/register|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: ['/((?!api/auth|api/chat|api/register|api/cek-status|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };

@@ -177,3 +177,12 @@ enum registration_status {
   APPROVED
   REJECTED
 }
+
+model support_tickets {
+  id         Int      @id @default(autoincrement())
+  nama       String   @db.VarChar(255)
+  email      String   @db.VarChar(255)
+  pesan      String   @db.Text
+  status     String   @default("OPEN")
+  created_at DateTime @default(now()) @db.Timestamp(0)
+}

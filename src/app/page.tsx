@@ -13,6 +13,28 @@ import LandingWorkflow from '@/components/LandingWorkflow';
 
 export default function PublicLandingPage() {
   const [mounted, setMounted] = useState(false);
+  
+  // 3D Tilt State
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Calculate rotation (-15 to 15 degrees)
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    setRotateX(-((y - centerY) / centerY) * 15);
+    setRotateY(((x - centerX) / centerX) * 15);
+  };
+
+  const handleMouseLeave = () => {
+    setRotateX(0);
+    setRotateY(0);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -131,9 +153,17 @@ export default function PublicLandingPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.2 }}
             className="w-full lg:w-1/2 relative hidden lg:flex justify-center mt-12 lg:mt-0"
+            style={{ perspective: 1000 }}
           >
-            {/* Image Collage */}
-            <div className="relative w-full max-w-lg aspect-square">
+            {/* 3D Tilt Container */}
+            <motion.div
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              animate={{ rotateX, rotateY }}
+              transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.5 }}
+              className="relative w-full max-w-lg aspect-square cursor-pointer"
+              style={{ transformStyle: "preserve-3d" }}
+            >
                {/* Background Glow */}
                <div className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full animate-pulse duration-3000"></div>
                
@@ -172,7 +202,7 @@ export default function PublicLandingPage() {
                      fill 
                      sizes="(max-width: 768px) 100vw, 50vw"
                      priority
-                     className="object-cover"
+                     className="w-full h-full object-cover"
                    />
                  </div>
 
