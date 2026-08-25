@@ -228,7 +228,7 @@ export default function PublicLandingPage() {
                    </div>
                  </motion.div>
                </div>
-            </div>
+            </motion.div>
           </motion.div>
 
         </div>
