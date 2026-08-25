@@ -98,7 +98,7 @@ export default function PublicLandingPage() {
             </h1>
             
             <p className="text-slate-600 dark:text-slate-300 text-base mb-8 max-w-xl leading-relaxed font-medium">
-              Sistem informasi yang dirancang khusus untuk membantu Pemerintah Daerah (Pemda) memvalidasi, menyinkronkan, dan memadankan data sasaran program dengan <strong className="text-slate-900 dark:text-white font-bold">Data Tunggal Sosial dan Ekonomi Nasional (DTSEN)</strong>.
+              Platform resmi <strong className="text-slate-900 dark:text-white font-bold">BPS Provinsi Sulawesi Tengah</strong> yang dirancang khusus untuk membantu Pemerintah Daerah (Pemda) memvalidasi, menyinkronkan, dan memadankan data sasaran program dengan <strong className="text-slate-900 dark:text-white font-bold">Data Tunggal Sosial dan Ekonomi Nasional (DTSEN)</strong>.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-10 sm:mb-12">
