@@ -47,15 +47,18 @@ export async function POST(request: Request) {
     
     const uniqueId = uuidv4();
     const fileName = `${uniqueId}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-    const relativeFilePath = `/uploads/registrations/${fileName}`;
+    let relativeFilePath = `/uploads/registrations/${fileName}`;
     
     // Vercel Serverless functions have a read-only filesystem (except /tmp).
-    // For this prototype, we'll bypass the actual file write if deployed on Vercel.
+    // For this prototype, we'll bypass the actual file write if deployed on Vercel
+    // and use a dummy PDF so the Admin Dashboard preview doesn't 404.
     if (!process.env.VERCEL) {
       const uploadDir = path.join(process.cwd(), "public/uploads/registrations");
       await mkdir(uploadDir, { recursive: true });
       const filePath = path.join(uploadDir, fileName);
       await writeFile(filePath, buffer);
+    } else {
+      relativeFilePath = "/dummy.pdf";
     }
 
     // Save to Database using Prisma
