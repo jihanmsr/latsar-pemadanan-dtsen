@@ -37,7 +37,7 @@
   {
     "id": 8,
     "keywords": ["kemiskinan ekstrem", "miskin ekstrem", "desil", "p0", "angka kemiskinan"],
-    "reply": "Kemiskinan ekstrem adalah kondisi ketidakmampuan individu dalam memenuhi kebutuhan dasar minimal (makanan, air bersih, sanitasi, kesehatan).\n\nIndonesia menargetkan kemiskinan ekstrem **0%** pada tahun 2024 (Perpres No. 67/2021).\n\nDTSEN memuat data desil pengeluaran per kapita yang membantu Pemda mengidentifikasi kelompok paling rentan untuk menjadi penerima bantuan prioritas."
+    "reply": "Kemiskinan ekstrem adalah kondisi ketidakmampuan individu dalam memenuhi kebutuhan dasar minimal (makanan, air bersih, sanitasi, kesehatan).\n\nIndonesia menargetkan kemiskinan ekstrem 0% pada tahun 2024 (Perpres No. 67/2021).\n\nDTSEN memuat data desil pengeluaran per kapita yang membantu Pemda mengidentifikasi kelompok paling rentan untuk menjadi penerima bantuan prioritas."
   },
   {
     "id": 9,
@@ -47,17 +47,17 @@
   {
     "id": 10,
     "keywords": ["siapa", "pengguna", "user", "pemda", "siapa yang bisa", "bisa digunakan", "instansi"],
-    "reply": "PAKEWA dapat digunakan oleh:\n\n🏛️ Pemerintah Daerah (Pemda)\nPemda yang memiliki program bantuan sosial dan ingin memadankan data sasaran dengan DTSEN.\n\n🔵 BPS Admin\nPetugas BPS yang melakukan verifikasi, pengelolaan, dan monitoring seluruh proses pemadanan.\n\nUntuk mendaftar, klik tombol **\"Daftar Instansi\"** di halaman utama."
+    "reply": "PAKEWA dapat digunakan oleh:\n\n🏛️ Pemerintah Daerah (Pemda)\nPemda yang memiliki program bantuan sosial dan ingin memadankan data sasaran dengan DTSEN.\n\n🔵 BPS Admin\nPetugas BPS yang melakukan verifikasi, pengelolaan, dan monitoring seluruh proses pemadanan.\n\nUntuk mendaftar, klik tombol \"Daftar Instansi\" di halaman utama."
   },
   {
     "id": 11,
     "keywords": ["biaya", "bayar", "gratis", "tarif", "harga", "berbayar"],
-    "reply": "PAKEWA adalah layanan **GRATIS** yang disediakan oleh BPS sebagai bagian dari tugas pokok dan fungsi (tupoksi) dalam penyediaan data statistik nasional. Tidak ada biaya apapun yang dikenakan kepada Pemda pengguna sistem ini."
+    "reply": "PAKEWA adalah layanan GRATIS yang disediakan oleh BPS sebagai bagian dari tugas pokok dan fungsi (tupoksi) dalam penyediaan data statistik nasional. Tidak ada biaya apapun yang dikenakan kepada Pemda pengguna sistem ini."
   },
   {
     "id": 12,
     "keywords": ["kontak", "hubungi", "telepon", "email", "whatsapp", "bantuan", "support", "helpdesk", "kendala", "masalah"],
-    "reply": "Jika Anda mengalami kendala teknis atau membutuhkan bantuan:\n\n📞 Hubungi tim kami melalui tombol **\"Hubungi Kami\"** (ikon WhatsApp hijau) di pojok kiri bawah.\n\n🏢 Atau kunjungi langsung:\nBPS Provinsi Sulawesi Tengah\nJl. Tanjung Dako No. 19, Palu\n\nKami siap membantu pada hari kerja Senin–Jumat, pukul 08.00–16.00 WITA."
+    "reply": "Jika Anda mengalami kendala teknis atau membutuhkan bantuan:\n\n📞 Hubungi tim kami melalui tombol \"Hubungi Kami\" (ikon WhatsApp hijau) di pojok kiri bawah.\n\n🏢 Atau kunjungi langsung:\nBPS Provinsi Sulawesi Tengah\nJl. Tanjung Dako No. 19, Palu\n\nKami siap membantu pada hari kerja Senin–Jumat, pukul 08.00–16.00 WITA."
   },
   {
     "id": 13,
@@ -67,16 +67,16 @@
   {
     "id": 14,
     "keywords": ["arti pakewa", "makna pakewa", "bahasa", "kaili", "asal kata", "asal usul", "senjata", "singkatan"],
-    "reply": "Kata PAKEWA berasal dari bahasa Kaili (Sulawesi Tengah) yang berarti **memadukan, mencocokkan, atau menyelaraskan sesuatu agar pas dan serasi**.\n\nBiasanya kata ini dipakai saat seseorang mencocokkan warna, ukuran, atau memasangkan sesuatu agar terlihat cocok. Bentuk awalan sering ditambahkan seperti *nompakewa* yang artinya sedang memadukan atau mencocokkan.\n\nIni sangat selaras dengan fungsi aplikasi PAKEWA yang bertugas **memadankan** data sasaran Pemda dengan data DTSEN BPS."
+    "reply": "Kata PAKEWA berasal dari bahasa Kaili (Sulawesi Tengah) yang berarti memadukan, mencocokkan, atau menyelaraskan sesuatu agar pas dan serasi.\n\nBiasanya kata ini dipakai saat seseorang mencocokkan warna, ukuran, atau memasangkan sesuatu agar terlihat cocok. Bentuk awalan sering ditambahkan seperti nompakewa yang artinya sedang memadukan atau mencocokkan.\n\nIni sangat selaras dengan fungsi aplikasi PAKEWA yang bertugas memadankan data sasaran Pemda dengan data DTSEN BPS."
   },
   {
     "id": 15,
     "keywords": ["versi", "versi 2", "versi 3", "database master", "master data", "dtsen versi", "v2", "v3", "versi berapa"],
-    "reply": "Sebagai informasi, PAKEWA saat ini menggunakan **DTSEN Versi 2** dan **Versi 3** sebagai rujukan *Database Master* nasional.\n\nData pada versi ini telah melalui proses verifikasi dan validasi mutakhir oleh BPS, sehingga proses pemadanan data sasaran program bantuan dari Pemda dapat berjalan dengan akurasi tinggi dan tepat sasaran."
+    "reply": "Sebagai informasi, PAKEWA saat ini menggunakan DTSEN Versi 2 dan Versi 3 sebagai rujukan Database Master nasional.\n\nData pada versi ini telah melalui proses verifikasi dan validasi mutakhir oleh BPS, sehingga proses pemadanan data sasaran program bantuan dari Pemda dapat berjalan dengan akurasi tinggi dan tepat sasaran."
   },
   {
     "id": 16,
     "keywords": ["bahasa pemrograman", "framework", "teknologi", "dibuat pakai apa", "tech stack", "coding", "dibuat menggunakan", "sistem dibuat dengan"],
-    "reply": "Sistem PAKEWA dikembangkan menggunakan tumpukan teknologi modern (Modern Tech Stack) yang tangguh dan cepat:\n\n⚛️ **Next.js (React)** untuk antarmuka web (Frontend)\n🎨 **Tailwind CSS** untuk desain tampilan\n🛠️ **TypeScript** untuk keamanan penulisan kode\n🗄️ **Prisma ORM & MySQL** untuk pengelolaan database (Backend)\n\nKombinasi teknologi ini menjamin aplikasi berjalan cepat, responsif, dan aman."
+    "reply": "Sistem PAKEWA dikembangkan menggunakan tumpukan teknologi modern (Modern Tech Stack) yang tangguh dan cepat:\n\n⚛️ Next.js (React) untuk antarmuka web (Frontend)\n🎨 Tailwind CSS untuk desain tampilan\n🛠️ TypeScript untuk keamanan penulisan kode\n🗄️ Prisma ORM & MySQL untuk pengelolaan database (Backend)\n\nKombinasi teknologi ini menjamin aplikasi berjalan cepat, responsif, dan aman."
   }
 ]
