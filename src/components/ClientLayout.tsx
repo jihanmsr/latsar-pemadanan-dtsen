@@ -7,6 +7,7 @@ import Header from "./Header";
 import Chatbot from "./Chatbot";
 import FloatingWhatsApp from "./FloatingWhatsApp";
 import FloatingFeedback from "./FloatingFeedback";
+import JumpingMascot from "./JumpingMascot";
 import { Toaster } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -34,6 +35,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         <Toaster position="top-right" richColors />
         {children}
         {/* Floating buttons for public pages */}
+        <JumpingMascot />
         <FloatingWhatsApp />
         <Chatbot />
       </>

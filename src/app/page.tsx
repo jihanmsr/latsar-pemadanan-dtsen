@@ -7,7 +7,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import FAQ from '@/components/FAQ';
 import PublicNavbar from '@/components/PublicNavbar';
-import JumpingMascot from '@/components/JumpingMascot';
 import LandingStats from '@/components/LandingStats';
 import LandingRegulations from '@/components/LandingRegulations';
 import LandingWorkflow from '@/components/LandingWorkflow';
@@ -264,8 +263,6 @@ export default function PublicLandingPage() {
           </Link>
         </div>
       </div>
-      {/* Floating Elements */}
-      <JumpingMascot />
 
       {/* Footer */}
       <footer className="w-full bg-slate-50 dark:bg-slate-900/30 border-t border-slate-200 dark:border-slate-800 mt-20 relative z-10">
