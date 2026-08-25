@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { Building2, FileCheck2, Loader2, CheckCircle2, XCircle, Search, FileText, X } from "lucide-react";
+import { Building2, FileCheck2, Loader2, CheckCircle2, XCircle, Search, FileText, X, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import Header from "@/components/Header";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -13,6 +14,13 @@ export default function AdminRegistrationsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [selectedPdfUrl, setSelectedPdfUrl] = useState<string | null>(null);
+  const [actionModal, setActionModal] = useState<{
+    isOpen: boolean;
+    type: "approve" | "reject";
+    id: string;
+    instansiName: string;
+  } | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   useEffect(() => {
     fetchRegistrations();
@@ -32,26 +40,31 @@ export default function AdminRegistrationsPage() {
     }
   };
 
-  const handleAction = async (id: string, action: "approve" | "reject", reason?: string) => {
-    if (action === "approve" && !confirm(`Anda yakin ingin MENYETUJUI permohonan ini?`)) return;
+  const executeAction = async () => {
+    if (!actionModal) return;
+    const { id, type } = actionModal;
+    const reason = type === "reject" ? rejectReason : undefined;
     
     setProcessingId(id);
+    setActionModal(null);
+    setRejectReason("");
+    
     try {
       const res = await fetch(`/api/admin/registrations/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, reason }),
+        body: JSON.stringify({ action: type, reason }),
       });
       const data = await res.json();
       if (data.success) {
-        alert(data.message);
+        toast.success(data.message);
         fetchRegistrations();
       } else {
-        alert(data.message || "Terjadi kesalahan.");
+        toast.error(data.message || "Terjadi kesalahan.");
       }
     } catch (err) {
       console.error(err);
-      alert("Gagal terhubung ke server.");
+      toast.error("Gagal terhubung ke server.");
     } finally {
       setProcessingId(null);
     }
@@ -157,12 +170,7 @@ export default function AdminRegistrationsPage() {
                           {reg.status === "PENDING" && (
                             <div className="flex items-center justify-end gap-2">
                               <button
-                                onClick={() => {
-                                  const reason = prompt("Masukkan alasan penolakan:");
-                                  if (reason !== null) {
-                                    handleAction(reg.id, "reject", reason);
-                                  }
-                                }}
+                                onClick={() => setActionModal({ isOpen: true, type: "reject", id: reg.id, instansiName: reg.nama_instansi })}
                                 disabled={processingId === reg.id}
                                 className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors disabled:opacity-50"
                                 title="Tolak"
@@ -170,7 +178,7 @@ export default function AdminRegistrationsPage() {
                                 <XCircle className="w-5 h-5" />
                               </button>
                               <button
-                                onClick={() => handleAction(reg.id, "approve")}
+                                onClick={() => setActionModal({ isOpen: true, type: "approve", id: reg.id, instansiName: reg.nama_instansi })}
                                 disabled={processingId === reg.id}
                                 className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
                               >
@@ -225,6 +233,85 @@ export default function AdminRegistrationsPage() {
                   className="w-full h-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white"
                   title="PDF Preview"
                 />
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Action Modal (Approve / Reject) */}
+      <AnimatePresence>
+        {actionModal && actionModal.isOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setActionModal(null);
+                setRejectReason("");
+              }}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden p-6"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`p-3 rounded-full ${actionModal.type === 'approve' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-500' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-500'}`}>
+                  {actionModal.type === 'approve' ? <CheckCircle2 className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    {actionModal.type === 'approve' ? 'Setujui Pendaftaran' : 'Tolak Pendaftaran'}
+                  </h3>
+                  <p className="text-sm text-slate-500 font-medium">Instansi: {actionModal.instansiName}</p>
+                </div>
+              </div>
+              
+              <div className="mb-6">
+                {actionModal.type === 'approve' ? (
+                  <p className="text-slate-600 dark:text-slate-300 text-sm">
+                    Apakah Anda yakin ingin <strong>MENYETUJUI</strong> pendaftaran akun untuk instansi ini? Pemohon akan dapat langsung login dan memadankan data.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-slate-600 dark:text-slate-300 text-sm">
+                      Silakan masukkan alasan penolakan. Alasan ini akan mempermudah instansi terkait untuk memperbaiki dokumen pendaftaran.
+                    </p>
+                    <textarea
+                      value={rejectReason}
+                      onChange={(e) => setRejectReason(e.target.value)}
+                      placeholder="Contoh: Surat permohonan kurang tanda tangan kepala dinas..."
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none resize-none h-24"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setActionModal(null);
+                    setRejectReason("");
+                  }}
+                  className="px-4 py-2 font-bold text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={executeAction}
+                  disabled={actionModal.type === 'reject' && !rejectReason.trim()}
+                  className={`px-4 py-2 font-bold text-sm text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    actionModal.type === 'approve' 
+                      ? 'bg-emerald-600 hover:bg-emerald-700' 
+                      : 'bg-rose-600 hover:bg-rose-700'
+                  }`}
+                >
+                  {actionModal.type === 'approve' ? 'Ya, Setujui' : 'Tolak Pendaftaran'}
+                </button>
               </div>
             </motion.div>
           </div>
