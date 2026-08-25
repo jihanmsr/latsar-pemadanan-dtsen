@@ -25,7 +25,7 @@ export default function PublicNavbar() {
     <>
       <nav className={`w-full sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm' : 'bg-transparent border-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-3 group">
             <img
               src="/logo-pakewa.png"
               alt="Logo PAKEWA"
@@ -33,7 +33,10 @@ export default function PublicNavbar() {
               height={36}
               className="object-contain group-hover:scale-105 transition-transform sm:w-10 sm:h-10"
             />
-            <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 dark:text-white ml-1">PAKEWA<span className="text-blue-600">.</span></span>
+            <div className="flex flex-col">
+              <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 dark:text-white leading-none">PAKEWA<span className="text-blue-600">.</span></span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">BPS Prov. Sulawesi Tengah</span>
+            </div>
           </Link>
           <div className="flex items-center gap-3 sm:gap-6">
             <Link href="/" className={`relative text-sm font-bold transition-colors hidden sm:block ${pathname === '/' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400'}`}>
