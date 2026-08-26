@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Bell, UserCircle, CheckCircle2, Sun, Moon, LogOut, Menu, Shield, Building } from 'lucide-react';
+import { Bell, UserCircle, CheckCircle2, Sun, Moon, LogOut, Menu, Shield, Building, Key } from 'lucide-react';
 import { useMatching } from '@/context/MatchingContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
+import ChangePasswordModal from './ChangePasswordModal';
 
 export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: boolean) => void }) {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { matchingProgress, files } = useMatching();
   const { user, logout } = useAuth();
@@ -35,6 +38,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
   const hasUnread = notifications.length > 0;
 
   return (
+    <>
     <header className="h-16 glass sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 transition-all duration-300">
       <div className="flex items-center gap-3">
         <button 
@@ -124,25 +128,72 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
           </AnimatePresence>
         </div>
         
-        <div className="flex items-center gap-3 border-l border-border pl-4 ml-2">
-          <div className="hidden sm:flex flex-col items-end">
-            <p className="text-sm font-extrabold text-foreground leading-none mb-1">
-              {user ? (user.name === 'Admin BPS Pusat' ? 'Admin BPS' : user.name) : 'Tamu'}
-            </p>
-            <p className="text-xs text-muted font-medium leading-none">
-              {(user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI') ? (user.role === 'BPS_PEGAWAI' ? 'Staf Validasi BPS' : 'BPS Administrator') : (user?.instansi || 'Perwakilan Pemda')}
-            </p>
-          </div>
-          <UserCircle className="w-9 h-9 text-primary-light" />
+        <div className="relative border-l border-border pl-4 ml-2">
           <button 
-            onClick={logout}
-            className="p-2 text-muted hover:text-rose-500 transition-all duration-300 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/30 ml-1"
-            title="Logout"
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
-            <LogOut className="w-5 h-5" />
+            <div className="hidden sm:flex flex-col items-end">
+              <p className="text-sm font-extrabold text-foreground leading-none mb-1">
+                {user ? (user.name === 'Admin BPS Pusat' ? 'Admin BPS' : user.name) : 'Tamu'}
+              </p>
+              <p className="text-xs text-muted font-medium leading-none">
+                {(user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI') ? (user.role === 'BPS_PEGAWAI' ? 'Staf Validasi BPS' : 'BPS Administrator') : (user?.instansi || 'Perwakilan Pemda')}
+              </p>
+            </div>
+            <UserCircle className="w-9 h-9 text-primary-light" />
           </button>
+
+          <AnimatePresence>
+            {showProfileMenu && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 mt-2 w-56 glass border border-border shadow-xl rounded-xl overflow-hidden z-50 py-1"
+              >
+                <div className="px-4 py-3 border-b border-border bg-slate-50/50 dark:bg-slate-800/50">
+                  <p className="text-sm font-bold text-foreground truncate">{user?.name}</p>
+                  <p className="text-xs text-muted truncate">{user?.email}</p>
+                </div>
+                
+                <div className="p-1">
+                  <button 
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      setShowPasswordModal(true);
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-left"
+                  >
+                    <Key className="w-4 h-4 text-blue-500" />
+                    Ubah Password
+                  </button>
+                  
+                  <div className="h-px bg-border my-1"></div>
+                  
+                  <button 
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      logout();
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors text-left font-medium"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Keluar
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </header>
+
+    <ChangePasswordModal 
+      isOpen={showPasswordModal} 
+      onClose={() => setShowPasswordModal(false)} 
+    />
+    </>
   );
 }

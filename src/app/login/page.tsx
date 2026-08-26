@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Loader2, ArrowRight, Eye, EyeOff, ShieldCheck, Mail, Lock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, ArrowRight, Eye, EyeOff, ShieldCheck, Mail, Lock, X, CheckCircle2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import PublicNavbar from '@/components/PublicNavbar';
@@ -15,6 +15,13 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
+
+  // Forgot password state
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotStatus, setForgotStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [forgotMessage, setForgotMessage] = useState('');
   
   useEffect(() => setMounted(true), []);
 
@@ -28,10 +35,98 @@ export default function LoginPage() {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    setForgotStatus('idle');
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setForgotStatus('success');
+        setForgotMessage(data.message);
+      } else {
+        setForgotStatus('error');
+        setForgotMessage(data.message || 'Terjadi kesalahan.');
+      }
+    } catch {
+      setForgotStatus('error');
+      setForgotMessage('Gagal terhubung ke server.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
   if (!mounted) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Forgot Password Modal */}
+      <AnimatePresence>
+        {showForgotModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"
+            >
+              <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-blue-500" />
+                  Lupa Kata Sandi
+                </h3>
+                <button onClick={() => setShowForgotModal(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 rounded-full transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="p-6">
+                {forgotStatus === 'success' ? (
+                  <div className="flex flex-col items-center text-center py-4">
+                    <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center mb-3">
+                      <CheckCircle2 className="w-7 h-7 text-emerald-500" />
+                    </div>
+                    <p className="font-bold text-slate-900 dark:text-white mb-1">Email Terkirim!</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{forgotMessage}</p>
+                    <button onClick={() => setShowForgotModal(false)} className="mt-5 px-6 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm">Tutup</button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleForgotPassword} className="space-y-4">
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Masukkan email akun Anda. Kami akan mengirimkan password sementara ke email tersebut.</p>
+                    {forgotStatus === 'error' && (
+                      <div className="p-3 bg-rose-50 dark:bg-rose-900/30 border border-rose-200 rounded-lg flex gap-2">
+                        <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                        <p className="text-sm text-rose-700 dark:text-rose-400">{forgotMessage}</p>
+                      </div>
+                    )}
+                    <div className="relative">
+                      <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="email"
+                        required
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        placeholder="email@instansi.go.id"
+                        className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-slate-900 dark:text-white"
+                      />
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <button type="button" onClick={() => setShowForgotModal(false)} className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Batal</button>
+                      <button type="submit" disabled={forgotLoading} className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-70">
+                        {forgotLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Kirim Email'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
       <PublicNavbar />
       <div className="flex-1 flex flex-col lg:flex-row">
       
@@ -136,9 +231,13 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between pl-1">
                 <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Kata Sandi</label>
-                <Link href="#" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+                <button 
+                  type="button"
+                  onClick={() => { setShowForgotModal(true); setForgotStatus('idle'); setForgotEmail(''); }}
+                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                >
                   Lupa kata sandi?
-                </Link>
+                </button>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">

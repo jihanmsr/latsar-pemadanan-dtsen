@@ -261,7 +261,7 @@ export default function UploadForm() {
       className="max-w-4xl mx-auto space-y-6 relative pb-8"
     >
       <div>
-        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">Upload Data Pengajuan</h2>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Upload Data Pengajuan</h2>
         <p className="text-slate-600 dark:text-slate-400">Unggah satu atau beberapa file sekaligus. Sistem akan memvalidasi seluruh file dalam antrean.</p>
       </div>
 

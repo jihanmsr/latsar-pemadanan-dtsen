@@ -62,15 +62,15 @@ export default function TestMatchPage() {
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex justify-center mb-6">
-            <Link href="/" className="inline-block p-4 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
+            <div className="inline-block p-4 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
               <Shield className="w-10 h-10 text-indigo-600" />
-            </Link>
+            </div>
           </div>
           <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
             Simulator Pemadanan PAKEWA
           </h1>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Uji kehebatan algoritma Fuzzy Matching kita secara langsung ke dalam Database Master (MySQL).
+            Uji performa algoritma <em>Fuzzy Matching</em> secara langsung terhadap Database Master DTSEN. Masukkan data sasaran untuk memperoleh hasil pemadanan beserta skor kemiripan.
           </p>
         </div>
 
