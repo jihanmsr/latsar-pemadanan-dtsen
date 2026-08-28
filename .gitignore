@@ -62,6 +62,32 @@ next-env.d.ts
 *.rar
 ~$*
 
+# Reports, Latsar & Academic files
+*.html
+!/src/**/*.html
+Jihan*
+Laporan*
+Bukti*
+Lampiran*
+Skenario*
+Slide*
+User_Manual*
+mockup*
+output.md
+
+# Scratch, Testing & Local scripts
+test-*.js
+test-*.ts
+test_*.py
+test_*.js
+add-admin.js
+scratch_*.js
+*.bak
+*.bak.*
+Screenshot*.png
+public/IMG_*.jpg
+public/WhatsApp*.jpeg
+
 # Python & Experiments
 __pycache__/
 *.py[cod]
