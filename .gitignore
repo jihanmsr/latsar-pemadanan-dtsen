@@ -1,6 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# Dependencies
 /node_modules
 /.pnp
 .pnp.*
@@ -10,44 +8,82 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
+# Next.js build output
 /.next/
 /out/
-
-# production
 /build
+*.tsbuildinfo
+next-env.d.ts
 
-# misc
-.DS_Store
+# Testing & Coverage
+/coverage
+
+# Environment & Credentials
+.env
+.env*.local
+.env.production
+.env.staging
+!.env.example
 *.pem
+*.key
+*.cert
 
-# debug
+# Database & DB dumps
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+*.sql.gz
+
+# Uploads & User generated files
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Documents, Data & Archives
+*.xlsx
+*.xls
+*.csv
+*.tsv
+*.pdf
+*.docx
+*.doc
+*.pptx
+*.ppt
+*.txt
+!README.md
+!AGENTS.md
+!CLAUDE.md
+*.zip
+*.zip.*
+*.part*
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+~$*
+
+# Python & Experiments
+__pycache__/
+*.py[cod]
+*$py.class
+*.py
+/backend/
+/New 25 Agustus/
+/PKTBT/
+/DTSEN_V3/
+/laporan mingguan/
+/pengetauan/
+/referensi/
+
+# OS & Temp
+.DS_Store
+Thumbs.db
+/tmp/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
 /src/generated/prisma
-
-# Data & Documents
-*.xlsx
-*.csv
-*.pdf
-*.docx
-*.doc
-*.txt
-~$*
-*.zip
