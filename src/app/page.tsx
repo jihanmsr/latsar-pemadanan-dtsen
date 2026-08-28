@@ -22,7 +22,7 @@ export default function PublicLandingPage() {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    baik
+
     // Calculate rotation (-15 to 15 degrees)
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
