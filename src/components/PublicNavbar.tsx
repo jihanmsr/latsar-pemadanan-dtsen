@@ -73,8 +73,8 @@ export default function PublicNavbar() {
         </div>
       </nav>
 
-      {/* MODAL DOKUMEN PERSYARATAN (Mounted directly to body) */}
-      {mounted && showDocsModal && createPortal(
+      {/* MODAL DOKUMEN PERSYARATAN */}
+      {showDocsModal && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm">
           <div 
             className="fixed inset-0" 
@@ -92,6 +92,7 @@ export default function PublicNavbar() {
                 </div>
               </div>
               <button 
+                type="button"
                 onClick={() => setShowDocsModal(false)} 
                 className="w-9 h-9 rounded-full flex items-center justify-center bg-white dark:bg-slate-800 text-slate-400 hover:text-slate-900 dark:hover:text-white shadow-sm border border-slate-200 dark:border-slate-700 transition-all hover:scale-105 shrink-0"
               >
@@ -133,8 +134,7 @@ export default function PublicNavbar() {
               ))}
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </>
   );
