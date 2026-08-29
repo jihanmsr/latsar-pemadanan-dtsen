@@ -3,10 +3,13 @@
 import { motion } from 'framer-motion';
 import { Download, FileText, FileSignature, BookOpen, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import PublicNavbar from '@/components/PublicNavbar';
 
 export default function PanduanPage() {
   return (
-    <div className="max-w-4xl mx-auto space-y-12 pb-16 pt-4">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <PublicNavbar />
+      <div className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 space-y-12 pb-16 pt-8">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -85,6 +88,7 @@ export default function PanduanPage() {
             </button>
           </div>
         </motion.div>
+      </div>
       </div>
     </div>
   );
