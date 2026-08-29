@@ -9,7 +9,7 @@ export default function JumpingMascot() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-24 left-6 z-[90] pointer-events-auto scale-90 sm:scale-100 origin-bottom-left hidden md:block">
+    <div className="fixed top-24 left-8 z-[100] pointer-events-auto scale-110 sm:scale-125 origin-top-left">
       <motion.div
         animate={{
           y: (isHovered || isOpen) ? [-20, 0, -20] : [0, -10, 0],
