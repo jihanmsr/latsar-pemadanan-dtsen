@@ -31,9 +31,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkUser = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+      const res = await fetch('/api/auth/me', { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
+      if (!res.ok) {
+        setUser(null);
+        return;
+      }
+
       const data = await res.json();
-      if (data.user) {
+      if (data && data.user) {
         setUser(data.user);
       } else {
         setUser(null);

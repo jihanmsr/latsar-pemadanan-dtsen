@@ -18,17 +18,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isPublicPage = pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/cek-status" || pathname === "/laporan-testing" || (pathname === "/sop" && !user);
 
-  if (isLoading) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-muted font-bold animate-pulse uppercase tracking-widest text-xs">Menyiapkan Akses Aman...</p>
-        </div>
-      </div>
-    );
-  }
-
+  // 1. Render public pages immediately without blocking on authentication loading
   if (isPublicPage) {
     return (
       <>
@@ -39,6 +29,18 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         <FloatingWhatsApp />
         <Chatbot />
       </>
+    );
+  }
+
+  // 2. Only private/protected pages wait for authentication check
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-muted font-bold animate-pulse uppercase tracking-widest text-xs">Menyiapkan Akses Aman...</p>
+        </div>
+      </div>
     );
   }
 
