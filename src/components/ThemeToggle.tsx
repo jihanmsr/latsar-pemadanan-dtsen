@@ -6,55 +6,32 @@ import { Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse"></div>;
-  }
+  const currentTheme = mounted ? (theme === 'system' ? resolvedTheme : theme) : 'dark';
 
   const toggleTheme = () => {
-    if (theme === "light") {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
+    setTheme(currentTheme === "light" ? "dark" : "light");
   };
 
   return (
     <button
       onClick={toggleTheme}
-      className="relative flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+      type="button"
+      className="relative flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
       aria-label="Toggle Theme"
-      title={theme === 'light' ? 'Beralih ke Dark Mode (Corporate)' : 'Beralih ke Light Mode (Glassmorphism)'}
+      title="Ubah Mode Gelap/Terang"
     >
-      <AnimatePresence mode="wait" initial={false}>
-        {theme === "light" ? (
-          <motion.div
-            key="light"
-            initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-            animate={{ opacity: 1, rotate: 0, scale: 1 }}
-            exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Sun className="w-5 h-5" />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="dark"
-            initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-            animate={{ opacity: 1, rotate: 0, scale: 1 }}
-            exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Moon className="w-5 h-5" />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {currentTheme === "light" ? (
+        <Sun className="w-5 h-5 text-amber-500" />
+      ) : (
+        <Moon className="w-5 h-5 text-blue-400" />
+      )}
     </button>
   );
 }
