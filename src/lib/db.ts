@@ -1,7 +1,6 @@
 import mysql from 'mysql2/promise';
 
-const dbUrl = process.env.DATABASE_URL;
-if (!dbUrl) throw new Error('DATABASE_URL tidak ditemukan di .env!');
+const dbUrl = process.env.DATABASE_URL || 'mysql://root:@localhost:3306/latsar_pemadanan_dtsen';
 const parsed = new URL(dbUrl);
 
 const dbConfig = {
