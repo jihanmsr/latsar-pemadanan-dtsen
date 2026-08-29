@@ -137,13 +137,20 @@ export default function RegisterPage() {
       const setInputValue = (name: string, value: string) => {
         const input = form.querySelector(`[name="${name}"]`) as HTMLInputElement | HTMLSelectElement;
         if (input) {
-          input.value = value;
+          const proto = input instanceof HTMLSelectElement ? window.HTMLSelectElement.prototype : window.HTMLInputElement.prototype;
+          const nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+          if (nativeSetter) {
+            nativeSetter.call(input, value);
+          } else {
+            input.value = value;
+          }
           input.dispatchEvent(new Event('input', { bubbles: true }));
           input.dispatchEvent(new Event('change', { bubbles: true }));
         }
       };
       
       setKategori('bps_kabkota');
+      
       setTimeout(() => {
         setInputValue('kategoriPemohon', 'bps_kabkota');
         setInputValue('namaInstansi', 'BPS Kota Palu');
@@ -166,7 +173,19 @@ export default function RegisterPage() {
         setInputValue('user2_no_hp', '0812 3456 7892');
         setInputValue('user2_email', 'catur.pri@bps.go.id');
         setInputValue('user2_jabatan', 'Kepala Bidang Infrastruktur');
-      }, 0);
+
+        // File dummy
+        try {
+          const fileInput = form.querySelector('input[name="lampiran"]') as HTMLInputElement;
+          if (fileInput) {
+            const file = new File(["Surat Permohonan"], "Surat_Permohonan_BPS_Palu.pdf", { type: "application/pdf" });
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+            setFileName("Surat_Permohonan_BPS_Palu.pdf");
+          }
+        } catch {}
+      }, 50);
     }
   };
 
