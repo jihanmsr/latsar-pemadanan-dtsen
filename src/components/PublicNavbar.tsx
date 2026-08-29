@@ -45,9 +45,15 @@ export default function PublicNavbar() {
                 <div className="h-1 w-full bg-blue-600 dark:bg-blue-400 rounded-full absolute -bottom-1 left-0"></div>
               )}
             </Link>
-            <button onClick={() => setShowDocsModal(true)} className="text-sm font-bold text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-colors hidden md:block">
+            <Link 
+              href="/panduan" 
+              className={`text-sm font-bold transition-colors hidden md:block ${pathname === '/panduan' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400'}`}
+            >
               Dokumen Persyaratan
-            </button>
+              {pathname === '/panduan' && (
+                <div className="h-1 w-full bg-blue-600 dark:bg-blue-400 rounded-full absolute -bottom-1 left-0"></div>
+              )}
+            </Link>
             <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
             <ThemeToggle />
             <Link href="/cek-status" className={`relative text-xs sm:text-sm font-bold transition-colors hidden sm:block ${pathname === '/cek-status' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400'}`}>
