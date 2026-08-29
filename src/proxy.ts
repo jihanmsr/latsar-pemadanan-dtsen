@@ -21,7 +21,18 @@ export async function proxy(request: NextRequest) {
   }
 
   // 2. Allow public pages
-  if (pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/cek-status' || pathname === '/laporan-testing' || pathname === '/sop' || pathname === '/dashboard/test-match') {
+  if (
+    pathname === '/' || 
+    pathname === '/login' || 
+    pathname === '/register' || 
+    pathname === '/cek-status' || 
+    pathname === '/laporan-testing' || 
+    pathname === '/sop' || 
+    pathname === '/panduan' ||
+    pathname === '/tracking' ||
+    pathname === '/dashboard/test-match' ||
+    pathname.startsWith('/juknis')
+  ) {
     return NextResponse.next();
   }
 
