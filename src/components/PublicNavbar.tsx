@@ -72,14 +72,14 @@ export default function PublicNavbar() {
         </div>
       </nav>
 
-      {/* MODAL DOKUMEN PERSYARATAN */}
-      {showDocsModal && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm">
+      {/* MODAL DOKUMEN PERSYARATAN (Mounted to body for absolute viewport centering) */}
+      {showDocsModal && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
           <div 
             className="fixed inset-0" 
             onClick={() => setShowDocsModal(false)}
           />
-          <div className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[82vh] border border-slate-100 dark:border-slate-800 z-10 animate-fade-in my-auto">
+          <div className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[80vh] border border-slate-100 dark:border-slate-800 z-10 animate-fade-in">
             <div className="flex items-center justify-between p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 shrink-0">
               <div className="flex items-center gap-3.5">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
@@ -94,7 +94,7 @@ export default function PublicNavbar() {
                 onClick={() => setShowDocsModal(false)} 
                 className="w-9 h-9 rounded-full flex items-center justify-center bg-white dark:bg-slate-800 text-slate-400 hover:text-slate-900 dark:hover:text-white shadow-sm border border-slate-200 dark:border-slate-700 transition-all hover:scale-105 shrink-0"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
             
@@ -132,7 +132,8 @@ export default function PublicNavbar() {
               ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
