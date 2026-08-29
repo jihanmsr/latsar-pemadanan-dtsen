@@ -101,11 +101,7 @@ export default function CekStatusPage() {
           </div>
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm"
-        >
+        <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
           <form onSubmit={handleSearch} className="flex gap-3">
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -130,22 +126,14 @@ export default function CekStatusPage() {
           </form>
 
           {error && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="mt-6 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl text-rose-600 dark:text-rose-400 text-sm font-medium flex items-start gap-3"
-            >
+            <div className="mt-6 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl text-rose-600 dark:text-rose-400 text-sm font-medium flex items-start gap-3">
               <XCircle className="w-5 h-5 shrink-0" />
               <p>{error}</p>
-            </motion.div>
+            </div>
           )}
 
           {result && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mt-8 space-y-6"
-            >
+            <div className="mt-8 space-y-6">
               <div className="h-px w-full bg-slate-100 dark:bg-slate-800"></div>
               
               {/* Status Card */}
@@ -202,9 +190,9 @@ export default function CekStatusPage() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </div>
   );

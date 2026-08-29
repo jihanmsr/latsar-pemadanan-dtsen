@@ -206,18 +206,14 @@ export default function RegisterPage() {
 
           <div className="mt-20 max-w-xl mx-auto w-full relative z-10 flex-1 flex flex-col justify-center">
             <div className="mb-12">
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+              <div>
                 <p className="text-sm font-bold text-blue-400 uppercase tracking-widest">
                   Modul Pemadanan DTSEN
                 </p>
-              </motion.div>
+              </div>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
+            <div>
               <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight">
                 Pendaftaran Instansi Baru
               </h2>
@@ -230,7 +226,7 @@ export default function RegisterPage() {
                   <p className="text-sm font-medium">Tim kami akan memverifikasi permohonan Anda dalam waktu maksimal 2x24 Jam kerja.</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
@@ -245,12 +241,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="flex-1 p-6 md:p-12 lg:p-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="max-w-5xl mx-auto"
-            >
+            <div className="max-w-5xl mx-auto">
               <div className="mb-10 xl:hidden">
                 <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
                   Pendaftaran Online
@@ -554,7 +545,7 @@ export default function RegisterPage() {
                   Isi Data Dummy (Demo)
                 </button>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

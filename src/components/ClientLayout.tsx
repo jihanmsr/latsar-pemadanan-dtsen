@@ -16,7 +16,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const { user, isLoading } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const isPublicPage = pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/cek-status" || pathname === "/laporan-testing" || (pathname === "/sop" && !user);
+  const isPublicPage = pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/cek-status" || pathname === "/laporan-testing" || pathname === "/panduan" || pathname === "/tracking" || pathname === "/sop";
 
   // 1. Render public pages immediately without blocking on authentication loading
   if (isPublicPage) {
@@ -51,18 +51,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <div className="flex-1 flex flex-col min-w-0">
         <Header setIsSidebarOpen={setIsSidebarOpen} />
         <main className="flex-1 overflow-auto p-4 md:p-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="h-full w-full"
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+          <div key={pathname} className="h-full w-full">
+            {children}
+          </div>
         </main>
       </div>
       {/* Floating buttons for authenticated pages */}

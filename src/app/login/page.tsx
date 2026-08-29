@@ -61,7 +61,6 @@ export default function LoginPage() {
     }
   };
 
-  if (!mounted) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -159,19 +158,14 @@ export default function LoginPage() {
 
         <div className="max-w-xl mx-auto w-full relative z-10">
           <div className="mb-12">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-
+            <div>
               <p className="text-sm font-bold text-blue-400 uppercase tracking-widest">
                 Modul Pemadanan DTSEN
               </p>
-            </motion.div>
+            </div>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
+          <div>
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight">
               Akses Portal Pemadanan Data Terpadu
             </h2>
@@ -184,18 +178,13 @@ export default function LoginPage() {
                 <p className="text-sm font-medium">Memastikan validasi NIK dan pemeringkatan kesejahteraan berjalan akurat dan aman.</p>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
       {/* RIGHT COLUMN - Login Form */}
       <div className="w-full lg:w-7/12 bg-white dark:bg-slate-950 flex flex-col justify-center p-8 lg:p-16 relative">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="max-w-md mx-auto w-full"
-        >
+        <div className="max-w-md mx-auto w-full">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight">Selamat Datang Kembali</h2>
             <p className="text-slate-500 dark:text-slate-400 font-medium">
@@ -294,7 +283,7 @@ export default function LoginPage() {
               Instansi belum terdaftar? <Link href="/register" className="text-blue-600 dark:text-blue-400 font-bold hover:underline">Registrasi Akun Baru</Link>
             </p>
           </div>
-        </motion.div>
+        </div>
       </div>
       </div>
     </div>
