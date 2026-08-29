@@ -99,28 +99,23 @@ export default function Chatbot() {
 
   return (
     <>
-      {/* Floating Button - bottom-right, higher than default to not overlap */}
-      <AnimatePresence>
-        {!isOpen && (
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-40 group"
-          >
-            <div className="relative w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:scale-110 transition-all duration-200">
-              <Bot className="w-7 h-7" />
-              {/* Pulse indicator */}
-              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
-            </div>
-            {/* Tooltip */}
-            <span className="absolute right-16 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">
-              Tanya AI PAKEWA
-            </span>
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* Floating Button - bottom-right */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 z-50 group transition-transform hover:scale-110"
+        >
+          <div className="relative w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/50">
+            <Bot className="w-7 h-7" />
+            {/* Pulse indicator */}
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
+          </div>
+          {/* Tooltip */}
+          <span className="absolute right-16 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">
+            Tanya AI PAKEWA
+          </span>
+        </button>
+      )}
 
       {/* Chat Window */}
       <AnimatePresence>

@@ -76,21 +76,10 @@ export default function PublicLandingPage() {
 
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 relative z-10">
 
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="w-full lg:w-1/2 relative"
-          >
-            {/* Animated Blue Decorative Frame Line */}
-            <motion.div
-              animate={{
-                y: ["-2%", "2%", "-2%"],
-                opacity: [0.5, 1, 0.5]
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -left-4 sm:-left-8 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-400/30 via-blue-500/60 to-blue-600/30 dark:from-blue-500/50 dark:via-sky-400/80 dark:to-blue-600/30 rounded-r shadow-[0_0_15px_rgba(59,130,246,0.2)] dark:shadow-[0_0_20px_rgba(59,130,246,0.8)]"
-            />
+          <div className="w-full lg:w-1/2 relative">
+            {/* Blue Decorative Frame Line */}
+            <div className="absolute -left-4 sm:-left-8 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-400/30 via-blue-500/60 to-blue-600/30 dark:from-blue-500/50 dark:via-sky-400/80 dark:to-blue-600/30 rounded-r shadow-[0_0_15px_rgba(59,130,246,0.2)] dark:shadow-[0_0_20px_rgba(59,130,246,0.8)]" />
+            
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-[1.3] sm:leading-tight mb-4 sm:mb-6 tracking-tight">
               Padanan Kesejahteraan Warga <br className="hidden sm:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-700 drop-shadow-sm inline-block mt-1 sm:mt-0">(PAKEWA)</span>
@@ -146,24 +135,11 @@ export default function PublicLandingPage() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="w-full lg:w-1/2 relative hidden lg:flex justify-center mt-12 lg:mt-0"
-            style={{ perspective: 1000 }}
-          >
-            {/* 3D Tilt Container */}
-            <motion.div
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              animate={{ rotateX, rotateY }}
-              transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.5 }}
-              className="relative w-full max-w-lg aspect-square cursor-pointer"
-              style={{ transformStyle: "preserve-3d" }}
-            >
+          <div className="w-full lg:w-1/2 relative hidden lg:flex justify-center mt-12 lg:mt-0">
+            {/* Image Container */}
+            <div className="relative w-full max-w-lg aspect-square">
               {/* Background Glow */}
               <div className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full animate-pulse duration-3000"></div>
 
@@ -228,8 +204,8 @@ export default function PublicLandingPage() {
                   </div>
                 </motion.div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
         </div>
       </div>
