@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { query } from "@/lib/db";
 import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -10,37 +8,27 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const resolvedParams = await params;
     const id = resolvedParams.id;
 
-    const reg = await prisma.registration_requests.findUnique({
-      where: { id },
-      include: { users: true }
-    });
-
-    if (!reg) {
+    const regs: any[] = await query("SELECT * FROM registration_requests WHERE id = ?", [id]);
+    if (!regs || regs.length === 0) {
       return NextResponse.json({ success: false, message: "Pendaftaran tidak ditemukan." }, { status: 404 });
     }
+    const reg = regs[0];
+    const regUsers: any[] = await query("SELECT * FROM registration_users WHERE registration_id = ?", [id]);
 
     if (action === "approve") {
-      await prisma.registration_requests.update({
-        where: { id },
-        data: { status: "APPROVED" }
-      });
+      await query("UPDATE registration_requests SET status = 'APPROVED' WHERE id = ?", [id]);
       
       const defaultPassword = "Password123!";
       const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
       // Create users based on the registration_users array
-      for (const u of reg.users) {
-        const existing = await prisma.users.findUnique({ where: { email: u.email } });
-        if (!existing) {
-          await prisma.users.create({
-            data: {
-              email: u.email,
-              password: hashedPassword,
-              name: u.nama_lengkap,
-              role: "PEMDA",
-              instansi: reg.nama_instansi
-            }
-          });
+      for (const u of (regUsers || [])) {
+        const existing: any[] = await query("SELECT id FROM users WHERE email = ?", [u.email]);
+        if (!existing || existing.length === 0) {
+          await query(
+            "INSERT INTO users (email, password, name, role, instansi) VALUES (?, ?, ?, 'PEMDA', ?)",
+            [u.email, hashedPassword, u.nama_lengkap, reg.nama_instansi]
+          );
           // Kirim email kredensial ke user
           if (process.env.SMTP_EMAIL && process.env.SMTP_PASSWORD) {
             import('@/lib/email').then(({ sendUserWelcomeEmail }) => {
@@ -58,13 +46,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       }
 
     } else if (action === "reject") {
-      await prisma.registration_requests.update({
-        where: { id },
-        data: { 
-          status: "REJECTED",
-          alasan_penolakan: reason || null
-        }
-      });
+      await query("UPDATE registration_requests SET status = 'REJECTED', alasan_penolakan = ? WHERE id = ?", [reason || null, id]);
 
       // Kirim email penolakan ke narahubung
       if (process.env.SMTP_EMAIL && process.env.SMTP_PASSWORD) {
