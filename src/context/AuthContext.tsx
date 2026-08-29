@@ -65,19 +65,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await res.json();
 
-      if (res.ok) {
+      if (res.ok && data.user) {
         setUser(data.user);
         if (data.user.role === 'BPS_ADMIN' || data.user.role === 'BPS_PEGAWAI') {
-          router.push('/admin/dashboard');
+          window.location.href = '/admin/dashboard';
         } else {
-          router.push('/dashboard');
+          window.location.href = '/dashboard';
         }
         return { success: true, message: data.message };
       } else {
-        return { success: false, message: data.message };
+        return { success: false, message: data.message || 'Login gagal' };
       }
-    } catch (err) {
-      return { success: false, message: 'Gagal menghubungi server' };
+    } catch (err: any) {
+      return { success: false, message: 'Gagal menghubungi server: ' + (err?.message || String(err)) };
     }
   };
 

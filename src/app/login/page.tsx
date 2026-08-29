@@ -12,8 +12,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
   const [mounted, setMounted] = useState(false);
 
   // Forgot password state
@@ -28,11 +29,24 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoggingIn(true);
     
-    const result = await login(email, password);
-    if (!result.success) {
-      setError(result.message);
+    try {
+      const result = await login(email, password);
+      if (!result.success) {
+        setError(result.message);
+        setIsLoggingIn(false);
+      }
+    } catch (err: any) {
+      setError('Terjadi kesalahan koneksi');
+      setIsLoggingIn(false);
     }
+  };
+
+  const fillDemoAccount = (demoEmail: string, demoPass: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPass);
+    setError('');
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -264,11 +278,15 @@ export default function LoginPage() {
             </div>
 
             <button
-              disabled={isLoading}
+              type="submit"
+              disabled={isLoggingIn}
               className="w-full py-3.5 mt-2 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
             >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Memverifikasi Akun...
+                </>
               ) : (
                 <>
                   Masuk ke Dashboard
@@ -278,7 +296,28 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-10 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
+          {/* Quick Demo Credentials */}
+          <div className="mt-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Akun Demo Cepat (Klik untuk isi):</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => fillDemoAccount('admin@bps.go.id', 'Admin@BPS2024!')}
+                className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-500 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-blue-600 transition-colors shadow-sm"
+              >
+                👑 Admin BPS
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemoAccount('pemda.palu@sulteng.go.id', 'Pemda@12345!')}
+                className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-500 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-blue-600 transition-colors shadow-sm"
+              >
+                🏛️ Pemda Palu
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
             <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">
               Instansi belum terdaftar? <Link href="/register" className="text-blue-600 dark:text-blue-400 font-bold hover:underline">Registrasi Akun Baru</Link>
             </p>
