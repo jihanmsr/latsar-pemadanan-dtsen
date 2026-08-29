@@ -79,7 +79,12 @@ export default function SopPage() {
       <div className={`relative z-10 max-w-[1400px] mx-auto space-y-8 px-4 sm:px-6 ${isDashboard ? "py-8" : "pt-24 pb-16"}`}>
         
         {/* Hero Section */}
-        <div className="text-center">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center"
+        >
           <div className="inline-block px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold text-xs tracking-widest uppercase mb-4 shadow-sm border border-blue-200 dark:border-blue-800">
             Panduan Resmi
           </div>
@@ -89,7 +94,7 @@ export default function SopPage() {
           <p className="text-base sm:text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed">
             Alur kerja yang aman, transparan, dan terstandarisasi untuk menjamin akurasi data sasaran kesejahteraan sosial dari hulu ke hilir.
           </p>
-        </div>
+        </motion.div>
 
         {/* Storyboard Layout */}
         <SOPTimeline />

@@ -29,11 +29,19 @@ export default function LandingStats() {
   return (
     <div className="w-full bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm border-y border-slate-200 dark:border-slate-800 py-12 px-4 sm:px-8 relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6"
+        >
           {stats.map((stat, idx) => (
-            <div 
+            <motion.div 
               key={idx} 
-              className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-default"
+              variants={itemVariants as any}
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all cursor-default"
             >
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color} shrink-0`}>
                 <stat.icon className="w-6 h-6" />
@@ -42,13 +50,19 @@ export default function LandingStats() {
                 <div className="text-2xl font-black text-slate-900 dark:text-white leading-none mb-1">{stat.value}</div>
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{stat.label}</div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
-        <div className="mt-8 text-center flex items-center justify-center gap-2 text-sm font-medium text-slate-500">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+        </motion.div>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.8 }}
+          className="mt-8 text-center flex items-center justify-center gap-2 text-sm font-medium text-slate-500"
+        >
+          <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
           Data diperbarui secara berkala dari basis data DTSEN
-        </div>
+        </motion.div>
       </div>
     </div>
   );
