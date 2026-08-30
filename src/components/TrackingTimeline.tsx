@@ -112,7 +112,7 @@ export default function TrackingTimeline() {
         const isMatch = Math.random() > 0.2;
         const score = f.matchScore || Math.floor(Math.random() * 30 + 70);
         return {
-          NIK: `317${Math.floor(Math.random() * 10000000000000)}`,
+          NIK: `'317${Math.floor(Math.random() * 10000000000000)}`,
           Nama: `Penduduk ${i+1} (${f.name.substring(0, 10)})`,
           Status_Padan: isMatch ? 'EXACT_MATCH' : 'TIDAK EXACT_MATCH',
           Skor_Levenshtein: score,
