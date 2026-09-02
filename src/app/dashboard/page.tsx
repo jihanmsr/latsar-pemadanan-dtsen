@@ -1,17 +1,19 @@
 "use client";
 
-import { motion } from 'framer-motion';
-import { Shield, FileText, CheckCircle2, Lock, FileDown, UploadCloud, Search, Calendar, User, ArrowRight, AlertTriangle, Download, Upload } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Shield, FileText, CheckCircle2, Lock, FileDown, UploadCloud, Search, Calendar, User, ArrowRight, AlertTriangle, Download, Upload, Bot, MessageSquare, BookOpen } from 'lucide-react';
 import UploadForm from '@/components/UploadForm';
 import DashboardStats from '@/components/DashboardStats';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function DashboardInstansi() {
   const [mounted, setMounted] = useState(false);
   const [currentDate, setCurrentDate] = useState('');
   const [latestSubmission, setLatestSubmission] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMascotMenuOpen, setIsMascotMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -35,19 +37,136 @@ export default function DashboardInstansi() {
     <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
       
       {/* HEADER / GREETING SECTION */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
-        <div>
-          <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-1">
-            <Calendar className="w-4 h-4" />
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 bg-white/70 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-sm border border-blue-100 dark:border-slate-700/50 relative">
+        {/* Light mode gradient overlay */}
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-100/80 via-blue-50/30 to-transparent dark:hidden pointer-events-none"></div>
+        {/* Dark mode gradient overlay */}
+        <div className="hidden dark:block absolute inset-0 rounded-3xl bg-gradient-to-r from-slate-800/80 via-slate-800/40 to-transparent pointer-events-none"></div>
+        {/* Dark mode glow overlay */}
+        <div className="hidden dark:block absolute top-0 right-0 bottom-0 w-64 md:w-96 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.8)_0,transparent_70%)] rounded-r-3xl"></div>
+        
+        <div className="flex-1 relative z-10">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
+            <Calendar className="w-4 h-4 text-blue-500 dark:text-blue-400" />
             <span>{currentDate}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 tracking-tight mb-2">
             Selamat Datang, Pengelola Data Instansi
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
-            Pantau statistik pemadanan dan kelola data sasaran instansi Anda.
+          <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base max-w-xl leading-relaxed">
+            Saya Asisten PAKEWA, siap membantu Anda memantau statistik pemadanan dan mengelola data sasaran instansi dengan cepat dan aman.
           </p>
         </div>
+
+        <div className="hidden sm:block relative z-10 shrink-0">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 relative">
+            <svg 
+              viewBox="0 0 200 200" 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="w-full h-full drop-shadow-xl hover:scale-105 transition-transform cursor-pointer"
+              onClick={() => setIsMascotMenuOpen(!isMascotMenuOpen)}
+            >
+              <g transform="translate(100, 100)">
+                <motion.line x1="0" y1="-50" x2="0" y2="-75" stroke="#64748b" strokeWidth="4" strokeLinecap="round" />
+                <motion.circle 
+                  animate={{ fill: ["#ef4444", "#3b82f6", "#ef4444"] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  cx="0" cy="-75" r="8" 
+                />
+                
+                <rect x="-45" y="-50" width="90" height="70" rx="20" fill="#3b82f6" />
+                <rect x="-35" y="-35" width="70" height="40" rx="10" fill="#0f172a" />
+                
+                <motion.circle 
+                  animate={{ scaleY: [1, 0.1, 1] }}
+                  transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 3 }}
+                  cx="-15" cy="-15" r="6" fill="#60a5fa" 
+                />
+                <motion.circle 
+                  animate={{ scaleY: [1, 0.1, 1] }}
+                  transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 3 }}
+                  cx="15" cy="-15" r="6" fill="#60a5fa" 
+                />
+                
+                <motion.path 
+                  animate={{ rotate: [0, -20, 0], originX: 0, originY: 0 }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  d="M -45 -10 Q -65 -10 -65 10" 
+                  fill="none" stroke="#94a3b8" strokeWidth="8" strokeLinecap="round" 
+                />
+                <motion.path 
+                  animate={{ rotate: [0, 20, 0], originX: 0, originY: 0 }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                  d="M 45 -10 Q 65 -10 65 10" 
+                  fill="none" stroke="#94a3b8" strokeWidth="8" strokeLinecap="round" 
+                />
+                
+                <path d="M -25 20 L 25 20 L 35 50 L -35 50 Z" fill="#94a3b8" />
+                
+                <motion.circle 
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                  cx="-20" cy="50" r="8" fill="#cbd5e1" 
+                />
+                <motion.circle 
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                  cx="20" cy="50" r="8" fill="#cbd5e1" 
+                />
+              </g>
+            </svg>
+
+            {/* Mascot Menu Popup */}
+            <AnimatePresence>
+              {isMascotMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: -20, x: -20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, y: -20, x: -20 }}
+                  className="absolute top-24 right-0 sm:right-auto sm:-left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-2 w-52 flex flex-col gap-1 z-50"
+                >
+                  <button
+                    onClick={() => {
+                      window.dispatchEvent(new CustomEvent('open-chatbot'));
+                      setIsMascotMenuOpen(false);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                      <Bot className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold">Tanya AI PAKEWA</span>
+                  </button>
+                  
+                  <a
+                    href="https://wa.me/6281234567890"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsMascotMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-green-50 dark:hover:bg-green-900/30 text-slate-700 dark:text-slate-200 hover:text-green-600 dark:hover:text-green-400 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 shrink-0">
+                      <MessageSquare className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold">Live Chat WA</span>
+                  </a>
+                  
+                  <a
+                    href="/sop"
+                    onClick={() => setIsMascotMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/30 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+                      <BookOpen className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold">Buku Panduan</span>
+                  </a>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
         
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/dashboard/test-match" className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm">
@@ -59,8 +178,7 @@ export default function DashboardInstansi() {
             Unggah Data Baru
           </Link>
         </div>
-      </div>
-
+        
       {/* DASHBOARD STATS */}
       <DashboardStats />
 
@@ -121,43 +239,60 @@ export default function DashboardInstansi() {
               )}
             </div>
             
-            <Link href="/dashboard/tracking" className="mt-5 w-full flex justify-center items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">
+            <Link href="/tracking" className="mt-5 w-full flex justify-center items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">
               Lihat Detail Progres <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-
-          {/* Missing NIK Task Panel */}
-          <div className="glass rounded-2xl p-6 border border-amber-200 dark:border-amber-900/50 shadow-sm bg-gradient-to-br from-amber-50/50 to-transparent dark:from-amber-900/10 dark:to-transparent">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold text-amber-900 dark:text-amber-400 flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-500" />
-                Tugas dari BPS
-              </h3>
-              <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 text-[10px] font-black rounded uppercase tracking-wider animate-pulse">Action Required</span>
-            </div>
-            <p className="text-xs text-amber-700 dark:text-amber-300/80 mb-4 font-medium leading-relaxed">
-              Terdapat NIK yang kosong/tidak valid pada hasil pra-validasi sebelumnya. Harap lengkapi format berikut dan unggah kembali (Format V4).
+          {/* Document Requirements Panel */}
+          <div className="glass rounded-2xl p-6 border border-blue-200 dark:border-blue-900/50 shadow-sm bg-gradient-to-br from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent">
+            <h3 className="text-sm font-bold text-blue-900 dark:text-blue-400 flex items-center gap-2 mb-4">
+              <FileText className="w-5 h-5 text-blue-500" />
+              Persyaratan Dokumen
+            </h3>
+            <p className="text-xs text-blue-700 dark:text-blue-300/80 mb-4 font-medium leading-relaxed">
+              Persiapkan dokumen administratif berikut untuk kelancaran proses serah terima data balikan:
             </p>
-            
-            <div className="space-y-3">
-              <a href="#" className="w-full flex items-center justify-between px-3 py-2 bg-white/60 dark:bg-slate-900/60 hover:bg-white dark:hover:bg-slate-800 border border-amber-200/50 dark:border-amber-800/50 rounded-lg transition-colors group">
-                <div className="flex items-center gap-2">
-                  <FileDown className="w-4 h-4 text-amber-600 dark:text-amber-500" />
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-amber-600 transition-colors">Unduh: Missing NIK.xlsx</span>
-                </div>
-                <Download className="w-4 h-4 text-slate-400 group-hover:text-amber-600 transition-colors" />
-              </a>
-              
-              <button onClick={() => document.getElementById('upload-v4')?.click()} className="w-full flex items-center justify-between px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors shadow-sm">
-                <div className="flex items-center gap-2">
-                  <Upload className="w-4 h-4" />
-                  <span className="text-xs font-bold">Unggah Hasil (V4.xlsx)</span>
-                </div>
-              </button>
-              <input type="file" id="upload-v4" className="hidden" accept=".xlsx,.csv" onChange={(e) => {
-                 if(e.target.files?.length) alert('File Hasil_Pemadanan_V4.xlsx berhasil diunggah dan dikirim ke BPS!');
-              }} />
-            </div>
+            <ul className="space-y-4 mb-5">
+               <li className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-white/50 dark:bg-slate-900/50 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                  <div className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <div>
+                      <strong>Surat Permohonan / MoU</strong>
+                      <p className="text-[10px] text-slate-500 mt-0.5">Diserahkan ke Admin BPS saat registrasi awal.</p>
+                    </div>
+                  </div>
+                  <a href="/contoh-mou.pdf" target="_blank" className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                    <Download className="w-3.5 h-3.5" /> Unduh Contoh
+                  </a>
+               </li>
+               <li className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-white/50 dark:bg-slate-900/50 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                  <div className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
+                    <CheckCircle2 className="w-4 h-4 text-slate-300 dark:text-slate-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong>Non-Disclosure Agreement (NDA)</strong>
+                      <p className="text-[10px] text-slate-500 mt-0.5">Diunggah bersamaan dengan BAST di akhir proses.</p>
+                    </div>
+                  </div>
+                  <a href="/template-nda.docx" target="_blank" className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                    <Download className="w-3.5 h-3.5" /> Unduh Template
+                  </a>
+               </li>
+               <li className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-slate-50/50 dark:bg-slate-900/30 rounded-xl border border-slate-100 dark:border-slate-800/50">
+                  <div className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
+                    <CheckCircle2 className="w-4 h-4 text-slate-300 dark:text-slate-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong>Berita Acara Serah Terima (BAST)</strong>
+                      <p className="text-[10px] text-slate-500 mt-0.5">Otomatis digenerate oleh sistem di menu Tracking.</p>
+                    </div>
+                  </div>
+                  <span className="shrink-0 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-400 text-[10px] font-bold rounded-lg cursor-not-allowed">
+                    Auto Generate
+                  </span>
+               </li>
+            </ul>
+            <Link href="/sop" className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/40 dark:hover:bg-blue-800/60 text-blue-700 dark:text-blue-300 rounded-lg transition-colors text-xs font-bold">
+               <FileText className="w-4 h-4" /> Baca SOP & Juknis Lengkap
+            </Link>
           </div>
 
           <div className="glass rounded-2xl p-6 border border-border shadow-sm">

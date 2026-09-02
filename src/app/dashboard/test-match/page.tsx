@@ -63,10 +63,10 @@ export default function TestMatchPage() {
         <div className="text-center space-y-4">
           <div className="flex justify-center mb-6">
             <div className="inline-block p-4 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
-              <Shield className="w-10 h-10 text-indigo-600" />
+              <Shield className="w-10 h-10 text-blue-600" />
             </div>
           </div>
-          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">
             Simulator Pemadanan PAKEWA
           </h1>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
@@ -83,7 +83,7 @@ export default function TestMatchPage() {
             className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 p-6 sm:p-8"
           >
             <div className="flex items-center gap-3 mb-6">
-              <Database className="w-6 h-6 text-indigo-500" />
+              <Database className="w-6 h-6 text-blue-500" />
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Data Sasaran (Input)</h2>
             </div>
             
@@ -94,7 +94,7 @@ export default function TestMatchPage() {
                   type="text" required
                   value={formData.nama}
                   onChange={e => setFormData({...formData, nama: e.target.value})}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 dark:text-white"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
                   placeholder="Misal: HABRIZI MALIK FIRDIANSYAH"
                 />
               </div>
@@ -106,7 +106,7 @@ export default function TestMatchPage() {
                     type="date" required
                     value={formData.tanggal_lahir}
                     onChange={e => setFormData({...formData, tanggal_lahir: e.target.value})}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 dark:text-white"
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
                   />
                 </div>
                 <div>
@@ -114,7 +114,7 @@ export default function TestMatchPage() {
                   <select 
                     value={formData.jenis_kelamin}
                     onChange={e => setFormData({...formData, jenis_kelamin: e.target.value})}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 dark:text-white"
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
                   >
                     <option value="1">Laki-laki</option>
                     <option value="2">Perempuan</option>
@@ -127,7 +127,7 @@ export default function TestMatchPage() {
                 <textarea 
                   value={formData.alamat}
                   onChange={e => setFormData({...formData, alamat: e.target.value})}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 dark:text-white h-24 resize-none"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-900 dark:text-white h-24 resize-none"
                   placeholder="Misal: Jl. Mangga No 1"
                 />
               </div>
@@ -135,7 +135,7 @@ export default function TestMatchPage() {
               <button 
                 type="submit" 
                 disabled={loading}
-                className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 dark:shadow-none transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 dark:shadow-none transition-all flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
                 {loading ? 'Mencocokkan...' : 'Mulai Pemadanan'}

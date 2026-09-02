@@ -48,8 +48,11 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
         />
       )}
 
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-border flex flex-col transition-transform duration-300 md:static md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-6 flex items-center justify-between border-b border-border">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-border flex flex-col transition-transform duration-300 md:static md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} overflow-hidden`}>
+        {/* Grid Background Pattern */}
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-50 dark:opacity-40 bg-[linear-gradient(to_right,#80808030_1px,transparent_1px),linear-gradient(to_bottom,#80808030_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff15_1px,transparent_1px),linear-gradient(to_bottom,#ffffff15_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        
+        <div className="p-6 flex items-center justify-between border-b border-border relative z-10 bg-surface/80 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <div className="bg-transparent p-0 rounded-xl overflow-hidden shrink-0">
               <img src="/logo-pakewa.png" alt="Logo PAKEWA" width="40" height="40" className="object-contain" />
@@ -63,7 +66,7 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
             <X className="w-5 h-5" />
           </button>
         </div>
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-2 relative z-10 overflow-y-auto">
         {!isBps && (
           <>
             <NavItem href="/dashboard" icon={Database} label="Upload Data" />
@@ -89,7 +92,7 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
           } 
         />
       </nav>
-      <div className="p-6 border-t border-border bg-slate-50/50 dark:bg-slate-900/30">
+      <div className="p-6 border-t border-border bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm relative z-10">
         <div className="text-xs font-bold text-muted flex items-center gap-2 group cursor-default">
           <span className="w-2.5 h-2.5 rounded-full bg-success relative">
             <span className="absolute inset-0 rounded-full bg-success animate-ping opacity-75"></span>

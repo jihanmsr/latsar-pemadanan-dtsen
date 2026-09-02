@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { FileSignature, UploadCloud, FileSearch, Database, FileCheck, ArrowLeft } from 'lucide-react';
+import { FileSignature, UploadCloud, FileSearch, Database, FileCheck, ArrowLeft, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useState, useEffect } from 'react';
@@ -12,37 +12,44 @@ import PublicNavbar from '@/components/PublicNavbar';
 const steps = [
   {
     id: 1,
-    title: "Cek MoU & Permohonan",
-    description: "Instansi harus memiliki Nota Kesepahaman (MoU) atau Perjanjian Kerja Sama dengan BPS serta melampirkan surat permohonan resmi.",
+    title: "Permohonan & Cek MoU",
+    description: "Pemerintah Daerah mengajukan permohonan pemadanan ke BPS dan memastikan ketersediaan Nota Kesepahaman (MoU) atau PKS.",
     icon: <FileSignature className="w-8 h-8 text-indigo-500 dark:text-indigo-400" />,
     color: "from-indigo-500 to-blue-500"
   },
   {
     id: 2,
     title: "Upload Data & Metadata",
-    description: "Pengguna mengunggah dataset sasaran (CSV/Excel/Word/OCR) ke dalam portal beserta metadata terkait.",
+    description: "Pengguna mengunggah dataset sasaran beserta kelengkapan metadata dan informasi narahubung (contact person) ke dalam portal.",
     icon: <UploadCloud className="w-8 h-8 text-blue-500 dark:text-blue-400" />,
-    color: "from-blue-500 to-cyan-500"
+    color: "from-blue-500 to-sky-500"
   },
   {
     id: 3,
-    title: "Pengecekan Manifes & Format",
-    description: "Sistem melakukan validasi otomatis mendalam terhadap struktur data dan keabsahan NIK sesuai standar kependudukan.",
-    icon: <FileSearch className="w-8 h-8 text-cyan-500 dark:text-cyan-400" />,
-    color: "from-cyan-500 to-teal-500"
+    title: "Eksplorasi Data",
+    description: "BPS melakukan verifikasi kelengkapan variabel (NIK, Nama, dll), pengecekan duplikasi NIK, serta kesesuaian format data.",
+    icon: <FileSearch className="w-8 h-8 text-sky-500 dark:text-sky-400" />,
+    color: "from-sky-500 to-cyan-500"
   },
   {
     id: 4,
-    title: "Probabilistic Matching",
-    description: "Algoritma membandingkan dataset dengan master data DTSEN untuk menghasilkan skor kemiripan secara akurat.",
-    icon: <Database className="w-8 h-8 text-teal-500 dark:text-teal-400" />,
-    color: "from-teal-500 to-emerald-500"
+    title: "Pemadanan & Penyusunan Manifes",
+    description: "BPS memadankan individu secara deterministik menggunakan variabel NIK dengan data DTSEN versi terbaru, lalu menyusun dokumen Manifes hasil pemadanan.",
+    icon: <Database className="w-8 h-8 text-cyan-500 dark:text-cyan-400" />,
+    color: "from-cyan-500 to-teal-500"
   },
   {
     id: 5,
-    title: "Serah Terima (BAST/NDA)",
-    description: "Setelah proses selesai, pengguna melampirkan dokumen NDA dan BAST terenkripsi untuk mengunduh balikan data.",
-    icon: <FileCheck className="w-8 h-8 text-emerald-500 dark:text-emerald-400" />,
+    title: "Serah Terima Data Balikan",
+    description: "BPS Daerah mengirimkan data balikan beserta Berita Acara Serah Terima (BAST) dan NDA terenkripsi kepada Pemerintah Daerah.",
+    icon: <FileCheck className="w-8 h-8 text-teal-500 dark:text-teal-400" />,
+    color: "from-teal-500 to-emerald-500"
+  },
+  {
+    id: 6,
+    title: "Pelaporan ke BPS Pusat",
+    description: "BPS Daerah meneruskan (melaporkan) data balikan, Manifes, beserta contact person ke BPS Pusat cq. Deputi Bidang MIS dan Deputi Bidang Stat Sosial.",
+    icon: <Send className="w-8 h-8 text-emerald-500 dark:text-emerald-400" />,
     color: "from-emerald-500 to-green-500"
   }
 ];
@@ -78,16 +85,18 @@ export default function SopPage() {
 
       <div className={`relative z-10 max-w-[1400px] mx-auto space-y-8 px-4 sm:px-6 ${isDashboard ? "py-4" : "pt-24 pb-16"}`}>
         
-        {/* Navigation Bar */}
-        <div className="flex items-center justify-between mb-4">
-          <Link
-            href={backUrl}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-xs"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            {user ? "Kembali ke Dashboard" : "Kembali ke Beranda"}
-          </Link>
-        </div>
+        {/* Navigation Bar (Hanya untuk publik) */}
+        {!isDashboard && (
+          <div className="flex items-center justify-between mb-4">
+            <Link
+              href={backUrl}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-xs"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Kembali ke Beranda
+            </Link>
+          </div>
+        )}
 
         {/* Hero Section */}
         <motion.div
@@ -102,9 +111,19 @@ export default function SopPage() {
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
             Standar Operasional <br className="hidden sm:block" /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Pemadanan Data</span>
           </h1>
-          <p className="text-base sm:text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed mb-8">
             Alur kerja yang aman, transparan, dan terstandarisasi untuk menjamin akurasi data sasaran kesejahteraan sosial dari hulu ke hilir.
           </p>
+          <div className="flex justify-center">
+            <a 
+              href="/juknis-panduan-penggunaan-layanan-dtsen.pdf" 
+              target="_blank" 
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-105"
+            >
+              <FileSignature className="w-5 h-5" />
+              Unduh Buku Panduan & Juknis
+            </a>
+          </div>
         </motion.div>
 
         {/* Storyboard Layout */}
