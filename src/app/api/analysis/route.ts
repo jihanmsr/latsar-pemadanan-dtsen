@@ -12,21 +12,37 @@ export async function GET(req: NextRequest) {
   const { user, error } = await verifyAuth(req);
   if (!user) return unauthorizedResponse(error ?? undefined);
 
-  // ── 2. ROLE CHECK: hanya BPS_ADMIN ────────────────────────────────────
-  if ((user.role !== 'BPS_ADMIN' && user.role !== 'BPS_PEGAWAI')) {
-    return forbiddenResponse('Statistik analisis hanya tersedia untuk Admin BPS.');
+  // ── 2. ROLE CHECK & FILTER ─────────────────────────────────────────────
+  let matchWhere = '';
+  let subWhere = '';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const values: any[] = [];
+  
+  if (user.role === 'PEMDA') {
+    matchWhere = 'WHERE submission_id IN (SELECT id FROM submissions WHERE user_id = ?)';
+    subWhere = 'WHERE user_id = ?';
+    values.push(user.id);
+  } else if (user.role === 'BPS_PEGAWAI') {
+    let region = user.instansi || '';
+    region = region.replace('BPS', '').trim();
+    if (region) {
+      matchWhere = 'WHERE submission_id IN (SELECT id FROM submissions WHERE user_id IN (SELECT id FROM users WHERE instansi LIKE ?))';
+      subWhere = 'WHERE user_id IN (SELECT id FROM users WHERE instansi LIKE ?)';
+      values.push(`%${region}%`);
+    }
   }
 
   try {
     // ── 3. ANALISIS KUALITAS & AKURASI (Matching Engine) ─────────────────
     const matchAgg = await query(`
       SELECT 
-        SUM(CASE WHEN status_padan = 'EXACT_MATCH' THEN 1 ELSE 0 END) as padanCount,
-        SUM(CASE WHEN status_padan = 'PROBABLE_MATCH' THEN 1 ELSE 0 END) as anomaliCount,
-        SUM(CASE WHEN status_padan = 'NO_MATCH' THEN 1 ELSE 0 END) as tidakPadanCount,
-        AVG(similarity_score) as avgScore
-      FROM matching_results
-    `);
+      SUM(CASE WHEN status_padan = 'EXACT_MATCH' THEN 1 ELSE 0 END) as padanCount,
+      SUM(CASE WHEN status_padan = 'PROBABLE_MATCH' THEN 1 ELSE 0 END) as anomaliCount,
+      SUM(CASE WHEN status_padan = 'NO_MATCH' THEN 1 ELSE 0 END) as tidakPadanCount,
+      AVG(similarity_score) as avgScore
+    FROM matching_results
+    ${matchWhere}
+  `, values);
     const totalMatch = Number(matchAgg[0].padanCount || 0);
     const totalAnomaly = Number(matchAgg[0].anomaliCount || 0);
     const totalNotMatch = Number(matchAgg[0].tidakPadanCount || 0);
@@ -36,11 +52,12 @@ export async function GET(req: NextRequest) {
     const subAgg = await query(`
       SELECT 
         COUNT(*) as total,
-        SUM(CASE WHEN status = 'VALIDATED' THEN 1 ELSE 0 END) as validated,
-        SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) as completed,
-        SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END) as failed
-      FROM submissions
-    `);
+      SUM(CASE WHEN status = 'VALIDATED' THEN 1 ELSE 0 END) as validated,
+      SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) as completed,
+      SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END) as failed
+    FROM submissions
+    ${subWhere}
+  `, values);
     
     const totalSubmissions = Number(subAgg[0].total || 0);
     const validatedSubmissions = Number(subAgg[0].validated || 0);
@@ -49,10 +66,10 @@ export async function GET(req: NextRequest) {
 
     // ── 5. ANALISIS SLA ───────────────────────────────────────────────────
     const completedWithSla = await query(`
-      SELECT created_at, sla_deadline 
-      FROM submissions 
-      WHERE status = 'COMPLETED' AND sla_deadline IS NOT NULL
-    `);
+    SELECT created_at, sla_deadline 
+    FROM submissions 
+    WHERE status = 'COMPLETED' AND sla_deadline IS NOT NULL ${user.role !== 'BPS_ADMIN' ? (user.role === 'PEMDA' ? 'AND user_id = ?' : 'AND user_id IN (SELECT id FROM users WHERE instansi LIKE ?)') : ''}
+  `, values);
 
     const metSla = completedWithSla.filter((s: any) =>
       s.sla_deadline && new Date(s.sla_deadline) >= new Date(s.created_at)

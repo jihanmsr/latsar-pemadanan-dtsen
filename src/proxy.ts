@@ -17,6 +17,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/favicon.ico' ||
     pathname.startsWith('/images') ||
     pathname.endsWith('.pdf') ||
+    pathname.endsWith('.docx') ||
+    pathname.endsWith('.xlsx') ||
     pathname.startsWith('/juknis')
   ) {
     return NextResponse.next();
@@ -59,5 +61,5 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // Protect all routes except those filtered out
-  matcher: ['/((?!api/auth|api/chat|api/register|api/cek-status|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf)$).*)'],
+  matcher: ['/((?!api/auth|api/chat|api/register|api/cek-status|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf|docx|xlsx)$).*)'],
 };
