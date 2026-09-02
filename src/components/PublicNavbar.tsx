@@ -106,8 +106,9 @@ export default function PublicNavbar() {
                 <div className="space-y-3">
                   {[
                     { title: "Petunjuk Teknis (Juknis) / Panduan Penggunaan Layanan DTSEN", url: "/juknis-panduan-penggunaan-layanan-dtsen.pdf" },
-                    { title: "Draft/Template Memorandum of Understanding (MoU)", url: "/template-mou.docx" },
+                    { title: "Contoh Memorandum of Understanding (MoU) - Referensi", url: "/contoh-mou.pdf" },
                     { title: "Draft/Template Non-Disclosure Agreement (NDA)", url: "/template-nda.docx" },
+                    { title: "Template Manifes Pemadanan Data (.xlsx)", url: "/template-manifes.xlsx" },
                     { title: "Surat Pengajuan Permintaan Data", url: "https://dtsen.data.go.id/download/ad35cdb4-d79e-42d3-9819-2d337560ae12.pdf" },
                     { title: "Kerangka Acuan Kerja (KAK) Pemanfaatan DTSEN", url: "https://dtsen.data.go.id/download/39aec116-0ff1-4159-8159-b2fec63e006c.pdf" },
                     { title: "Peraturan tentang Satu Data Indonesia", url: "https://dtsen.data.go.id/download/7e6fee67-3345-406f-ba52-eb06aa13390c.pdf" },

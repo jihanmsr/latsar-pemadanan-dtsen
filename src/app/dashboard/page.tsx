@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 export default function DashboardInstansi() {
   const [mounted, setMounted] = useState(false);
-  
+  const [currentDate, setCurrentDate] = useState('');
   const [latestSubmission, setLatestSubmission] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
