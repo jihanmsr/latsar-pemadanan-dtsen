@@ -10,12 +10,23 @@ import Link from 'next/link';
 export default function DashboardInstansi() {
   const [mounted, setMounted] = useState(false);
   
-  // Use a fixed date format or simple string initially to avoid hydration mismatch, then update
-  const [currentDate, setCurrentDate] = useState('');
+  const [latestSubmission, setLatestSubmission] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
     setCurrentDate(new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+    
+    // Fetch latest submission
+    fetch('/api/submissions?limit=1')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data && data.data.length > 0) {
+          setLatestSubmission(data.data[0]);
+        }
+      })
+      .catch(err => console.error(err))
+      .finally(() => setIsLoading(false));
   }, []);
 
   if (!mounted) return null;
@@ -80,18 +91,34 @@ export default function DashboardInstansi() {
               Status Pra-Validasi
             </h3>
             <div className="space-y-4">
-              <div className="bg-white/60 dark:bg-slate-900/60 p-3 rounded-lg border border-slate-200/50 dark:border-slate-800/50 flex justify-between items-center backdrop-blur-sm">
-                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Berkas Terakhir:</span>
-                <span className="text-xs font-bold text-slate-900 dark:text-white">Dinsos_Palu_2025.csv</span>
-              </div>
-              <div className="bg-white/60 dark:bg-slate-900/60 p-3 rounded-lg border border-slate-200/50 dark:border-slate-800/50 flex justify-between items-center backdrop-blur-sm">
-                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Total Baris:</span>
-                <span className="text-xs font-bold text-slate-900 dark:text-white">1.254 Data</span>
-              </div>
-              <div className="bg-white/60 dark:bg-slate-900/60 p-3 rounded-lg border border-slate-200/50 dark:border-slate-800/50 flex justify-between items-center backdrop-blur-sm">
-                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Status Padan:</span>
-                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-900/40 px-2 py-1 rounded">85% Sukses</span>
-              </div>
+              {isLoading ? (
+                <div className="text-sm text-slate-500 animate-pulse text-center py-4">Memuat data...</div>
+              ) : latestSubmission ? (
+                <>
+                  <div className="bg-white/60 dark:bg-slate-900/60 p-3 rounded-lg border border-slate-200/50 dark:border-slate-800/50 flex justify-between items-center backdrop-blur-sm">
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Berkas Terakhir:</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white truncate max-w-[150px]" title={latestSubmission.file_name}>{latestSubmission.file_name}</span>
+                  </div>
+                  <div className="bg-white/60 dark:bg-slate-900/60 p-3 rounded-lg border border-slate-200/50 dark:border-slate-800/50 flex justify-between items-center backdrop-blur-sm">
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Total Baris:</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">{latestSubmission.total_rows} Data Sasaran</span>
+                  </div>
+                  <div className="bg-white/60 dark:bg-slate-900/60 p-3 rounded-lg border border-slate-200/50 dark:border-slate-800/50 flex justify-between items-center backdrop-blur-sm">
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Status Padan:</span>
+                    {(() => {
+                      const stats = latestSubmission.matching_stats;
+                      const isSuccess = stats?.padan === stats?.total && stats?.total > 0;
+                      return (
+                        <span className={`text-xs font-bold px-2 py-1 rounded ${isSuccess ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-900/40' : 'text-amber-600 dark:text-amber-400 bg-amber-100/80 dark:bg-amber-900/40'}`}>
+                          {isSuccess ? '100% Sukses' : 'Campuran (Ada Typo & Gagal)'}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </>
+              ) : (
+                <div className="text-sm text-slate-500 text-center py-4 italic">Belum ada berkas</div>
+              )}
             </div>
             
             <Link href="/dashboard/tracking" className="mt-5 w-full flex justify-center items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors">

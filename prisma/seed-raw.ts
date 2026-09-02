@@ -98,11 +98,11 @@ async function main() {
     const pemdaPass = await bcrypt.hash('Pemda@12345!', 10);
 
     const users = [
-      { email: 'admin@bps.go.id', password: adminPass, name: 'Admin BPS', role: 'BPS_ADMIN', instansi: 'BPS Provinsi/Kabupaten' },
-      { email: 'pegawai@bps.go.id', password: adminPass, name: 'Pegawai BPS', role: 'BPS_PEGAWAI', instansi: 'BPS Kota Palu' },
-      { email: 'pemda.palu@sulteng.go.id', password: pemdaPass, name: 'Operator Dinas Palu', role: 'PEMDA', instansi: 'Dinas Sosial Kota Palu' },
-      { email: 'pemda.sigi@sulteng.go.id', password: pemdaPass, name: 'Operator Dinas Sigi', role: 'PEMDA', instansi: 'Dinas Sosial Kab. Sigi' },
-      { email: 'pemda.donggala@sulteng.go.id', password: pemdaPass, name: 'Operator Dinas Donggala', role: 'PEMDA', instansi: 'Dinas Sosial Kab. Donggala' },
+      { email: 'admin@bps.go.id', password: adminPass, name: 'Administrator PAKEWA', role: 'BPS_ADMIN', instansi: 'BPS Provinsi Sulawesi Tengah' },
+      { email: 'pegawai@bps.go.id', password: adminPass, name: 'Jihan Maisaroh', role: 'BPS_PEGAWAI', instansi: 'BPS Kota Palu' },
+      { email: 'pemda.palu@sulteng.go.id', password: pemdaPass, name: 'Andi Syahputra', role: 'PEMDA', instansi: 'Dinas Sosial Kota Palu' },
+      { email: 'pemda.sigi@sulteng.go.id', password: pemdaPass, name: 'Siti Rahmawati', role: 'PEMDA', instansi: 'Dinas Sosial Kab. Sigi' },
+      { email: 'pemda.donggala@sulteng.go.id', password: pemdaPass, name: 'Budi Kurniawan', role: 'PEMDA', instansi: 'Dinas Sosial Kab. Donggala' },
     ];
 
     for (const u of users) {
@@ -128,6 +128,40 @@ async function main() {
     }
     console.log(`  ✅ Master DTSEN: ${seeded} records`);
 
+    // ── SUBMISSIONS & MATCHING RESULTS ─────────────────────────────────────
+    const pemdaUser = await conn.query(`SELECT id FROM users WHERE email = 'pemda.palu@sulteng.go.id'`);
+    if (pemdaUser && pemdaUser.length > 0) {
+      const userId = pemdaUser[0].id;
+      const subId = 'SUB-TEST-1234';
+      
+      await conn.query(
+        `INSERT INTO submissions (id, user_id, file_name, file_type, status, total_rows, valid_rows)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE file_name=VALUES(file_name)`,
+        [subId, userId, '3_hasil_campuran.csv', 'CSV', 'COMPLETED', 7, 7]
+      );
+
+      await conn.query(`DELETE FROM matching_results WHERE submission_id = ?`, [subId]);
+      
+      const results = [
+        [subId, '7271010101800001', 'AHMAD FAUZI', '7271010101800001', 'AHMAD FAUZI', 100, 'EXACT_MATCH', null],
+        [subId, '7271010201800002', 'BUDI SONTOSO', '7271010201800002', 'BUDI SANTOSO', 90, 'PROBABLE_MATCH', 'Typo nama'],
+        [subId, '7271010301850003', 'CICI RAHAYU', '7271010301850003', 'CICI RAHAYU', 100, 'EXACT_MATCH', null],
+        [subId, '9999999999999999', 'ORANG TIDAK DIKENAL', null, null, 0, 'NO_MATCH', 'NIK tidak ditemukan'],
+        [subId, '7271010401750004', 'DEDI KURNIAWAN', '7271010401750004', 'DEDI KURNIAWAN', 100, 'EXACT_MATCH', null],
+        [subId, '7271010501800005', 'EKA WULANDARI', '7271010501800005', 'EKA WULANDARI', 100, 'EXACT_MATCH', null],
+        [subId, '8888888888888888', 'SAYA TIDAK ADA', null, null, 0, 'NO_MATCH', 'NIK tidak ditemukan'],
+      ];
+
+      for (const res of results) {
+        await conn.query(
+          `INSERT INTO matching_results (submission_id, nik_usulan, nama_usulan, nik_master, nama_master, similarity_score, status_padan, alasan_anomali)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          res
+        );
+      }
+      console.log(`  ✅ Seeded dummy submission (3_hasil_campuran.csv) for PEMDA Palu`);
+    }
     console.log('\n🎉 Seeding selesai!');
     console.log('\n📝 Akun yang bisa digunakan:');
     console.log('  👑 Kepala/Admin BPS : admin@bps.go.id           | Admin@BPS2024!');
