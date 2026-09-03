@@ -186,8 +186,8 @@ export default function DashboardInstansi() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {/* Left Column: Upload Area */}
-        <div className="xl:col-span-2 space-y-6">
-          <div id="upload-section" className="glass rounded-2xl p-6 border border-border shadow-sm flex flex-col">
+        <div className="xl:col-span-2 h-full flex flex-col">
+          <div id="upload-section" className="glass rounded-2xl p-6 border border-border shadow-sm flex flex-col flex-1">
             <div className="mb-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/50 pb-4">
               <div>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">

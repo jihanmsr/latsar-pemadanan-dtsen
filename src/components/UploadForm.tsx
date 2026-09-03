@@ -258,7 +258,7 @@ export default function UploadForm() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="max-w-4xl mx-auto space-y-6 relative pb-8"
+      className="w-full h-full flex flex-col space-y-6 relative pb-8"
     >
       <div>
         <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Upload Data Pengajuan</h2>
