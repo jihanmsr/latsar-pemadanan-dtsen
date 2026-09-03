@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle2, Circle, Clock, Download, FileText, Upload, AlertCircle, XCircle, Loader2, Lock, Unlock, Database, RefreshCw, Plus, FileCheck } from 'lucide-react';
 import { useMatching, FileItem } from '@/context/MatchingContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as XLSX from 'xlsx';
 
@@ -39,27 +39,30 @@ const Particles = () => {
 export default function TrackingTimeline() {
   const { submissionId, files, matchingProgress, setMatchingProgress, docs, setDocs, updateFile, setSubmissionId, setFiles, reset } = useMatching();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const targetId = searchParams.get('id');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      const res = await fetch('/api/submissions?limit=1').then(r => r.json());
+      const url = targetId ? `/api/submissions?id=${targetId}` : `/api/submissions?limit=1`;
+      const res = await fetch(url).then(r => r.json());
       if (res.success && res.data.length > 0) {
         const latest = res.data[0];
         setSubmissionId(latest.id);
         setMatchingProgress(100);
         setFiles([{
           id: latest.id,
-          name: '3_hasil_campuran.csv',
+          name: latest.file_name || 'berkas_pengajuan.csv',
           size: 2048,
-          file: new File([""], "3_hasil_campuran.csv"),
+          file: new File([""], latest.file_name || "berkas.csv"),
           status: 'success',
           errorRate: 0,
           errorList: [],
-          totalRows: latest.total_rows || 7,
-          matchScore: 85
+          totalRows: latest.total_rows || 0,
+          matchScore: latest.matching_stats ? Math.round((latest.matching_stats.padan / latest.matching_stats.total) * 100) : 85
         }]);
       }
     } catch (err) {
@@ -71,33 +74,36 @@ export default function TrackingTimeline() {
 
   // Sinkronisasi dengan database jika tidak ada file di state (misal: habis refresh)
   useEffect(() => {
-    if (files.length === 0) {
-      fetch('/api/submissions?limit=1')
+    // If targetId is provided in URL, always override current context state
+    // If no targetId, only fetch if files length is 0 (direct visit)
+    if (targetId || files.length === 0) {
+      const url = targetId ? `/api/submissions?id=${targetId}` : `/api/submissions?limit=1`;
+      fetch(url)
         .then(res => res.json())
         .then(res => {
           if (res.success && res.data.length > 0) {
             const latest = res.data[0];
             setSubmissionId(latest.id);
-            // Anggap semua data dari database sudah diproses (100%)
-            setMatchingProgress(100);
+            setMatchingProgress(100); // Simulate done if it's already in DB
             
-            // Reconstruct file dummy dari data submission agar UI bisa merender
             setFiles([{
               id: latest.id,
-              name: '3_hasil_campuran.csv',
+              name: latest.file_name || 'berkas_pengajuan.csv',
               size: 2048,
-              file: new File([""], "3_hasil_campuran.csv"),
+              file: new File([""], latest.file_name || "berkas.csv"),
               status: 'success',
               errorRate: 0,
               errorList: [],
-              totalRows: latest.total_rows || 7,
-              matchScore: 85
+              totalRows: latest.total_rows || 0,
+              matchScore: latest.matching_stats && latest.matching_stats.total > 0 
+                ? Math.round((latest.matching_stats.padan / latest.matching_stats.total) * 100) 
+                : 85
             }]);
           }
         })
         .catch(console.error);
     }
-  }, [files.length, setSubmissionId, setMatchingProgress, setFiles]);
+  }, [targetId, setSubmissionId, setMatchingProgress, setFiles]);
 
   // Auto trigger process if files exist and not started yet
   useEffect(() => {

@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
     const status = searchParams.get('status') as
       | 'PENDING' | 'VALIDATED' | 'MATCHING' | 'COMPLETED' | 'FAILED' | null;
     const limit  = Math.min(parseInt(searchParams.get('limit') ?? '20'), 100);
@@ -40,6 +41,11 @@ export async function GET(req: NextRequest) {
         conditions.push('u.instansi LIKE ?');
         values.push(`%${region}%`);
       }
+    }
+
+    if (id) {
+      conditions.push('s.id = ?');
+      values.push(id);
     }
 
     if (status) {

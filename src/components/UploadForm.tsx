@@ -585,7 +585,7 @@ export default function UploadForm() {
                 <button
                   onClick={() => {
                     setIsSuccessModalOpen(false);
-                    router.push('/tracking');
+                    router.push(`/tracking?id=${submissionId}`);
                   }}
                   className="px-4 py-4 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex justify-center items-center gap-2"
                 >

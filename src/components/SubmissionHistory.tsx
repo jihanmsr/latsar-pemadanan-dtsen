@@ -120,7 +120,7 @@ export default function SubmissionHistory() {
                   </td>
                   <td className="px-4 py-3 text-right whitespace-nowrap">
                     <div className="flex justify-end gap-2">
-                      <Link href={`/tracking`} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Lihat Progres">
+                      <Link href={`/tracking?id=${sub.id}`} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Lihat Progres">
                         <Eye className="w-4 h-4" />
                       </Link>
                       {sub.status === 'COMPLETED' && (
