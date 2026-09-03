@@ -20,7 +20,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
   }, []);
 
   const notifications = [];
-  
+
   if (user?.role === 'PEMDA') {
     notifications.push({ id: 99, title: "Tindakan Diperlukan", desc: `Silakan lengkapi manifes untuk data ${user.instansi || 'instansi'}.` });
   }
@@ -37,7 +37,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
   return (
     <header className="h-16 glass sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 transition-all duration-300">
       <div className="flex items-center gap-3">
-        <button 
+        <button
           onClick={() => setIsSidebarOpen?.(true)}
           className="p-2 md:hidden rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-700/50 text-muted hover:text-foreground transition-all duration-300"
         >
@@ -58,7 +58,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
               </span>
-              <span>Dashboard Instansi</span>
+              <span>Dashboard Pemda</span>
             </div>
           )}
         </div>
@@ -80,7 +80,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
         )}
 
         <div className="relative">
-          <button 
+          <button
             onClick={() => setShowNotifications(!showNotifications)}
             className="p-2 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-700/50 text-muted hover:text-foreground transition-all duration-300 relative"
           >
@@ -92,7 +92,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
 
           <AnimatePresence>
             {showNotifications && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -123,7 +123,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
             )}
           </AnimatePresence>
         </div>
-        
+
         <div className="flex items-center gap-3 border-l border-border pl-4 ml-2">
           <div className="hidden sm:flex flex-col items-end">
             <p className="text-sm font-extrabold text-foreground leading-none mb-1">
@@ -134,7 +134,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
             </p>
           </div>
           <UserCircle className="w-9 h-9 text-primary-light" />
-          <button 
+          <button
             onClick={logout}
             className="p-2 text-muted hover:text-rose-500 transition-all duration-300 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/30 ml-1"
             title="Logout"

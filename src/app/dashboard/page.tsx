@@ -175,7 +175,7 @@ export default function DashboardInstansi() {
           </Link>
           <Link href="#upload-section" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm">
             <UploadCloud className="w-4 h-4" />
-            Unggah Data Baru
+            Mulai Pengajuan Pemadanan
           </Link>
         </div>
         
