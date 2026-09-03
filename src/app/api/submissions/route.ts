@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sendNewSubmissionEmail, sendSLAUpdateEmail } from '@/lib/email';
 import { query } from '@/lib/db';
 import { verifyAuth, unauthorizedResponse } from '@/lib/auth';
 
@@ -194,6 +195,8 @@ export async function POST(req: NextRequest) {
     `;
     
     await query(sql, [id, user.id, file_name, total_rows || 0, valid_rows || 0]);
+    // Send email to admin asynchronously
+    sendNewSubmissionEmail('admin.bps@sulteng.go.id', user.instansi || 'Instansi Pemda', id, total_rows || 0).catch(console.error);
 
     return NextResponse.json({ success: true, message: 'Submission berhasil disimpan.', id });
   } catch (err) {
@@ -232,6 +235,13 @@ export async function PUT(req: NextRequest) {
 
     if (result.affectedRows === 0) {
       return NextResponse.json({ success: false, error: 'Tiket tidak ditemukan atau Anda tidak memiliki akses.' }, { status: 404 });
+    }
+    
+    // Send email to Pemda asynchronously
+    const userEmailSql = `SELECT u.email, u.instansi FROM users u JOIN submissions s ON s.user_id = u.id WHERE s.id = ?`;
+    const userRows = await query(userEmailSql, [id]) as any[];
+    if (userRows.length > 0) {
+      sendSLAUpdateEmail(userRows[0].email, userRows[0].instansi || 'Instansi Anda', id, status).catch(console.error);
     }
     
     // Jika status di-update ke MATCHING atau COMPLETED, kita buatkan data dummy di matching_results jika belum ada

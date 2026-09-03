@@ -149,3 +149,66 @@ export async function sendUserWelcomeEmail(to: string, name: string, institution
     html: getEmailLayout("Selamat Datang di PAKEWA", content),
   });
 }
+
+/**
+ * Mengirim email notifikasi ke Pemda saat status SLA (Pengajuan) di-update oleh Admin
+ */
+export async function sendSLAUpdateEmail(to: string, institutionName: string, submissionId: string, newStatus: string) {
+  const content = `
+    <p style="margin-top: 0;">Yth. Tim Data <strong>${institutionName}</strong>,</p>
+    <p>Pengajuan pemadanan data Anda dengan ID <strong>${submissionId}</strong> telah diperbarui oleh Admin BPS.</p>
+    
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center;">
+      <p style="margin: 0 0 5px 0; color: #64748b; font-size: 14px;">Status Saat Ini</p>
+      <div style="display: inline-block; background-color: #dbeafe; color: #1e40af; padding: 8px 16px; border-radius: 6px; font-weight: bold; letter-spacing: 1px;">${newStatus}</div>
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 20px;">
+      <a href="http://localhost:3000/dashboard" style="display: inline-block; background-color: #1e40af; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);">Lihat Detail di Dashboard</a>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"${APP_NAME}" <${process.env.SMTP_EMAIL}>`,
+      to,
+      subject: `[PAKEWA] Update Status Pengajuan ${submissionId}`,
+      html: getEmailLayout("Update Status Pemadanan", content),
+    });
+    console.log(`[Email Terkirim] SLA Update ${newStatus} to ${to}`);
+  } catch (e: any) {
+    console.log(`[Email Simulasi] SLA Update ${newStatus} to ${to} (SMTP tidak dikonfigurasi)`);
+  }
+}
+
+/**
+ * Mengirim email notifikasi ke Admin BPS saat ada Pemda yang mengunggah pengajuan baru
+ */
+export async function sendNewSubmissionEmail(adminEmail: string, institutionName: string, submissionId: string, totalRows: number) {
+  const content = `
+    <p style="margin-top: 0;">Yth. Admin BPS,</p>
+    <p>Terdapat pengajuan pemadanan data sasaran baru yang masuk ke sistem PAKEWA dari <strong>${institutionName}</strong>.</p>
+    
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 20px 0;">
+      <p style="margin: 0 0 10px 0;"><strong>ID Pengajuan:</strong> ${submissionId}</p>
+      <p style="margin: 0 0 10px 0;"><strong>Instansi:</strong> ${institutionName}</p>
+      <p style="margin: 0 0 0 0;"><strong>Total Baris Data:</strong> ${totalRows.toLocaleString('id-ID')} baris</p>
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="http://localhost:3000/admin/dashboard" style="display: inline-block; background-color: #1e40af; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">Verifikasi Sekarang</a>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"${APP_NAME}" <${process.env.SMTP_EMAIL}>`,
+      to: adminEmail,
+      subject: `[PAKEWA] Pengajuan Baru: ${institutionName}`,
+      html: getEmailLayout("Pengajuan Data Baru", content),
+    });
+    console.log(`[Email Terkirim] New Submission to Admin`);
+  } catch (e: any) {
+    console.log(`[Email Simulasi] New Submission to Admin (SMTP tidak dikonfigurasi)`);
+  }
+}

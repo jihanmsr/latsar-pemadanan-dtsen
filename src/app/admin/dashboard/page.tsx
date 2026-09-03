@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin, FileDown, UploadCloud, Send, Table as TableIcon, Loader2, ChevronLeft, ChevronRight, Play, X, User } from 'lucide-react';
+import { FileText, Download, CheckCircle, CheckCircle2, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin, FileDown, UploadCloud, Send, Table as TableIcon, Loader2, ChevronLeft, ChevronRight, Play, X, User } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import DashboardStats from '@/components/DashboardStats';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -48,8 +48,12 @@ export default function AdminDashboard() {
   const [totalRecords, setTotalRecords] = useState(0);
   const [avgMatch, setAvgMatch] = useState(0);
   const [dynamicLogs, setDynamicLogs] = useState<any[]>([]);
+  const [dynamicChartData, setDynamicChartData] = useState(chartData);
+  const [dynamicRegions, setDynamicRegions] = useState<any[]>([]);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
+  const [isSendingMissing, setIsSendingMissing] = useState(false);
+  const [missingInstansi, setMissingInstansi] = useState("");
 
 
   // Excel Table States
@@ -112,6 +116,47 @@ export default function AdminDashboard() {
         setTotalRecords(total);
         setAvgMatch(matchCount > 0 ? Math.round(matchScores / matchCount) : 0);
         setDynamicLogs(logs);
+
+        // Update Chart Data: Add total to the last month (Jul -> Sep)
+        const newChartData = [...chartData];
+        newChartData[newChartData.length - 1] = {
+          name: 'Sekarang', 
+          volume: newChartData[newChartData.length - 1].volume + total
+        };
+        setDynamicChartData(newChartData);
+
+        // Update Regions Data (Top 3)
+        const regionMap = new Map<string, { totalSLA: number, count: number }>();
+        json.data.forEach((sub: any) => {
+          const instansi = sub.user?.instansi || 'Instansi Lain';
+          let slaScore = 0;
+          if (sub.status === 'PENDING') slaScore = 25;
+          if (sub.status === 'VALIDATED') slaScore = 50;
+          if (sub.status === 'MATCHING') slaScore = 75;
+          if (sub.status === 'COMPLETED') slaScore = 100;
+          
+          if (!regionMap.has(instansi)) {
+            regionMap.set(instansi, { totalSLA: 0, count: 0 });
+          }
+          const curr = regionMap.get(instansi)!;
+          curr.totalSLA += slaScore;
+          curr.count += 1;
+        });
+
+        const sortedRegions = Array.from(regionMap.entries())
+          .map(([name, data]) => ({
+            name,
+            progress: Math.round(data.totalSLA / data.count)
+          }))
+          .sort((a, b) => b.progress - a.progress)
+          .slice(0, 3);
+        
+        // Fallback if empty
+        if (sortedRegions.length === 0) {
+           sortedRegions.push({ name: 'Belum Ada Data', progress: 0 });
+        }
+        setDynamicRegions(sortedRegions);
+
         
         if (selectedSubmission) {
           const updated = json.data.find((s: any) => s.id === selectedSubmission.id);
@@ -217,7 +262,7 @@ export default function AdminDashboard() {
           </div>
           <div className="flex-1 min-h-[250px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={dynamicChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
@@ -259,33 +304,20 @@ export default function AdminDashboard() {
           <MapPin className="w-5 h-5 text-rose-500" /> Progres Pemadanan Wilayah (Top 3)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm font-bold text-foreground">
-              <span>Kota Palu</span>
-              <span>85%</span>
+          {dynamicRegions.map((region, i) => (
+            <div key={i} className="space-y-2">
+              <div className="flex justify-between text-sm font-bold text-foreground">
+                <span>{region.name}</span>
+                <span>{region.progress}%</span>
+              </div>
+              <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
+                <div 
+                  className={`h-2 rounded-full ${i === 0 ? 'bg-blue-600' : i === 1 ? 'bg-blue-500' : 'bg-blue-400'}`} 
+                  style={{ width: `${region.progress}%` }}
+                ></div>
+              </div>
             </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
-              <div className="bg-blue-600 h-2 rounded-full" style={{ width: '85%' }}></div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm font-bold text-foreground">
-              <span>Kab. Donggala</span>
-              <span>60%</span>
-            </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
-              <div className="bg-blue-500 h-2 rounded-full" style={{ width: '60%' }}></div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm font-bold text-foreground">
-              <span>Kab. Sigi</span>
-              <span>45%</span>
-            </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
-              <div className="bg-blue-400 h-2 rounded-full" style={{ width: '45%' }}></div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -388,56 +420,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {activeTab === 'archives' && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-              <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <FolderArchive className="w-5 h-5 text-blue-600" /> Rekapitulasi Dokumen Administratif
-              </h3>
-              <p className="text-sm text-slate-500 mt-1">Daftar tautan dokumen legal (MoU, NDA, BAST) dan Manifes dari setiap instansi yang telah mengajukan pemadanan.</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-700">
-                  <tr>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">ID Referensi</th>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">Instansi</th>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">Jenis Dokumen</th>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">Tanggal Arsip</th>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300 text-right">Tautan Unduh</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {mockArchives.map((doc, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                      <td className="px-6 py-4 font-mono font-medium text-slate-600 dark:text-slate-400">
-                        {doc.id}
-                      </td>
-                      <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
-                        {doc.instansi}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold ${
-                          doc.type === 'BAST' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                        }`}>
-                          {doc.type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-500">
-                        {doc.date}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <a href={doc.url} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors">
-                          <Download className="w-3.5 h-3.5" /> Unduh Dokumen
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+        
 
         {activeTab === 'requests' && (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden p-6">
@@ -449,11 +432,12 @@ export default function AdminDashboard() {
             <div className="max-w-2xl bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Instansi Tujuan</label>
-                <select className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 dark:text-slate-300">
+                <select value={missingInstansi} onChange={(e) => setMissingInstansi(e.target.value)} className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 dark:text-slate-300">
                   <option value="">-- Pilih Instansi Daerah --</option>
-                  <option value="palu">Dinas Sosial Kota Palu</option>
-                  <option value="sigi">Dinas Sosial Kab. Sigi</option>
-                  <option value="donggala">Dinas Sosial Kab. Donggala</option>
+                  {dynamicRegions.filter(r => r.name !== 'Belum Ada Data').map((r, i) => (
+                    <option key={i} value={r.name}>{r.name}</option>
+                  ))}
+                  <option value="Dinas Sosial Kota Palu">Dinas Sosial Kota Palu</option>
                 </select>
               </div>
               
@@ -473,11 +457,19 @@ export default function AdminDashboard() {
 
               <div className="pt-2 flex justify-end">
                 <button 
-                  onClick={() => toast.success('Permintaan kelengkapan data berhasil dikirim ke instansi terkait!')}
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm"
+                  disabled={!missingInstansi || isSendingMissing}
+                  onClick={() => {
+                    setIsSendingMissing(true);
+                    setTimeout(() => {
+                      toast.success(`Permintaan kelengkapan data berhasil dikirim ke ${missingInstansi}!`);
+                      setIsSendingMissing(false);
+                      setMissingInstansi("");
+                    }, 1500);
+                  }}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm"
                 >
-                  <Send className="w-4 h-4" />
-                  Kirim Permintaan Ke Pemda
+                  {isSendingMissing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                  {isSendingMissing ? 'Mengirim...' : 'Kirim Permintaan Ke Pemda'}
                 </button>
               </div>
             </div>
