@@ -52,6 +52,7 @@ export default function AdminDashboard() {
   const [dynamicRegions, setDynamicRegions] = useState<any[]>([]);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
+  const [showDataPreview, setShowDataPreview] = useState(false);
   const [isSendingMissing, setIsSendingMissing] = useState(false);
   const [missingInstansi, setMissingInstansi] = useState("");
 
@@ -320,396 +321,180 @@ export default function AdminDashboard() {
           ))}
         </div>
       </div>
-
-      {/* Tab Navigation & Submissions Table */}
-      <div className="pt-4">
-        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 w-max mb-6">
-          <button 
-            onClick={() => setActiveTab('submissions')}
-            className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'submissions' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-          >
-            <Database className="w-4 h-4" /> Daftar Pengajuan Masuk
-          </button>
-          <button 
-            onClick={() => setActiveTab('archives')}
-            className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'archives' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-          >
-            <FolderArchive className="w-4 h-4" /> Arsip Dokumen Digital
-          </button>
-          <button 
-            onClick={() => setActiveTab('requests')}
-            className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'requests' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-          >
-            <FileDown className="w-4 h-4" /> Permintaan Missing NIK
-          </button>
-          {user?.role === 'BPS_ADMIN' && (
-            <button 
-              onClick={() => setActiveTab('results')}
-              className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'results' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-            >
-              <TableIcon className="w-4 h-4" /> Tabel Hasil Analisis
-            </button>
-          )}
+      {/* 4.5. Submissions Table Preview */}
+      <div className="glass rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col h-[400px]">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
+          <div>
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <FileText className="w-5 h-5 text-blue-500" /> Pratinjau Daftar Pengajuan Masuk
+            </h3>
+            <p className="text-xs text-muted mt-1">Status tiket pengajuan data dari instansi daerah</p>
+          </div>
         </div>
 
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        {activeTab === 'submissions' && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
-                  <tr>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">ID Pengajuan</th>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">Instansi Pengirim</th>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">Deskripsi Data</th>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">Status Verifikasi</th>
-                    <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300 text-right">Aksi</th>
+        <div className="flex-1 overflow-auto bg-white dark:bg-slate-900 relative">
+          {loading ? (
+             <div className="flex flex-col items-center justify-center h-full text-slate-400">
+               <Loader2 className="w-8 h-8 mb-4 animate-spin" />
+               <p>Memuat antrean...</p>
+             </div>
+          ) : submissions.length === 0 ? (
+             <div className="flex flex-col items-center justify-center h-full text-slate-400">
+               <FileText className="w-12 h-12 mb-4 opacity-50" />
+               <p>Belum ada pengajuan masuk.</p>
+             </div>
+          ) : (
+            <table className="w-full text-sm text-left whitespace-nowrap">
+              <thead className="bg-slate-100 dark:bg-slate-800 sticky top-0 z-0 shadow-sm">
+                <tr>
+                  <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">ID Tiket</th>
+                  <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">Instansi Pengirim</th>
+                  <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">Berkas Data</th>
+                  <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">Status Terkini</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                {submissions.slice(0, 5).map((sub) => (
+                  <tr key={sub.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-6 py-3 border-r border-slate-100 dark:border-slate-800/50 text-slate-700 dark:text-slate-300 font-bold font-mono">
+                      {sub.id}
+                    </td>
+                    <td className="px-6 py-3 border-r border-slate-100 dark:border-slate-800/50 text-slate-700 dark:text-slate-300">
+                      {sub.user?.instansi || 'Instansi Daerah'}
+                    </td>
+                    <td className="px-6 py-3 border-r border-slate-100 dark:border-slate-800/50 text-slate-700 dark:text-slate-300">
+                      <div className="flex items-center gap-2">
+                        <FileDown className="w-4 h-4 text-blue-500" />
+                        {sub.file_name}
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 border-r border-slate-100 dark:border-slate-800/50 text-slate-700 dark:text-slate-300">
+                      <span className={`inline-flex px-2 py-1 rounded text-xs font-bold ${sub.status === 'COMPLETED' ? 'bg-success/20 text-success-dark' : sub.status === 'PENDING' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>
+                        {sub.status === 'COMPLETED' ? 'SELESAI (PADAN)' : sub.status}
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {loading ? (
-                    <tr><td colSpan={5} className="text-center py-8">Memuat data...</td></tr>
-                  ) : submissions.map((sub) => (
-                    <tr key={sub.id} onClick={() => setSelectedSubmission(sub)} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer">
-                      <td className="px-6 py-4">
-                        <span className="font-mono font-medium text-blue-600 dark:text-blue-400">REQ-{sub.id}</span>
-                        <p className="text-xs text-slate-500 mt-1">{new Date(sub.created_at).toLocaleDateString('id-ID')}</p>
-                      </td>
-                      <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
-                        {sub.user?.instansi || sub.user?.name}
-                      </td>
-                      <td className="px-6 py-4">
-                        <p className="font-medium text-slate-700 dark:text-slate-300">{sub.file_name}</p>
-                        <p className="text-xs text-slate-500 mt-1">{sub.total_rows?.toLocaleString() || 0} Records</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        {sub.status === 'PENDING' ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-                            <Clock className="w-3 h-3" /> Menunggu Verifikasi
-                          </span>
-                        ) : sub.status === 'MATCHING' ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800 animate-pulse">
-                            <Clock className="w-3 h-3 animate-spin" /> Memproses...
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                            <CheckCircle className="w-3 h-3" /> Terverifikasi
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); setSelectedSubmission(sub); }}
-                            className="px-4 py-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5"
-                          >
-                            <FileText className="w-4 h-4" /> Lihat Detail
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
         
-
-        {activeTab === 'requests' && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden p-6">
-            <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-2">
-              <Send className="w-5 h-5 text-blue-600" /> Form Permintaan Kelengkapan Data (Missing NIK)
-            </h3>
-            <p className="text-sm text-slate-500 mb-6">Kirimkan format dokumen untuk dilengkapi oleh instansi daerah terkait daftar NIK yang belum ditemukan/valid dari hasil pra-validasi sebelumnya.</p>
-            
-            <div className="max-w-2xl bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Instansi Tujuan</label>
-                <select value={missingInstansi} onChange={(e) => setMissingInstansi(e.target.value)} className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 dark:text-slate-300">
-                  <option value="">-- Pilih Instansi Daerah --</option>
-                  {dynamicRegions.filter(r => r.name !== 'Belum Ada Data').map((r, i) => (
-                    <option key={i} value={r.name}>{r.name}</option>
-                  ))}
-                  <option value="Dinas Sosial Kota Palu">Dinas Sosial Kota Palu</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Unggah Format Template (Cth: Missing NIK.xlsx)</label>
-                <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                   <UploadCloud className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                   <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Klik atau drag file template format kemari</p>
-                   <p className="text-xs text-slate-500 mt-1">Format didukung: .xlsx, .csv</p>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Catatan Tambahan (Opsional)</label>
-                <textarea className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none min-h-[80px] text-slate-700 dark:text-slate-300" placeholder="Mohon lengkapi NIK warga yang kosong sesuai format terlampir..."></textarea>
-              </div>
-
-              <div className="pt-2 flex justify-end">
-                <button 
-                  disabled={!missingInstansi || isSendingMissing}
-                  onClick={() => {
-                    setIsSendingMissing(true);
-                    setTimeout(() => {
-                      toast.success(`Permintaan kelengkapan data berhasil dikirim ke ${missingInstansi}!`);
-                      setIsSendingMissing(false);
-                      setMissingInstansi("");
-                    }, 1500);
-                  }}
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm"
-                >
-                  {isSendingMissing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  {isSendingMissing ? 'Mengirim...' : 'Kirim Permintaan Ke Pemda'}
-                </button>
-              </div>
-            </div>
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center shrink-0">
+          <div className="text-sm text-slate-500 font-medium">
+            Menampilkan 5 pengajuan terbaru
           </div>
-        )}
-
-        {activeTab === 'results' && user?.role === 'BPS_ADMIN' && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden flex flex-col h-[600px]">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
-              <div>
-                <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <TableIcon className="w-5 h-5 text-blue-600" /> Data Hasil Analisis & Pemadanan
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">Pembacaan dinamis langsung dari file Excel master.</p>
-              </div>
-              
-              <div className="flex gap-2 bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
-                <button
-                  onClick={() => { setExcelType('desil'); setExcelPage(1); }}
-                  className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors ${excelType === 'desil' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
-                >
-                  Cek Desil All
-                </button>
-                <button
-                  onClick={() => { setExcelType('v4'); setExcelPage(1); }}
-                  className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors ${excelType === 'v4' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
-                >
-                  Pemadanan V4
-                </button>
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-auto bg-white dark:bg-slate-900 relative">
-              {excelLoading && (
-                <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm z-10 flex items-center justify-center">
-                  <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                </div>
-              )}
-              
-              {!excelData ? null : (
-                <table className="w-full text-xs text-left whitespace-nowrap">
-                  <thead className="bg-slate-100 dark:bg-slate-800 sticky top-0 z-0">
-                    <tr>
-                      <th className="px-4 py-3 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">No.</th>
-                      {excelData.headers.map((h, i) => (
-                        <th key={i} className="px-4 py-3 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
-                    {excelData.rows.map((row, i) => (
-                      <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                        <td className="px-4 py-2 border-r border-slate-100 dark:border-slate-800/50 text-slate-400 text-[10px]">
-                          {(excelPage - 1) * 50 + i + 1}
-                        </td>
-                        {excelData.headers.map((h, j) => (
-                          <td key={j} className="px-4 py-2 border-r border-slate-100 dark:border-slate-800/50 text-slate-700 dark:text-slate-300">
-                            {row[h] !== null && row[h] !== undefined ? String(row[h]) : '-'}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                    {excelData.rows.length === 0 && (
-                      <tr>
-                        <td colSpan={excelData.headers.length + 1} className="px-4 py-12 text-center text-slate-500">
-                          Data kosong atau tidak ditemukan.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              )}
-            </div>
-
-            {excelData && (
-              <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center shrink-0">
-                <span className="text-xs font-medium text-slate-500">
-                  Menampilkan {(excelPage - 1) * 50 + 1}-{Math.min(excelPage * 50, excelData.total)} dari {excelData.total.toLocaleString('id-ID')} baris
-                </span>
-                <div className="flex gap-2">
-                  <button 
-                    disabled={excelPage <= 1}
-                    onClick={() => setExcelPage(p => Math.max(1, p - 1))}
-                    className="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button 
-                    disabled={excelPage >= excelData.totalPages}
-                    onClick={() => setExcelPage(p => Math.min(excelData.totalPages, p + 1))}
-                    className="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </motion.div>
+          <a href="/admin/submissions" className="text-xs font-bold text-blue-600 hover:underline">Kelola Semua Pengajuan ↗</a>
+        </div>
       </div>
 
-      {/* Slide-over Detail Sidebar */}
-      <AnimatePresence>
-        {selectedSubmission && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedSubmission(null)}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60]"
-            />
-            <motion.div
-              initial={{ x: '100%', opacity: 0.5 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: '100%', opacity: 0 }}
-              transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
-              className="fixed top-0 right-0 bottom-0 w-full sm:w-[450px] bg-white dark:bg-slate-900 shadow-2xl z-[70] border-l border-slate-200 dark:border-slate-800 flex flex-col"
+      {/* 5. Table Preview */}
+      <div className="glass rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col h-[500px]">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
+          <div>
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <TableIcon className="w-5 h-5 text-blue-500" /> Pratinjau Data Hasil Analisis
+            </h3>
+            <p className="text-xs text-muted mt-1">Live data dari tabel matching_results</p>
+          </div>
+          <div className="flex gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+            <button
+              onClick={() => { setExcelType('desil'); setExcelPage(1); }}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${excelType === 'desil' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
             >
-              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-blue-600" /> Detail Pengajuan
-                </h2>
+              Cek Desil All
+            </button>
+            <button
+              onClick={() => { setExcelType('v4'); setExcelPage(1); }}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${excelType === 'v4' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+            >
+              Pemadanan V4
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-auto bg-white dark:bg-slate-900 relative">
+          {excelLoading && (
+            <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm z-10 flex items-center justify-center">
+              <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+            </div>
+          )}
+          
+          {!excelData ? (
+             <div className="flex flex-col items-center justify-center h-full text-slate-400">
+               <Database className="w-12 h-12 mb-4 opacity-50" />
+               <p>Memuat data...</p>
+             </div>
+          ) : (
+            <table className="w-full text-sm text-left whitespace-nowrap">
+              <thead className="bg-slate-100 dark:bg-slate-800 sticky top-0 z-0 shadow-sm">
+                <tr>
+                  <th className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">No.</th>
+                  {excelData.headers.map((h, i) => (
+                    <th key={i} className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300 border-b border-r border-slate-200 dark:border-slate-700">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                {excelData.rows.map((row, i) => (
+                  <tr key={i} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-6 py-3 border-r border-slate-100 dark:border-slate-800/50 text-slate-500 font-mono">
+                      {(excelPage - 1) * 50 + i + 1}
+                    </td>
+                    {excelData.headers.map((h, j) => (
+                      <td key={j} className="px-6 py-3 border-r border-slate-100 dark:border-slate-800/50 text-slate-700 dark:text-slate-300">
+                        {row[h] !== null && row[h] !== undefined ? (
+                          h === 'Status Padan' ? (
+                            <span className={`inline-flex px-2 py-1 rounded text-xs font-bold ${row[h] === 'EXACT_MATCH' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'}`}>
+                              {row[h]}
+                            </span>
+                          ) : (
+                            String(row[h])
+                          )
+                        ) : '-'}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                {excelData.rows.length === 0 && (
+                  <tr>
+                    <td colSpan={excelData.headers.length + 1} className="px-6 py-16 text-center text-slate-500 font-medium">
+                      Data kosong atau tidak ditemukan.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
+        
+        {excelData && (
+          <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center shrink-0">
+            <div className="text-sm text-slate-500 font-medium">
+              Menampilkan <strong className="text-slate-700 dark:text-slate-300">{(excelPage - 1) * 50 + 1}-{Math.min(excelPage * 50, excelData.total)}</strong> dari <strong className="text-slate-700 dark:text-slate-300">{excelData.total.toLocaleString('id-ID')}</strong> baris
+            </div>
+            <div className="flex items-center gap-4">
+              <a href="/admin/analysis" className="text-xs font-bold text-blue-600 hover:underline">Buka Layar Penuh ↗</a>
+              <div className="flex gap-2">
                 <button 
-                  onClick={() => setSelectedSubmission(null)}
-                  className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full transition-colors"
+                  disabled={excelPage <= 1}
+                  onClick={() => setExcelPage(p => Math.max(1, p - 1))}
+                  className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-white dark:hover:bg-slate-800 disabled:opacity-50 disabled:bg-transparent transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                </button>
+                <button 
+                  disabled={excelPage >= excelData.totalPages}
+                  onClick={() => setExcelPage(p => Math.min(excelData.totalPages, p + 1))}
+                  className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-white dark:hover:bg-slate-800 disabled:opacity-50 disabled:bg-transparent transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 </button>
               </div>
-
-              <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                {/* Info Utama */}
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">ID Tiket</p>
-                    <div className="font-mono text-base font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">REQ-{selectedSubmission.id}</div>
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="flex-1">
-                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Pengirim</p>
-                      <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
-                        <User className="w-4 h-4 text-slate-400" /> {selectedSubmission.user?.instansi || 'Instansi Daerah'}
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Tanggal</p>
-                      <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
-                        <Clock className="w-4 h-4 text-slate-400" /> {new Date(selectedSubmission.created_at).toLocaleDateString('id-ID')}
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Berkas Data Sasaran</p>
-                    <div className="text-sm font-bold text-slate-900 dark:text-white bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/30 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Database className="w-4 h-4 text-blue-500" />
-                        {selectedSubmission.file_name}
-                      </div>
-                      <span className="text-xs bg-white dark:bg-slate-800 px-2 py-1 rounded-md text-slate-500 shadow-sm">{selectedSubmission.total_rows?.toLocaleString() || 0} Baris</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Status SLA Timeline */}
-                <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white mb-4">SLA Timeline</h3>
-                  <div className="relative border-l-2 border-slate-100 dark:border-slate-800 ml-3 space-y-6">
-                    <div className="relative pl-6">
-                      <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center border-2 border-white dark:border-slate-900">
-                        <CheckCircle className="w-2 h-2 text-white" />
-                      </div>
-                      <p className="text-sm font-bold text-slate-900 dark:text-white">Pengajuan Data</p>
-                      <p className="text-xs text-slate-500">SLA: 1 Hari Kerja</p>
-                    </div>
-                    <div className="relative pl-6">
-                      <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 ${selectedSubmission.status !== 'PENDING' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}>
-                        {selectedSubmission.status !== 'PENDING' ? <CheckCircle className="w-2 h-2 text-white" /> : <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
-                      </div>
-                      <p className={`text-sm font-bold ${selectedSubmission.status !== 'PENDING' ? 'text-slate-900 dark:text-white' : 'text-amber-600 dark:text-amber-400'}`}>Cek Variabel (Sistem)</p>
-                      <p className="text-xs text-slate-500">SLA: 1-2 Hari Kerja</p>
-                    </div>
-                    <div className="relative pl-6">
-                      <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 ${['MATCHING', 'COMPLETED'].includes(selectedSubmission.status) ? (selectedSubmission.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-blue-500 animate-pulse') : 'bg-slate-200 dark:bg-slate-700'}`}>
-                        {selectedSubmission.status === 'COMPLETED' ? <CheckCircle className="w-2 h-2 text-white" /> : ['MATCHING'].includes(selectedSubmission.status) ? <div className="w-1.5 h-1.5 bg-white rounded-full"></div> : null}
-                      </div>
-                      <p className={`text-sm font-bold ${['MATCHING', 'COMPLETED'].includes(selectedSubmission.status) ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>Proses Matching Lokal</p>
-                      <p className="text-xs text-slate-500">SLA: 3-5 Hari Kerja</p>
-                    </div>
-                    <div className="relative pl-6">
-                      <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 ${selectedSubmission.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-700'}`}>
-                        {selectedSubmission.status === 'COMPLETED' && <CheckCircle className="w-2 h-2 text-white" />}
-                      </div>
-                      <p className={`text-sm font-bold ${selectedSubmission.status === 'COMPLETED' ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>Serah Terima Data</p>
-                      <p className="text-xs text-slate-500">SLA: 1 Hari Kerja</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">
-                {selectedSubmission.status === 'PENDING' && (
-                  <button 
-                    onClick={() => updateStatus(selectedSubmission.id, 'VALIDATED')}
-                    disabled={processingId === selectedSubmission.id}
-                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    <ShieldCheck className="w-5 h-5" /> Approve Cek Sistem
-                  </button>
-                )}
-                {selectedSubmission.status === 'VALIDATED' && (
-                  <button 
-                    onClick={() => updateStatus(selectedSubmission.id, 'MATCHING')}
-                    disabled={processingId === selectedSubmission.id}
-                    className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    <Play className="w-5 h-5" /> Mulai Matching Lokal
-                  </button>
-                )}
-                {selectedSubmission.status === 'MATCHING' && (
-                  <button 
-                    onClick={() => updateStatus(selectedSubmission.id, 'COMPLETED')}
-                    disabled={processingId === selectedSubmission.id}
-                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    <CheckCircle className="w-5 h-5" /> Selesaikan Pemadanan
-                  </button>
-                )}
-                {selectedSubmission.status === 'COMPLETED' && (
-                  <div className="w-full py-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-xl text-sm font-bold border border-emerald-200 dark:border-emerald-800 text-center flex items-center justify-center gap-2">
-                    <CheckCircle2 className="w-5 h-5" /> SLA Selesai (Menunggu BAST Pemda)
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
 
     </div>
   );

@@ -56,8 +56,7 @@ export default function TestMatchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}
         <div className="text-center space-y-4">
@@ -246,6 +245,5 @@ export default function TestMatchPage() {
           </div>
         </div>
       </div>
-    </div>
   );
 }

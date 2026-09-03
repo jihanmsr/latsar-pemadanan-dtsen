@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Database, FolderArchive, FileCheck, ShieldCheck, LayoutDashboard, X, Search, BarChart2, Bot, Building2 } from 'lucide-react';
+import { Database, FileText, Send, Table as TableIcon, FolderArchive, FileCheck, ShieldCheck, LayoutDashboard, X, Search, BarChart2, Bot, Building2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
@@ -71,6 +71,13 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
           <>
             <NavItem href="/dashboard" icon={Database} label="Upload Data" />
             <NavItem href="/tracking" icon={FileCheck} label="Tracking Progres" />
+            <NavItem 
+              href="/sop" 
+              label="SOP Pemadanan" 
+              customIcon={
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-all duration-300"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8"/><path d="M12 8v6"/><path d="M3 16h5v5"/><path d="M16 16h5v5"/></svg>
+              } 
+            />
           </>
         )}
         
@@ -78,6 +85,9 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
           <>
             <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard BPS" />
             {user?.role === 'BPS_ADMIN' && <NavItem href="/admin/registrations" icon={Building2} label="Verifikasi Instansi" />}
+            <NavItem href="/admin/submissions" icon={FileText} label="Daftar Pengajuan" />
+            <NavItem href="/admin/analysis" icon={TableIcon} label="Hasil Analisis" />
+            <NavItem href="/admin/requests" icon={Send} label="Pencarian NIK (Kebutuhan SE)" />
             <NavItem href="/admin/archives" icon={FolderArchive} label="Arsip Dokumen" />
             <NavItem href="/admin/search" icon={Search} label="Pencarian Individu" />
             <NavItem href="/admin/compare" icon={BarChart2} label="Komparasi V2 & V3" />
@@ -85,13 +95,7 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIs
           </>
         )}
 
-        <NavItem 
-          href="/sop" 
-          label="SOP Pemadanan" 
-          customIcon={
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-all duration-300"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8"/><path d="M12 8v6"/><path d="M3 16h5v5"/><path d="M16 16h5v5"/></svg>
-          } 
-        />
+
       </nav>
       <div className="p-6 border-t border-border bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm relative z-10">
         <div className="text-xs font-bold text-muted flex items-center gap-2 group cursor-default">

@@ -133,8 +133,21 @@ export default function ComparePage() {
             </button>
           </div>
         ) : (
-          <div className="glass p-6 rounded-2xl shadow-sm border border-border">
-            <p className="text-muted italic text-center py-8">Tabel detail individu (BPS_ADMIN only) dapat dilihat pada Tab "Tabel Hasil Analisis" di Dashboard.</p>
+          <div className="glass p-8 rounded-2xl shadow-sm border border-border flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
+              <Database className="w-8 h-8 text-blue-600" />
+            </div>
+            <h4 className="text-xl font-bold text-foreground mb-2">Akses Tabel Database</h4>
+            <p className="text-muted max-w-md mb-6">
+              Detail data individu hasil pemadanan V3 dan V4 kini tersedia secara komprehensif di modul Hasil Analisis.
+            </p>
+            <a 
+              href="/admin/analysis"
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center gap-2 transition-all shadow-sm"
+            >
+              <Database className="w-5 h-5" />
+              Buka Tabel Hasil Analisis
+            </a>
           </div>
         )}
       </div>

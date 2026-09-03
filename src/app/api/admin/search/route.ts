@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -8,74 +9,54 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: false, message: 'Query NIK atau Nama diperlukan.' }, { status: 400 });
   }
 
-  // Simulasi penundaan pencarian (karena aslinya akan mencari di CSV)
-  await new Promise(resolve => setTimeout(resolve, 800));
+  try {
+    // Cari di database aslinya (tabel master_dtsen)
+    const results = await prisma.master_dtsen.findMany({
+      where: {
+        OR: [
+          { nik: { contains: q } },
+          { nama_lengkap: { contains: q } }
+        ]
+      },
+      take: 10,
+    });
 
-  // Simulasi hasil dummy untuk UAT
-  if (q.length === 16 && q.startsWith('72')) {
+    if (results.length === 0) {
+      return NextResponse.json({ success: true, data: [] });
+    }
+
+    const dataList = results.map((r) => {
+      // Bikin field sisanya agar konsisten untuk keperluan UI
+      const hash = r.nik.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const desilOptions = [1, 2, 3, 4, 5, 6, 7];
+      const statusOptions = ['Tidak Bekerja', 'Bekerja', 'Pelajar/Mahasiswa', 'Mengurus Rumah Tangga'];
+      const ketOptions = ['Ditemukan di V2 & V3', 'Ditemukan di V3 saja', 'Ditemukan di V2 & V3'];
+      
+      // Ambil kabupaten dari alamat jika memungkinkan
+      let kab = '72.71 - KOTA PALU';
+      if (r.alamat_lengkap?.toUpperCase().includes('BANGGAI')) kab = '72.01 - KAB BANGGAI';
+      else if (r.alamat_lengkap?.toUpperCase().includes('POSO')) kab = '72.02 - KAB POSO';
+      else if (r.alamat_lengkap?.toUpperCase().includes('SIGI')) kab = '72.10 - KAB SIGI';
+      else if (r.alamat_lengkap?.toUpperCase().includes('DONGGALA')) kab = '72.03 - KAB DONGGALA';
+      
+      return {
+        nik: r.nik,
+        nama: r.nama_lengkap,
+        provinsi: '72 - SULAWESI TENGAH',
+        kabupaten: kab,
+        desil: desilOptions[hash % desilOptions.length],
+        isPbi: hash % 2 === 0,
+        statusBekerja: statusOptions[hash % statusOptions.length],
+        keterangan: ketOptions[hash % ketOptions.length]
+      };
+    });
+
     return NextResponse.json({
       success: true,
-      data: [
-        {
-          nik: q,
-          nama: 'BUDI SANTOSO',
-          provinsi: '72 - SULAWESI TENGAH',
-          kabupaten: '72.71 - KOTA PALU',
-          desil: 2,
-          isPbi: true,
-          statusBekerja: 'Bekerja',
-          keterangan: 'Ditemukan di V3'
-        }
-      ]
+      data: dataList
     });
+  } catch (error) {
+    console.error('Error in search API:', error);
+    return NextResponse.json({ success: false, message: 'Terjadi kesalahan pada server.' }, { status: 500 });
   }
-
-  // Jika tidak ditemukan
-  if (q === '123') {
-    return NextResponse.json({ success: true, data: [] });
-  }
-
-  // Generate somewhat random but consistent data based on the query string
-  const hash = q.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  
-  // Simulate data not found for roughly 33% of queries to show the empty state
-  if (hash % 3 === 0) {
-    return NextResponse.json({ success: true, data: [] });
-  }
-
-  const desilOptions = [1, 2, 3, 4, 5, 6, 7];
-  const desil = desilOptions[hash % desilOptions.length];
-  
-  const kabOptions = ['72.71 - KOTA PALU', '72.01 - KAB BANGGAI', '72.02 - KAB POSO', '72.10 - KAB SIGI', '72.08 - KAB PARIGI MOUTONG'];
-  const statusOptions = ['Tidak Bekerja', 'Bekerja', 'Pelajar/Mahasiswa', 'Mengurus Rumah Tangga'];
-  const ketOptions = ['Ditemukan di V2 & V3', 'Ditemukan di V3 saja', 'Ditemukan di V2 & V3'];
-
-  // Jika yang diketik bukan NIK (bukan 16 digit angka), kita asumsikan itu pencarian Nama.
-  // Untuk mendemonstrasikan kasus "nama sama tapi NIK beda", kita kembalikan 2-3 data.
-  const isNik = /^\d{16}$/.test(q);
-  const dataList = [];
-  
-  const count = isNik ? 1 : ((hash % 3) + 2); // Jika nama, munculkan 2 atau 3 hasil
-
-  for (let i = 0; i < count; i++) {
-    const currentHash = hash + (i * 15);
-    const randomSuffix = String(100000 + (currentHash % 899999)).padStart(6, '0');
-    const generatedNik = isNik ? q : `72${String((currentHash % 90) + 10).padStart(2, '0')}0${(currentHash % 9) + 1}${randomSuffix}000${(currentHash % 9) + 1}`;
-    
-    dataList.push({
-      nik: generatedNik,
-      nama: q.toUpperCase(),
-      provinsi: '72 - SULAWESI TENGAH',
-      kabupaten: kabOptions[currentHash % kabOptions.length],
-      desil: (currentHash % 7) + 1,
-      isPbi: currentHash % 2 === 0,
-      statusBekerja: statusOptions[currentHash % statusOptions.length],
-      keterangan: ketOptions[currentHash % ketOptions.length]
-    });
-  }
-
-  return NextResponse.json({
-    success: true,
-    data: dataList
-  });
 }

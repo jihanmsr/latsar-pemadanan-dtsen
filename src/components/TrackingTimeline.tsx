@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { CheckCircle2, Circle, Clock, Download, FileText, Upload, AlertCircle, XCircle, Loader2, Lock, Unlock, Database, RefreshCw, Plus, FileCheck } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, Download, FileText, Upload, AlertCircle, XCircle, Loader2, Lock, Unlock, Database, RefreshCw, Plus, FileCheck, MessageCircle } from 'lucide-react';
 import { useMatching, FileItem } from '@/context/MatchingContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -157,7 +157,7 @@ export default function TrackingTimeline() {
     },
   ];
 
-  const isDownloadUnlocked = matchingProgress === 100 && docs.bast && docs.nda;
+  const isDownloadUnlocked = matchingProgress === 100 && docs.bast;
 
   const handleDownload = () => {
     if (!submissionId) return;
@@ -391,7 +391,7 @@ export default function TrackingTimeline() {
                         <FileCheck className="w-5 h-5 text-blue-600" />
                         Persyaratan Serah Terima
                       </h3>
-                      <p className="text-xs text-slate-500 mt-1">Unggah dokumen BAST dan NDA untuk unduh data.</p>
+                      <p className="text-xs text-slate-500 mt-1">Unggah dokumen BAST untuk mengunduh hasil pemadanan.</p>
                     </div>
                     
                     <div className="space-y-3">
@@ -417,18 +417,7 @@ export default function TrackingTimeline() {
                         )}
                       </div>
                       
-                      <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors ${docs.nda ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50'}`}>
-                        <input 
-                          type="checkbox" 
-                          checked={docs.nda}
-                          onChange={(e) => setDocs(d => ({ ...d, nda: e.target.checked }))}
-                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-bold text-slate-700 dark:text-slate-300">Dokumen NDA</p>
-                        </div>
-                        <Upload className={`w-4 h-4 ${docs.nda ? 'text-blue-600' : 'text-slate-400'}`} />
-                      </label>
+                      {/* NDA removed since it's uploaded in Step 1 */}
                     </div>
                   </div>
                   

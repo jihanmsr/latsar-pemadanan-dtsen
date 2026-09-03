@@ -17,7 +17,9 @@ export default function UploadForm() {
   const router = useRouter();
 
   const [isValidating, setIsValidating] = useState(false);
-  const [isMouChecked, setIsMouChecked] = useState(false);
+  const [isMouUploaded, setIsMouUploaded] = useState(false);
+  const [isNdaUploaded, setIsNdaUploaded] = useState(false);
+  const [isManifestUploaded, setIsManifestUploaded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
@@ -330,21 +332,34 @@ export default function UploadForm() {
         )}
       </AnimatePresence>
 
-      <MoUUpload onUploadSuccess={() => setIsMouChecked(true)} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <MoUUpload 
+          title="1. Dokumen MoU / PKS"
+          description="Unggah Nota Kesepahaman (MoU) atau PKS."
+          accept=".pdf,.docx,.zip"
+          onUploadSuccess={() => setIsMouUploaded(true)} 
+        />
+        <MoUUpload 
+          title="2. Dokumen NDA"
+          description="Unggah Non-Disclosure Agreement (NDA)."
+          accept=".pdf,.docx,.zip"
+          onUploadSuccess={() => setIsNdaUploaded(true)} 
+        />
+      </div>
 
       <motion.div 
-        whileHover={isMouChecked ? { scale: 1.02 } : {}}
-        whileTap={isMouChecked ? { scale: 0.98 } : {}}
+        whileHover={(isMouUploaded && isNdaUploaded) ? { scale: 1.02 } : {}}
+        whileTap={(isMouUploaded && isNdaUploaded) ? { scale: 0.98 } : {}}
         className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all relative overflow-hidden group ${
-            isMouChecked 
+            (isMouUploaded && isNdaUploaded) 
               ? 'border-blue-300 dark:border-slate-600 bg-blue-50/40 dark:bg-slate-800/40 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-100/50 dark:hover:bg-slate-800/80 cursor-pointer hover:shadow-[0_0_20px_rgba(59,130,246,0.15)]' 
               : 'border-slate-200 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/20 cursor-not-allowed opacity-70'
            }`}
-           onClick={() => isMouChecked && fileInputRef.current?.click()}
+           onClick={() => (isMouUploaded && isNdaUploaded) && fileInputRef.current?.click()}
            onDragOver={(e) => e.preventDefault()}
-           onDrop={(e) => { e.preventDefault(); if (isMouChecked) handleDrop(e); }}
+           onDrop={(e) => { e.preventDefault(); if (isMouUploaded && isNdaUploaded) handleDrop(e); }}
       >
-        {isMouChecked && (
+        {(isMouUploaded && isNdaUploaded) && (
            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent -translate-x-full group-hover:animate-[scan_2s_ease-in-out_infinite]" />
         )}
         <input
@@ -357,17 +372,17 @@ export default function UploadForm() {
         />
         <div className="flex flex-col items-center gap-5 relative z-10">
           <motion.div 
-            animate={isMouChecked ? { y: [0, -5, 0] } : {}}
+            animate={(isMouUploaded && isNdaUploaded) ? { y: [0, -5, 0] } : {}}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-sm ${isMouChecked ? 'bg-gradient-to-br from-blue-100 to-blue-200 dark:from-slate-700 dark:to-slate-600' : 'bg-slate-200 dark:bg-slate-800'}`}
+            className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-sm ${(isMouUploaded && isNdaUploaded) ? 'bg-gradient-to-br from-blue-100 to-blue-200 dark:from-slate-700 dark:to-slate-600' : 'bg-slate-200 dark:bg-slate-800'}`}
           >
-            {isMouChecked ? <UploadCloud className="w-10 h-10 text-blue-600 dark:text-blue-400" /> : <Lock className="w-10 h-10 text-slate-400" />}
+            {(isMouUploaded && isNdaUploaded) ? <UploadCloud className="w-10 h-10 text-blue-600 dark:text-blue-400" /> : <Lock className="w-10 h-10 text-slate-400" />}
           </motion.div>
           <div>
-            <p className={`text-xl font-black tracking-tight ${isMouChecked ? 'text-slate-900 dark:text-white' : 'text-slate-500'}`}>
-              {isMouChecked ? 'Klik atau seret file ke sini' : 'Centang MoU untuk mengunggah file'}
+            <p className={`text-xl font-black tracking-tight ${(isMouUploaded && isNdaUploaded) ? 'text-slate-900 dark:text-white' : 'text-slate-500'}`}>
+              {(isMouUploaded && isNdaUploaded) ? '3. Klik atau seret File Data Sasaran ke sini' : 'Lengkapi Dokumen MoU & NDA terlebih dahulu'}
             </p>
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2">Format didukung: .csv, .xlsx, .pdf, .png, .jpg</p>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2">Format didukung: .csv, .xlsx, citra KTP (OCR)</p>
           </div>
         </div>
       </motion.div>
@@ -523,51 +538,73 @@ export default function UploadForm() {
               );
             })}
           </div>
-
-          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-sm font-bold flex items-center gap-2">
-              {allSuccess ? (
-                <>
-                  <ShieldCheck className="w-5 h-5 text-success" />
-                  <span className="text-success">Semua file lolos validasi.</span>
-                </>
-              ) : hasErrors ? (
-                <>
-                  <XCircle className="w-5 h-5 text-rose-500" />
-                  <span className="text-rose-600 dark:text-rose-400">Harap perbaiki atau hapus file yang gagal.</span>
-                </>
-              ) : (
-                <span className="text-slate-500">Menunggu validasi selesai...</span>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-              <button
-                onClick={() => setIsManifestModalOpen(true)}
-                disabled={!allSuccess || globalProgress < 100 || totalFiles === 0 || isValidating}
-                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-bold transition-all shadow-md ${
-                  allSuccess && globalProgress === 100 && totalFiles > 0
-                    ? 'bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-300 hover:-translate-y-0.5'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none'
-                }`}
-              >
-                <Download className="w-5 h-5" />
-                Unduh Manifes Global
-              </button>
-
-              <button
-                onClick={handleContinue}
-                disabled={!allSuccess || totalFiles === 0 || isValidating}
-                className={`flex-1 sm:flex-none px-6 py-2.5 rounded-lg font-bold transition-all shadow-md ${
-                  allSuccess && totalFiles > 0
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white hover:-translate-y-0.5' 
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none'
-                }`}
-              >
-                Lanjutkan Pengajuan
-              </button>
-            </div>
-          </div>
         </motion.div>
+      )}
+
+      {/* Manifest Upload (Step 4) */}
+      <AnimatePresence>
+        {allSuccess && files.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <MoUUpload 
+              title="4. Unggah Form Manifes (Final)"
+              description="Setelah Anda membuat Manifes (lewat tombol AI di bawah), silakan cetak, tandatangani, lalu unggah kembali format finalnya di sini."
+              accept=".pdf,.zip,.rar"
+              onUploadSuccess={() => setIsManifestUploaded(true)} 
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Action Bar */}
+      {files.length > 0 && (
+        <div className="bg-surface border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-sm font-bold flex items-center gap-2">
+            {allSuccess ? (
+              <>
+                <ShieldCheck className="w-5 h-5 text-success" />
+                <span className="text-success">Semua file sasaran lolos validasi.</span>
+              </>
+            ) : hasErrors ? (
+              <>
+                <XCircle className="w-5 h-5 text-rose-500" />
+                <span className="text-rose-600 dark:text-rose-400">Harap perbaiki atau hapus file yang gagal.</span>
+              </>
+            ) : (
+              <span className="text-slate-500">Menunggu validasi selesai...</span>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <button
+              onClick={() => setIsManifestModalOpen(true)}
+              disabled={!allSuccess || globalProgress < 100 || totalFiles === 0 || isValidating}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-bold transition-all shadow-md ${
+                allSuccess && globalProgress === 100 && totalFiles > 0
+                  ? 'bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-300 hover:-translate-y-0.5'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none'
+              }`}
+            >
+              <Download className="w-5 h-5" />
+              Buat Manifes Otomatis (AI)
+            </button>
+
+            <button
+              onClick={handleContinue}
+              disabled={!allSuccess || totalFiles === 0 || isValidating || !isManifestUploaded}
+              className={`flex-1 sm:flex-none px-6 py-2.5 rounded-lg font-bold transition-all shadow-md ${
+                allSuccess && totalFiles > 0 && isManifestUploaded
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white hover:-translate-y-0.5' 
+                  : 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none'
+              }`}
+            >
+              Lanjutkan Pengajuan
+            </button>
+          </div>
+        </div>
       )}
 
       <ManifestModal 

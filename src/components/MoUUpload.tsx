@@ -4,9 +4,12 @@ import { motion } from 'framer-motion';
 
 interface MoUUploadProps {
   onUploadSuccess: () => void;
+  title?: string;
+  description?: string;
+  accept?: string;
 }
 
-export default function MoUUpload({ onUploadSuccess }: MoUUploadProps) {
+export default function MoUUpload({ onUploadSuccess, title = "Dokumen Kelengkapan", description = "Sesuai SOP, unggah file kelengkapan.", accept = ".pdf,.docx,.jpg,.png,.zip,.rar" }: MoUUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -56,8 +59,8 @@ export default function MoUUpload({ onUploadSuccess }: MoUUploadProps) {
           <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Dokumen MoU / Perjanjian Kerja Sama</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Unggah dokumen Nota Kesepahaman (MoU) atau PKS dengan BPS sebelum melanjutkan pengajuan pemadanan data.</p>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{description}</p>
         </div>
       </div>
 
@@ -71,7 +74,7 @@ export default function MoUUpload({ onUploadSuccess }: MoUUploadProps) {
               type="file" 
               ref={fileInputRef} 
               className="hidden" 
-              accept=".pdf,.docx,.jpg,.png" 
+              accept={accept} 
               onChange={handleFileChange}
             />
             <UploadCloud className="w-8 h-8 text-slate-400 mx-auto mb-2" />
@@ -127,7 +130,7 @@ export default function MoUUpload({ onUploadSuccess }: MoUUploadProps) {
           <div className="flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
             <div>
-              <p className="text-sm font-bold text-green-800 dark:text-green-300">Dokumen MoU Berhasil Diunggah</p>
+              <p className="text-sm font-bold text-green-800 dark:text-green-300">Dokumen Kelengkapan Berhasil Diunggah</p>
               <p className="text-xs text-green-600 dark:text-green-400">{file?.name}</p>
             </div>
           </div>
