@@ -234,11 +234,22 @@ export default function UploadForm() {
     });
   };
 
-  const handleContinue = () => {
-    if (!submissionId) {
-      setSubmissionId(`REQ-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*1000)}`);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+  const handleContinue = async () => {
+    try {
+      setIsValidating(true);
+      await new Promise(r => setTimeout(r, 1000));
+      
+      if (!submissionId) {
+        setSubmissionId(`REQ-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*1000)}`);
+      }
+      setIsSuccessModalOpen(true);
+    } catch (error) {
+      console.error("Error finalizing:", error);
+    } finally {
+      setIsValidating(false);
     }
-    router.push('/tracking');
   };
 
   const handleResetSubmission = () => {
@@ -504,9 +515,9 @@ export default function UploadForm() {
             <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
               <button
                 onClick={() => setIsManifestModalOpen(true)}
-                disabled={globalProgress < 100 || totalFiles === 0 || isValidating}
+                disabled={!allSuccess || globalProgress < 100 || totalFiles === 0 || isValidating}
                 className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-bold transition-all shadow-md ${
-                  globalProgress === 100 && totalFiles > 0
+                  allSuccess && globalProgress === 100 && totalFiles > 0
                     ? 'bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-300 hover:-translate-y-0.5'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none'
                 }`}
@@ -536,6 +547,57 @@ export default function UploadForm() {
         onClose={() => setIsManifestModalOpen(false)} 
         onGenerate={(metadata) => generateManifest(files, metadata)} 
       />
+
+      {/* Success Ticket Modal */}
+      <AnimatePresence>
+        {isSuccessModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 text-center"
+            >
+              <div className="p-8 pb-6">
+                <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/40 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white dark:border-slate-900 shadow-sm">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Pengajuan Berhasil!</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                  Data sasaran Anda telah masuk ke dalam antrean pemadanan sistem BPS. Berikut adalah kode tiket (resi) pengajuan Anda:
+                </p>
+                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-6">
+                  <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1">Kode Tiket</p>
+                  <p className="text-xl font-mono font-black text-blue-600 dark:text-blue-400 tracking-tight">{submissionId}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  onClick={() => {
+                    setIsSuccessModalOpen(false);
+                    reset();
+                    // Just close modal and reset, staying on dashboard to see history
+                  }}
+                  className="px-4 py-4 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-r border-slate-100 dark:border-slate-800"
+                >
+                  Lihat Riwayat
+                </button>
+                <button
+                  onClick={() => {
+                    setIsSuccessModalOpen(false);
+                    router.push('/tracking');
+                  }}
+                  className="px-4 py-4 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex justify-center items-center gap-2"
+                >
+                  <Play className="w-4 h-4" />
+                  Lacak Progres
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </motion.div>
   );
 }

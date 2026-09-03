@@ -62,6 +62,7 @@ export default function ManifestModal({ isOpen, onClose, onGenerate }: ManifestM
                   value={metadata.namaInstansi}
                   onChange={(e) => setMetadata({ ...metadata, namaInstansi: e.target.value })}
                 />
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Sesuai dengan nama OPD atau instansi yang terdaftar.</p>
               </div>
 
               {/* Nomor Surat */}
@@ -77,6 +78,7 @@ export default function ManifestModal({ isOpen, onClose, onGenerate }: ManifestM
                   value={metadata.nomorSurat}
                   onChange={(e) => setMetadata({ ...metadata, nomorSurat: e.target.value })}
                 />
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Nomor registrasi dari Surat Permohonan resmi/MoU.</p>
               </div>
 
               {/* Tanggal & Perihal Grid */}
@@ -92,6 +94,7 @@ export default function ManifestModal({ isOpen, onClose, onGenerate }: ManifestM
                     value={metadata.tanggalSurat}
                     onChange={(e) => setMetadata({ ...metadata, tanggalSurat: e.target.value })}
                   />
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Tanggal penerbitan Surat Permohonan.</p>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
@@ -105,6 +108,7 @@ export default function ManifestModal({ isOpen, onClose, onGenerate }: ManifestM
                     value={metadata.perihalSurat}
                     onChange={(e) => setMetadata({ ...metadata, perihalSurat: e.target.value })}
                   />
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Tujuan atau perihal pengajuan pemadanan data.</p>
                 </div>
               </div>
             </div>

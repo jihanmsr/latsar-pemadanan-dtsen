@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, FileText, CheckCircle2, Lock, FileDown, UploadCloud, Search, Calendar, User, ArrowRight, AlertTriangle, Download, Upload, Bot, MessageSquare, BookOpen } from 'lucide-react';
 import UploadForm from '@/components/UploadForm';
 import DashboardStats from '@/components/DashboardStats';
+import SubmissionHistory from '@/components/SubmissionHistory';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -317,6 +318,10 @@ export default function DashboardInstansi() {
         </div>
 
       </div>
+
+      {/* SUBMISSION HISTORY TABLE */}
+      <SubmissionHistory />
+
     </div>
   );
 }
