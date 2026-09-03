@@ -204,3 +204,66 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+/**
+ * PUT /api/submissions
+ * Endpoint untuk mengubah status pengajuan (Keperluan Simulasi SLA)
+ */
+export async function PUT(req: NextRequest) {
+  const { user, error } = await verifyAuth(req);
+  if (!user) return unauthorizedResponse(error ?? undefined);
+
+  try {
+    const body = await req.json();
+    const { id, status } = body;
+
+    if (!id || !status) {
+      return NextResponse.json({ success: false, error: 'Parameter id dan status diwajibkan.' }, { status: 400 });
+    }
+
+    // Update status in submissions table
+    const sql = `
+      UPDATE submissions 
+      SET status = ? 
+      WHERE id = ? AND user_id = ?
+    `;
+    
+    const result = await query(sql, [status, id, user.id]) as any;
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json({ success: false, error: 'Tiket tidak ditemukan atau Anda tidak memiliki akses.' }, { status: 404 });
+    }
+    
+    // Jika status di-update ke MATCHING atau COMPLETED, kita buatkan data dummy di matching_results jika belum ada
+    if (status === 'MATCHING' || status === 'COMPLETED') {
+      const checkSql = `SELECT count(*) as count FROM matching_results WHERE submission_id = ?`;
+      const rows = await query(checkSql, [id]) as any[];
+      if (rows.length > 0 && Number(rows[0].count) === 0) {
+        // Ambil info file
+        const fileSql = `SELECT total_rows FROM submissions WHERE id = ?`;
+        const fileRows = await query(fileSql, [id]) as any[];
+        let total = 20;
+        if (fileRows.length > 0 && fileRows[0].total_rows > 0) {
+          total = fileRows[0].total_rows;
+        }
+        
+        const padan = Math.floor(total * 0.85); // 85% match rate default simulasi
+        const anomali = total - padan;
+        
+        const insertMatchSql = `
+          INSERT INTO matching_results (submission_id, total_count, padan, tidak_padan, anomali, average_match_score)
+          VALUES (?, ?, ?, 0, ?, 85.5)
+        `;
+        await query(insertMatchSql, [id, total, padan, anomali]);
+      }
+    }
+
+    return NextResponse.json({ success: true, message: 'Status berhasil diperbarui.', id, newStatus: status });
+  } catch (err) {
+    console.error('[/api/submissions PUT] Error:', err);
+    return NextResponse.json(
+      { success: false, error: 'Gagal memperbarui status submission.' },
+      { status: 500 }
+    );
+  }
+}

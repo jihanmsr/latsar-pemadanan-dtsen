@@ -52,6 +52,19 @@ export default function TrackingTimeline() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [submissionOptions, setSubmissionOptions] = useState<any[]>([]);
 
+  const mapStatusToProgress = (status: string) => {
+    switch (status) {
+      case 'PENDING': return 0;
+      case 'VALIDATED': return 25;
+      case 'MATCHING': return 50;
+      case 'COMPLETED': return 100;
+      default: return 0;
+    }
+  };
+
+
+
+
   // Fetch list of submissions for the dropdown
   useEffect(() => {
     fetch('/api/submissions?limit=50')
@@ -72,7 +85,7 @@ export default function TrackingTimeline() {
       if (res.success && res.data.length > 0) {
         const latest = res.data[0];
         setSubmissionId(latest.id);
-        setMatchingProgress(100);
+        setMatchingProgress(mapStatusToProgress(latest.status));
         setFiles([{
           id: latest.id,
           name: latest.file_name || 'berkas_pengajuan.csv',
@@ -104,7 +117,7 @@ export default function TrackingTimeline() {
           if (res.success && res.data.length > 0) {
             const latest = res.data[0];
             setSubmissionId(latest.id);
-            setMatchingProgress(100); // Simulate done if it's already in DB
+            setMatchingProgress(mapStatusToProgress(latest.status));
             
             setFiles([{
               id: latest.id,
@@ -125,39 +138,7 @@ export default function TrackingTimeline() {
     }
   }, [targetId, setSubmissionId, setMatchingProgress, setFiles]);
 
-  // Auto trigger process if files exist and not started yet
-  useEffect(() => {
-    if (files.length === 0) return;
-    const allValidated = files.every(f => f.status === 'success' || f.status === 'error');
-    if (allValidated && matchingProgress === 0 && !isProcessing) {
-      runSequentialApis();
-    }
-  }, [files, matchingProgress, isProcessing]);
-
-  const runSequentialApis = async () => {
-    setIsProcessing(true);
-    
-    // Simulate delay for system check
-    await new Promise(r => setTimeout(r, 1000));
-    setMatchingProgress(20);
-
-    // Process matching per file
-    const successfulFiles = files.filter(f => f.status === 'success');
-    for (let i = 0; i < successfulFiles.length; i++) {
-      const f = successfulFiles[i];
-      // Simulate Levenshtein processing
-      await new Promise(r => setTimeout(r, 1500));
-      const matchScore = Math.floor(Math.random() * (95 - 60 + 1) + 60); // Random 60-95%
-      updateFile(f.id, { matchScore });
-      
-      const newProgress = 20 + Math.floor(((i + 1) / successfulFiles.length) * 80);
-      setMatchingProgress(newProgress);
-    }
-    
-    setMatchingProgress(100);
-  };
-
-  const steps = [
+    const steps = [
     { 
       id: 1, name: 'Pengajuan Data', sla: '1 Hari Kerja (SLA)', 
       status: files.length > 0 ? 'completed' : 'current' 
