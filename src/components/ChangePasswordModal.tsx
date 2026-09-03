@@ -20,7 +20,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -36,19 +36,31 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
 
     setIsSubmitting(true);
     
-    // Simulate API delay
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldPassword, newPassword })
+      });
       
-      setTimeout(() => {
-        setIsSuccess(false);
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        onClose();
-      }, 2000);
-    }, 1500);
+      const data = await res.json();
+      if (res.ok) {
+        setIsSuccess(true);
+        setTimeout(() => {
+          setIsSuccess(false);
+          setOldPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+          onClose();
+        }, 2000);
+      } else {
+        setError(data.message || 'Gagal mengubah kata sandi.');
+      }
+    } catch (err) {
+      setError('Terjadi kesalahan jaringan.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

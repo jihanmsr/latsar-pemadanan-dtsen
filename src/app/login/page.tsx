@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Loader2, ArrowRight, Eye, EyeOff, ShieldCheck, Mail, Lock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, ArrowRight, Eye, EyeOff, ShieldCheck, Mail, Lock, X, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import PublicNavbar from '@/components/PublicNavbar';
@@ -15,6 +15,11 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
+
+  // Forgot Password Modal State
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotState, setForgotState] = useState<'idle' | 'loading' | 'success'>('idle');
   
   useEffect(() => setMounted(true), []);
 
@@ -28,18 +33,34 @@ export default function LoginPage() {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail) return;
+    setForgotState('loading');
+    
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail })
+      });
+      // Berhasil atau tidak (untuk keamanan), kita tetap tunjukkan layar sukses
+      setForgotState('success');
+    } catch (err) {
+      setForgotState('success');
+    }
+  };
+
   if (!mounted) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <PublicNavbar />
-      <div className="flex-1 flex flex-col lg:flex-row">
+      <div className="flex-1 flex flex-col lg:flex-row relative">
       
       {/* LEFT COLUMN - Information / Branding */}
       <div className="w-full lg:w-5/12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 lg:p-16 flex flex-col justify-center relative overflow-hidden">
-        {/* Background decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Animated Glowing Orbs */}
           <motion.div 
             animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
@@ -50,14 +71,12 @@ export default function LoginPage() {
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
             className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] rounded-full bg-indigo-500/20 blur-[120px]"
           />
-          
-          {/* Subtle Futuristic Grid Pattern */}
           <div 
             className="absolute inset-0 opacity-[0.04]" 
             style={{ 
               backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', 
               backgroundSize: '40px 40px',
-              maskImage: 'linear-gradient(to bottom, black 40%, transparent)' // Fades out the grid at the bottom
+              maskImage: 'linear-gradient(to bottom, black 40%, transparent)' 
             }}
           />
         </div>
@@ -65,7 +84,6 @@ export default function LoginPage() {
         <div className="max-w-xl mx-auto w-full relative z-10">
           <div className="mb-12">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-
               <p className="text-sm font-bold text-blue-400 uppercase tracking-widest">
                 Modul Pemadanan DTSEN
               </p>
@@ -136,9 +154,13 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between pl-1">
                 <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Kata Sandi</label>
-                <Link href="/forgot-password" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+                <button 
+                  type="button" 
+                  onClick={() => setShowForgotModal(true)}
+                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                >
                   Lupa kata sandi?
-                </Link>
+                </button>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
@@ -176,6 +198,7 @@ export default function LoginPage() {
             </div>
 
             <button
+              type="submit"
               disabled={isLoading}
               className="w-full py-3.5 mt-2 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
             >
@@ -197,6 +220,106 @@ export default function LoginPage() {
           </div>
         </motion.div>
       </div>
+      
+      {/* FORGOT PASSWORD MODAL */}
+      <AnimatePresence>
+        {showForgotModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => forgotState !== 'loading' && setShowForgotModal(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2 text-slate-800 dark:text-white font-bold">
+                  <Mail className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+                  Lupa Kata Sandi
+                </div>
+                <button 
+                  onClick={() => setShowForgotModal(false)}
+                  disabled={forgotState === 'loading'}
+                  className="p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors disabled:opacity-50"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6">
+                {forgotState !== 'success' ? (
+                  <form onSubmit={handleForgotPassword} className="space-y-6">
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      Masukkan email akun Anda. Kami akan mengirimkan password sementara ke email tersebut.
+                    </p>
+                    
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <Mail className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="email"
+                        required
+                        placeholder="jihanmaisaroh@bps.go.id"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-blue-500/50 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all dark:text-white"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowForgotModal(false)}
+                        disabled={forgotState === 'loading'}
+                        className="flex-1 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+                      >
+                        Batal
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!forgotEmail || forgotState === 'loading'}
+                        className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center disabled:opacity-50 gap-2"
+                      >
+                        {forgotState === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Kirim Email'}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="text-center py-4">
+                    <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 border-[6px] border-emerald-50 dark:border-emerald-900/10">
+                      <CheckCircle2 className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Email Terkirim!</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                      Jika email terdaftar, instruksi reset password telah dikirim.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setShowForgotModal(false);
+                        setTimeout(() => setForgotState('idle'), 300);
+                      }}
+                      className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-full transition-colors"
+                    >
+                      Tutup
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       </div>
     </div>
   );
