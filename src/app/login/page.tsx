@@ -136,7 +136,7 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between pl-1">
                 <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Kata Sandi</label>
-                <Link href="#" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+                <Link href="/forgot-password" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
                   Lupa kata sandi?
                 </Link>
               </div>

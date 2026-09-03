@@ -1,14 +1,18 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Bell, UserCircle, CheckCircle2, Sun, Moon, LogOut, Menu, Shield, Building } from 'lucide-react';
+import { Bell, UserCircle, CheckCircle2, Sun, Moon, LogOut, Menu, Shield, Building, Lock } from 'lucide-react';
 import { useMatching } from '@/context/MatchingContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import ChangePasswordModal from './ChangePasswordModal';
+
 export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: boolean) => void }) {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [adminNotifications, setAdminNotifications] = useState<any[]>([]);
   const { matchingProgress, files } = useMatching();
@@ -174,7 +178,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center gap-3 border-l border-border pl-4 ml-2">
+        <div className="flex items-center gap-3 border-l border-border pl-4 ml-2 relative">
           <div className="hidden sm:flex flex-col items-end">
             <p className="text-sm font-extrabold text-foreground leading-none mb-1">
               {user ? (user.name === 'Admin BPS Pusat' ? 'Admin BPS' : user.name) : 'Tamu'}
@@ -183,16 +187,58 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
               {(user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI') ? (user.role === 'BPS_PEGAWAI' ? 'Staf Validasi BPS' : 'BPS Administrator') : (user?.instansi || 'Perwakilan Pemda')}
             </p>
           </div>
-          <UserCircle className="w-9 h-9 text-primary-light" />
-          <button
-            onClick={logout}
-            className="p-2 text-muted hover:text-rose-500 transition-all duration-300 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/30 ml-1"
-            title="Logout"
+          
+          <button 
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="focus:outline-none flex items-center gap-1 hover:opacity-80 transition-opacity"
           >
-            <LogOut className="w-5 h-5" />
+            <UserCircle className="w-9 h-9 text-primary-light" />
           </button>
+
+          <AnimatePresence>
+            {showProfileMenu && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl overflow-hidden z-50"
+              >
+                <div className="p-1.5 flex flex-col">
+                  <button 
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      setIsPasswordModalOpen(true);
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-left"
+                  >
+                    <Lock className="w-4 h-4 text-slate-400" />
+                    Ubah Password
+                  </button>
+                  
+                  <div className="h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
+                  
+                  <button 
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      logout();
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Keluar (Logout)
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
+      
+      <ChangePasswordModal 
+        isOpen={isPasswordModalOpen} 
+        onClose={() => setIsPasswordModalOpen(false)} 
+      />
     </header>
   );
 }
