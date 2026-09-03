@@ -92,9 +92,9 @@ export default function Chatbot() {
   };
 
   const quickQuestions = [
-    'Apa itu DTSEN?',
-    'Cara pemadanan?',
-    'Regulasi DTSEN?',
+    'Cara upload data',
+    'Kenapa NIK ditolak?',
+    'Syarat dokumen MoU',
   ];
 
   return (
@@ -173,13 +173,13 @@ export default function Chatbot() {
                       : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-bl-sm'
                   }`}>
                     {m.text}
-                    {m.role === 'bot' && m.text.includes('Hubungi Kami') && !showTicketForm && (
+                    {m.role === 'bot' && m.text.includes('Hubungi Kami') && (
                       <button 
-                        onClick={() => setShowTicketForm(true)}
-                        className="mt-3 w-full py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 font-bold rounded-lg transition-colors text-xs flex items-center justify-center gap-1.5"
+                        onClick={() => window.open('https://wa.me/6281234567890?text=Halo%20Admin%20PAKEWA%2C%20saya%20butuh%20bantuan.', '_blank')}
+                        className="mt-3 w-full py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 font-bold rounded-lg transition-colors text-xs flex items-center justify-center gap-1.5"
                       >
                         <MessageSquare className="w-3.5 h-3.5" />
-                        Tinggalkan Pesan ke Admin
+                        Hubungi Admin (WhatsApp)
                       </button>
                     )}
                   </div>

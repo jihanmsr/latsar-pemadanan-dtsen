@@ -16,6 +16,8 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
   const isValidated = files && files.length > 0 && files.every(f => f.status === 'success');
   const { theme, setTheme } = useTheme();
 
+  const [pemdaNotifications, setPemdaNotifications] = useState<any[]>([]);
+
   useEffect(() => {
     setMounted(true);
     if (user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI') {
@@ -31,6 +33,19 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
             })));
           }
         }).catch(console.error);
+    } else if (user?.role === 'PEMDA') {
+      fetch('/api/submissions')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            const needsAction = res.data.filter((s: any) => s.status === 'MATCHING');
+            setPemdaNotifications(needsAction.map((p: any) => ({
+              id: p.id,
+              title: 'Tindakan Diperlukan',
+              desc: `Proses matching untuk ${p.file_name} sedang berjalan. Pantau di menu Tracking.`
+            })));
+          }
+        }).catch(console.error);
     }
   }, [user]);
 
@@ -39,7 +54,7 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
   if (user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI') {
     notifications.push(...adminNotifications);
   } else if (user?.role === 'PEMDA') {
-    notifications.push({ id: 99, title: "Tindakan Diperlukan", desc: `Silakan lengkapi manifes untuk data ${user.instansi || 'instansi'}.` });
+    notifications.push(...pemdaNotifications);
   }
 
   if (matchingProgress === 100) {
@@ -114,28 +129,46 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-2 w-80 glass border border-border shadow-xl rounded-xl overflow-hidden z-50"
+                className="absolute right-0 mt-2 w-80 md:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl rounded-2xl overflow-hidden z-50"
               >
-                <div className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-border px-4 py-3">
-                  <h3 className="font-bold text-foreground text-sm">Notifikasi</h3>
+                <div className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-800 px-4 py-3 flex justify-between items-center">
+                  <h3 className="font-bold text-slate-800 dark:text-white text-sm">Notifikasi</h3>
+                  {notifications.length > 0 && (
+                    <span className="text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                      {notifications.length} Baru
+                    </span>
+                  )}
                 </div>
-                <div className="max-h-64 overflow-y-auto">
+                <div className="max-h-[22rem] overflow-y-auto">
                   {notifications.length === 0 ? (
-                    <div className="p-4 text-center text-muted text-sm">
-                      Tidak ada notifikasi baru.
+                    <div className="p-8 flex flex-col items-center justify-center text-center">
+                      <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
+                        <Bell className="w-6 h-6 text-slate-400 dark:text-slate-500" />
+                      </div>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Tidak ada notifikasi baru.</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Anda sudah melihat semuanya!</p>
                     </div>
                   ) : (
-                    notifications.map(notif => (
-                      <div key={notif.id} className="p-4 border-b border-border hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors flex gap-3 items-start">
-                        <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 ${notif.id === 99 ? 'text-primary' : 'text-success'}`} />
-                        <div>
-                          <p className="text-sm font-bold text-foreground">{notif.title}</p>
-                          <p className="text-xs text-muted mt-1">{notif.desc}</p>
+                    notifications.map((notif, idx) => (
+                      <div key={idx} className="p-4 border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors flex gap-3 items-start cursor-pointer group">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${notif.id === 99 ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30' : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30'}`}>
+                          <Bell className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 transition-colors leading-tight">{notif.title}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-snug">{notif.desc}</p>
                         </div>
                       </div>
                     ))
                   )}
                 </div>
+                {notifications.length > 0 && (
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-800 text-center">
+                    <button className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+                      Tandai semua dibaca
+                    </button>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

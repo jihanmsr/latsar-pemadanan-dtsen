@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { CheckCircle2, Circle, Clock, Download, FileText, Upload, AlertCircle, XCircle, Loader2, Lock, Unlock, Database, RefreshCw, Plus, FileCheck, MessageCircle } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, Download, FileText, Upload, AlertCircle, XCircle, Loader2, Lock, Unlock, Database, RefreshCw, Plus, FileCheck, MessageCircle, Search } from 'lucide-react';
 import { useMatching, FileItem } from '@/context/MatchingContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,6 +41,7 @@ export default function TrackingTimeline() {
   const searchParams = useSearchParams();
   const targetId = searchParams.get('id');
   const { reset } = useMatching();
+  const [searchInput, setSearchInput] = useState(targetId || '');
   
   // Local state instead of global context to avoid polluting the Upload Dashboard
   const [submissionId, setSubmissionId] = useState<string | null>(null);
@@ -51,6 +52,12 @@ export default function TrackingTimeline() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [submissionOptions, setSubmissionOptions] = useState<any[]>([]);
+
+  // OTP State
+  const [showOtp, setShowOtp] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
+  const [otpError, setOtpError] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const mapStatusToProgress = (status: string) => {
     switch (status) {
@@ -85,6 +92,7 @@ export default function TrackingTimeline() {
       if (res.success && res.data.length > 0) {
         const latest = res.data[0];
         setSubmissionId(latest.id);
+        setSearchInput(latest.id);
         setMatchingProgress(mapStatusToProgress(latest.status));
         setFiles([{
           id: latest.id,
@@ -117,6 +125,7 @@ export default function TrackingTimeline() {
           if (res.success && res.data.length > 0) {
             const latest = res.data[0];
             setSubmissionId(latest.id);
+            setSearchInput(latest.id);
             setMatchingProgress(mapStatusToProgress(latest.status));
             
             setFiles([{
@@ -136,7 +145,7 @@ export default function TrackingTimeline() {
         })
         .catch(console.error);
     }
-  }, [targetId, setSubmissionId, setMatchingProgress, setFiles]);
+  }, [targetId, setSubmissionId, setMatchingProgress, setFiles, files.length]);
 
     const steps = [
     { 
@@ -174,15 +183,26 @@ export default function TrackingTimeline() {
     for (const f of successfulFiles) {
       const numRows = Math.max(f.totalRows || 1, 10);
       const dummyData = Array.from({ length: numRows }).map((_, i) => {
-        const isMatch = Math.random() > 0.2;
+        const randomVal = Math.random();
+        let status = "Tidak Ditemukan";
+        let dtsenId = "";
+        
+        if (randomVal > 0.6) {
+           status = "Cocok 100%";
+           dtsenId = `DTSEN-${String(Math.floor(Math.random() * 10000)).padStart(5, '0')}`;
+        } else if (randomVal > 0.3) {
+           status = "Anomali Typo";
+           dtsenId = `DTSEN-${String(Math.floor(Math.random() * 10000)).padStart(5, '0')}`;
+        }
+
         const score = f.matchScore || Math.floor(Math.random() * 30 + 70);
+        
         return {
-          NIK: `'317${Math.floor(Math.random() * 10000000000000)}`,
-          Nama: `Penduduk ${i+1} (${f.name.substring(0, 10)})`,
-          Status_Padan: isMatch ? 'EXACT_MATCH' : 'TIDAK EXACT_MATCH',
-          Skor_Levenshtein: score,
-          ID_BPS_DTSEN: `DTSEN-${Math.floor(Math.random() * 10000)}`,
-          'Catatan Pemadanan (Metode)': isMatch ? 'Pencarian Lapis 1 (Tanggal Lahir cocok).' : 'Pencarian Lapis 2 (Nama Murni): Tanggal Lahir berbeda / salah input.'
+          NIK_SASARAN: `'727${Math.floor(Math.random() * 10000000000000)}`,
+          NAMA_SASARAN: `Penduduk Sasaran ${i+1}`,
+          STATUS_PADAN: status,
+          SKOR_KEMIRIPAN: `${status === 'Cocok 100%' ? 100 : (status === 'Tidak Ditemukan' ? 0 : score)}%`,
+          ID_DTSEN: dtsenId
         };
       });
 
@@ -218,23 +238,30 @@ export default function TrackingTimeline() {
           <p className="text-slate-600 dark:text-slate-400 font-medium">Pantau status pemadanan per file. Perhatikan SLA pada masing-masing tahapan.</p>
         </div>
         <div className="flex items-center gap-3">
-          {submissionId && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl text-blue-800 dark:text-blue-300 font-bold shadow-sm flex items-center overflow-hidden">
-              <span className="pl-4 py-2 border-r border-blue-200 dark:border-blue-800 mr-2 opacity-75 text-sm">ID:</span>
-              <select 
-                value={submissionId || ''}
-                onChange={(e) => {
-                  router.push(`/tracking?id=${e.target.value}`);
-                }}
-                className="bg-transparent border-none text-blue-800 dark:text-blue-300 font-bold focus:ring-0 cursor-pointer py-2 pr-8 pl-1 text-sm outline-none"
+          <form 
+            onSubmit={(e) => { e.preventDefault(); if (searchInput) router.push(`/tracking?id=${searchInput}`); }}
+            className="flex items-center"
+          >
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center overflow-hidden shadow-sm focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
+              <span className="pl-3 text-slate-400">
+                <Search className="w-4 h-4" />
+              </span>
+              <input 
+                type="text"
+                placeholder="Nomor Tiket (REQ-...)"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="bg-transparent border-none text-sm font-medium text-slate-900 dark:text-white px-3 py-2.5 w-48 sm:w-64 outline-none focus:ring-0"
+              />
+              <button 
+                type="submit"
+                disabled={!searchInput}
+                className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 text-sm font-bold border-l border-slate-200 dark:border-slate-700 transition-colors disabled:opacity-50"
               >
-                {submissionOptions.length === 0 && <option value={submissionId || ''}>{submissionId}</option>}
-                {submissionOptions.map(opt => (
-                  <option key={opt.id} value={opt.id}>{opt.id} - {opt.file_name.substring(0, 15)}{opt.file_name.length > 15 ? '...' : ''}</option>
-                ))}
-              </select>
+                Cari
+              </button>
             </div>
-          )}
+          </form>
           <button 
             onClick={handleRefresh} 
             disabled={isRefreshing} 
@@ -299,6 +326,18 @@ export default function TrackingTimeline() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* WhatsApp Contact Box */}
+            <div className="mt-8 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded-2xl flex items-start gap-3 relative z-10 shadow-sm transition-transform hover:-translate-y-1">
+               <MessageCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+               <div>
+                  <h4 className="font-bold text-sm text-emerald-800 dark:text-emerald-300">Terlalu lama menunggu?</h4>
+                  <p className="text-xs text-emerald-700 dark:text-emerald-400/80 mt-1 mb-3">Jika SLA terlewat, Anda bisa mengingatkan admin BPS via WhatsApp.</p>
+                  <a href="https://wa.me/6285211223344" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow">
+                     Hubungi Admin PAKEWA
+                  </a>
+               </div>
             </div>
           </div>
 
@@ -411,7 +450,7 @@ export default function TrackingTimeline() {
                         {matchingProgress === 100 && (
                           <div className="ml-7">
                             <button onClick={() => window.open(`/api/bast?submissionId=${submissionId}`)} className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                              <Download className="w-3 h-3" /> Generate BAST
+                              <Download className="w-3 h-3" /> Cetak BAST (Berita Acara Serah Terima)
                             </button>
                           </div>
                         )}

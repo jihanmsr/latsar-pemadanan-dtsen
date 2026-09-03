@@ -70,17 +70,29 @@ export default function SearchPage() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-4"
           >
-            <h3 className="text-lg font-bold text-foreground">Hasil Pencarian ({results.length})</h3>
+            <h3 className="text-lg font-bold text-foreground">
+              Hasil Pencarian {results.length === 10 ? '(10+)' : `(${results.length})`}
+            </h3>
             
             {results.length === 0 ? (
-              <div className="p-8 text-center bg-slate-50 dark:bg-slate-900 rounded-2xl border border-border border-dashed">
-                <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-muted font-medium">Data tidak ditemukan untuk "{query}"</p>
+              <div className="p-10 text-center bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 border-dashed">
+                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FileText className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                </div>
+                <p className="text-foreground font-bold text-xl mb-2">Data tidak ditemukan</p>
+                <p className="text-muted text-sm max-w-md mx-auto leading-relaxed">
+                  Kami tidak dapat menemukan profil dengan kata kunci <span className="font-bold text-foreground">"{query}"</span>. 
+                  Pastikan ejaan nama atau 16-digit NIK sudah benar. 
+                </p>
+                <div className="mt-6 inline-block bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg border border-blue-100 dark:border-blue-800/50">
+                  <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">💡 Tips: Pencarian dengan NIK jauh lebih akurat daripada menggunakan nama.</p>
+                </div>
               </div>
             ) : (
-              results.map((r, i) => (
-                <div key={i} className="glass p-6 rounded-2xl shadow-sm border border-border flex flex-col md:flex-row gap-6">
-                  <div className="flex-1 space-y-4">
+              <div className="space-y-4">
+                {results.map((r, i) => (
+                  <div key={i} className="glass p-6 rounded-2xl shadow-sm border border-border flex flex-col md:flex-row gap-6 hover:shadow-md transition-shadow">
+                    <div className="flex-1 space-y-4">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
                         <User className="w-6 h-6" />
@@ -120,7 +132,16 @@ export default function SearchPage() {
                     </div>
                   </div>
                 </div>
-              ))
+              ))}
+              
+              {results.length === 10 && (
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl text-center mt-6 shadow-sm">
+                    <p className="text-amber-800 dark:text-amber-300 text-sm font-medium">
+                      ⚠️ Menampilkan 10 hasil teratas. Silakan gunakan kata kunci yang lebih spesifik (seperti menggunakan NIK lengkap) jika data yang Anda cari belum muncul.
+                    </p>
+                  </div>
+                )}
+              </div>
             )}
           </motion.div>
         )}
