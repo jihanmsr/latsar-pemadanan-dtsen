@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin, FileDown, UploadCloud, Send, Table as TableIcon, Loader2, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin, FileDown, UploadCloud, Send, Table as TableIcon, Loader2, ChevronLeft, ChevronRight, Play, X, User } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import DashboardStats from '@/components/DashboardStats';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -48,6 +49,7 @@ export default function AdminDashboard() {
   const [avgMatch, setAvgMatch] = useState(0);
   const [dynamicLogs, setDynamicLogs] = useState<any[]>([]);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
 
 
   // Excel Table States
@@ -110,6 +112,11 @@ export default function AdminDashboard() {
         setTotalRecords(total);
         setAvgMatch(matchCount > 0 ? Math.round(matchScores / matchCount) : 0);
         setDynamicLogs(logs);
+        
+        if (selectedSubmission) {
+          const updated = json.data.find((s: any) => s.id === selectedSubmission.id);
+          if (updated) setSelectedSubmission(updated);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -336,7 +343,7 @@ export default function AdminDashboard() {
                   {loading ? (
                     <tr><td colSpan={5} className="text-center py-8">Memuat data...</td></tr>
                   ) : submissions.map((sub) => (
-                    <tr key={sub.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                    <tr key={sub.id} onClick={() => setSelectedSubmission(sub)} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer">
                       <td className="px-6 py-4">
                         <span className="font-mono font-medium text-blue-600 dark:text-blue-400">REQ-{sub.id}</span>
                         <p className="text-xs text-slate-500 mt-1">{new Date(sub.created_at).toLocaleDateString('id-ID')}</p>
@@ -365,38 +372,12 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
-                          {sub.status === 'PENDING' && (
-                            <button 
-                              onClick={() => updateStatus(sub.id, 'VALIDATED')}
-                              disabled={processingId === sub.id}
-                              className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
-                            >
-                              Approve Cek Sistem
-                            </button>
-                          )}
-                          {sub.status === 'VALIDATED' && (
-                            <button 
-                              onClick={() => updateStatus(sub.id, 'MATCHING')}
-                              disabled={processingId === sub.id}
-                              className="px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center gap-1"
-                            >
-                              <Play className="w-3 h-3" /> Mulai Matching
-                            </button>
-                          )}
-                          {sub.status === 'MATCHING' && (
-                            <button 
-                              onClick={() => updateStatus(sub.id, 'COMPLETED')}
-                              disabled={processingId === sub.id}
-                              className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center gap-1"
-                            >
-                              <CheckCircle className="w-3 h-3" /> Selesaikan
-                            </button>
-                          )}
-                          {sub.status === 'COMPLETED' && (
-                            <span className="text-xs text-emerald-500 font-bold px-2 flex items-center gap-1">
-                               <CheckCircle className="w-4 h-4" /> BAST Selesai
-                            </span>
-                          )}
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); setSelectedSubmission(sub); }}
+                            className="px-4 py-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5"
+                          >
+                            <FileText className="w-4 h-4" /> Lihat Detail
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -598,6 +579,146 @@ export default function AdminDashboard() {
         )}
       </motion.div>
       </div>
+
+      {/* Slide-over Detail Sidebar */}
+      <AnimatePresence>
+        {selectedSubmission && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedSubmission(null)}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60]"
+            />
+            <motion.div
+              initial={{ x: '100%', opacity: 0.5 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '100%', opacity: 0 }}
+              transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
+              className="fixed top-0 right-0 bottom-0 w-full sm:w-[450px] bg-white dark:bg-slate-900 shadow-2xl z-[70] border-l border-slate-200 dark:border-slate-800 flex flex-col"
+            >
+              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-blue-600" /> Detail Pengajuan
+                </h2>
+                <button 
+                  onClick={() => setSelectedSubmission(null)}
+                  className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                {/* Info Utama */}
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">ID Tiket</p>
+                    <div className="font-mono text-base font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">REQ-{selectedSubmission.id}</div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Pengirim</p>
+                      <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <User className="w-4 h-4 text-slate-400" /> {selectedSubmission.user?.instansi || 'Instansi Daerah'}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Tanggal</p>
+                      <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <Clock className="w-4 h-4 text-slate-400" /> {new Date(selectedSubmission.created_at).toLocaleDateString('id-ID')}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Berkas Data Sasaran</p>
+                    <div className="text-sm font-bold text-slate-900 dark:text-white bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/30 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Database className="w-4 h-4 text-blue-500" />
+                        {selectedSubmission.file_name}
+                      </div>
+                      <span className="text-xs bg-white dark:bg-slate-800 px-2 py-1 rounded-md text-slate-500 shadow-sm">{selectedSubmission.total_rows?.toLocaleString() || 0} Baris</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status SLA Timeline */}
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white mb-4">SLA Timeline</h3>
+                  <div className="relative border-l-2 border-slate-100 dark:border-slate-800 ml-3 space-y-6">
+                    <div className="relative pl-6">
+                      <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center border-2 border-white dark:border-slate-900">
+                        <CheckCircle className="w-2 h-2 text-white" />
+                      </div>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white">Pengajuan Data</p>
+                      <p className="text-xs text-slate-500">SLA: 1 Hari Kerja</p>
+                    </div>
+                    <div className="relative pl-6">
+                      <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 ${selectedSubmission.status !== 'PENDING' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}>
+                        {selectedSubmission.status !== 'PENDING' ? <CheckCircle className="w-2 h-2 text-white" /> : <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
+                      </div>
+                      <p className={`text-sm font-bold ${selectedSubmission.status !== 'PENDING' ? 'text-slate-900 dark:text-white' : 'text-amber-600 dark:text-amber-400'}`}>Cek Variabel (Sistem)</p>
+                      <p className="text-xs text-slate-500">SLA: 1-2 Hari Kerja</p>
+                    </div>
+                    <div className="relative pl-6">
+                      <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 ${['MATCHING', 'COMPLETED'].includes(selectedSubmission.status) ? (selectedSubmission.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-blue-500 animate-pulse') : 'bg-slate-200 dark:bg-slate-700'}`}>
+                        {selectedSubmission.status === 'COMPLETED' ? <CheckCircle className="w-2 h-2 text-white" /> : ['MATCHING'].includes(selectedSubmission.status) ? <div className="w-1.5 h-1.5 bg-white rounded-full"></div> : null}
+                      </div>
+                      <p className={`text-sm font-bold ${['MATCHING', 'COMPLETED'].includes(selectedSubmission.status) ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>Proses Matching Lokal</p>
+                      <p className="text-xs text-slate-500">SLA: 3-5 Hari Kerja</p>
+                    </div>
+                    <div className="relative pl-6">
+                      <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 ${selectedSubmission.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-700'}`}>
+                        {selectedSubmission.status === 'COMPLETED' && <CheckCircle className="w-2 h-2 text-white" />}
+                      </div>
+                      <p className={`text-sm font-bold ${selectedSubmission.status === 'COMPLETED' ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>Serah Terima Data</p>
+                      <p className="text-xs text-slate-500">SLA: 1 Hari Kerja</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">
+                {selectedSubmission.status === 'PENDING' && (
+                  <button 
+                    onClick={() => updateStatus(selectedSubmission.id, 'VALIDATED')}
+                    disabled={processingId === selectedSubmission.id}
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <ShieldCheck className="w-5 h-5" /> Approve Cek Sistem
+                  </button>
+                )}
+                {selectedSubmission.status === 'VALIDATED' && (
+                  <button 
+                    onClick={() => updateStatus(selectedSubmission.id, 'MATCHING')}
+                    disabled={processingId === selectedSubmission.id}
+                    className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <Play className="w-5 h-5" /> Mulai Matching Lokal
+                  </button>
+                )}
+                {selectedSubmission.status === 'MATCHING' && (
+                  <button 
+                    onClick={() => updateStatus(selectedSubmission.id, 'COMPLETED')}
+                    disabled={processingId === selectedSubmission.id}
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <CheckCircle className="w-5 h-5" /> Selesaikan Pemadanan
+                  </button>
+                )}
+                {selectedSubmission.status === 'COMPLETED' && (
+                  <div className="w-full py-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-xl text-sm font-bold border border-emerald-200 dark:border-emerald-800 text-center flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-5 h-5" /> SLA Selesai (Menunggu BAST Pemda)
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
