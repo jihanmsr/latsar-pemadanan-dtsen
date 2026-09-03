@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { UploadCloud, CheckCircle2, FileText } from 'lucide-react';
+import { UploadCloud, CheckCircle2, FileText, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface MoUUploadProps {
@@ -10,21 +10,40 @@ export default function MoUUpload({ onUploadSuccess }: MoUUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
+      setIsError(false);
     }
   };
 
   const handleUpload = () => {
     if (!file) return;
     setIsUploading(true);
+    setIsError(false);
     
     // Simulate upload delay
     setTimeout(() => {
       setIsUploading(false);
+      
+      // Simulate error conditions
+      if (file.size > 10 * 1024 * 1024) {
+        setIsError(true);
+        setErrorMessage("Ukuran file terlalu besar. Maksimal 10 MB.");
+        return;
+      }
+      
+      const fileNameLower = file.name.toLowerCase();
+      if (fileNameLower.includes('error') || fileNameLower.includes('gagal') || fileNameLower.includes('virus')) {
+        setIsError(true);
+        setErrorMessage("Sistem menolak file: Format tidak sesuai atau koneksi terputus.");
+        return;
+      }
+      
       setIsSuccess(true);
       onUploadSuccess();
     }, 1500);
@@ -42,7 +61,7 @@ export default function MoUUpload({ onUploadSuccess }: MoUUploadProps) {
         </div>
       </div>
 
-      {!isSuccess ? (
+      {!isSuccess && !isError ? (
         <div className="space-y-4">
           <div 
             className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
@@ -79,6 +98,26 @@ export default function MoUUpload({ onUploadSuccess }: MoUUploadProps) {
             )}
           </button>
         </div>
+      ) : isError ? (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+            <div>
+              <p className="text-sm font-bold text-red-800 dark:text-red-300">Gagal Mengunggah Dokumen</p>
+              <p className="text-xs text-red-600 dark:text-red-400">{errorMessage}</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => { setIsError(false); setFile(null); }}
+            className="text-xs text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 underline font-medium"
+          >
+            Coba Lagi
+          </button>
+        </motion.div>
       ) : (
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
@@ -98,6 +137,7 @@ export default function MoUUpload({ onUploadSuccess }: MoUUploadProps) {
           >
             Ganti File
           </button>
+
         </motion.div>
       )}
     </div>
