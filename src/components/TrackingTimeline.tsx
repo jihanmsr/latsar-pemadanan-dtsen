@@ -43,6 +43,19 @@ export default function TrackingTimeline() {
   const targetId = searchParams.get('id');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [submissionOptions, setSubmissionOptions] = useState<any[]>([]);
+
+  // Fetch list of submissions for the dropdown
+  useEffect(() => {
+    fetch('/api/submissions?limit=50')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          setSubmissionOptions(res.data);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -218,8 +231,20 @@ export default function TrackingTimeline() {
         </div>
         <div className="flex items-center gap-3">
           {submissionId && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-xl text-blue-800 dark:text-blue-300 font-bold shadow-sm whitespace-nowrap">
-              ID: {submissionId}
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl text-blue-800 dark:text-blue-300 font-bold shadow-sm flex items-center overflow-hidden">
+              <span className="pl-4 py-2 border-r border-blue-200 dark:border-blue-800 mr-2 opacity-75 text-sm">ID:</span>
+              <select 
+                value={submissionId || ''}
+                onChange={(e) => {
+                  router.push(`/tracking?id=${e.target.value}`);
+                }}
+                className="bg-transparent border-none text-blue-800 dark:text-blue-300 font-bold focus:ring-0 cursor-pointer py-2 pr-8 pl-1 text-sm outline-none"
+              >
+                {submissionOptions.length === 0 && <option value={submissionId || ''}>{submissionId}</option>}
+                {submissionOptions.map(opt => (
+                  <option key={opt.id} value={opt.id}>{opt.id} - {opt.file_name.substring(0, 15)}{opt.file_name.length > 15 ? '...' : ''}</option>
+                ))}
+              </select>
             </div>
           )}
           <button 

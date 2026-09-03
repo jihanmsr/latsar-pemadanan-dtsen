@@ -239,11 +239,39 @@ export default function UploadForm() {
   const handleContinue = async () => {
     try {
       setIsValidating(true);
-      await new Promise(r => setTimeout(r, 1000));
       
-      if (!submissionId) {
-        setSubmissionId(`REQ-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*1000)}`);
+      let currentId = submissionId;
+      if (!currentId) {
+        currentId = `REQ-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*1000)}`;
+        setSubmissionId(currentId);
       }
+
+      // Hitung total dan valid baris dari context files
+      let totalRows = 0;
+      let validRows = 0;
+      files.forEach(f => {
+        if (f.status === 'success') {
+          totalRows += f.totalRows || 0;
+          validRows += f.totalRows || 0; // asumsi jika success, semua valid
+        }
+      });
+
+      // Kirim data ke backend (Persistence)
+      const res = await fetch('/api/submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: currentId,
+          file_name: files.find(f => f.status === 'success')?.name || 'berkas_pengajuan.csv',
+          total_rows: totalRows,
+          valid_rows: validRows
+        })
+      });
+
+      if (!res.ok) {
+        console.error("Failed to save submission to database");
+      }
+      
       setIsSuccessModalOpen(true);
     } catch (error) {
       console.error("Error finalizing:", error);
@@ -584,8 +612,10 @@ export default function UploadForm() {
                 </button>
                 <button
                   onClick={() => {
+                    const currentId = submissionId;
                     setIsSuccessModalOpen(false);
-                    router.push(`/tracking?id=${submissionId}`);
+                    reset();
+                    router.push(`/tracking?id=${currentId}`);
                   }}
                   className="px-4 py-4 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex justify-center items-center gap-2"
                 >

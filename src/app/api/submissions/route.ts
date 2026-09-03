@@ -170,3 +170,37 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+/**
+ * POST /api/submissions
+ * Endpoint untuk menyimpan data pengajuan baru ke database
+ */
+export async function POST(req: NextRequest) {
+  const { user, error } = await verifyAuth(req);
+  if (!user) return unauthorizedResponse(error ?? undefined);
+
+  try {
+    const body = await req.json();
+    const { id, file_name, total_rows, valid_rows } = body;
+
+    if (!id || !file_name) {
+      return NextResponse.json({ success: false, error: 'Parameter id dan file_name diwajibkan.' }, { status: 400 });
+    }
+
+    // Insert into submissions table
+    const sql = `
+      INSERT INTO submissions (id, user_id, file_name, file_type, status, total_rows, valid_rows, created_at)
+      VALUES (?, ?, ?, 'CSV', 'PENDING', ?, ?, NOW())
+    `;
+    
+    await query(sql, [id, user.id, file_name, total_rows || 0, valid_rows || 0]);
+
+    return NextResponse.json({ success: true, message: 'Submission berhasil disimpan.', id });
+  } catch (err) {
+    console.error('[/api/submissions POST] Error:', err);
+    return NextResponse.json(
+      { success: false, error: 'Gagal menyimpan data submission.' },
+      { status: 500 }
+    );
+  }
+}
