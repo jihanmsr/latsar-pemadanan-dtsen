@@ -37,10 +37,17 @@ const Particles = () => {
 };
 
 export default function TrackingTimeline() {
-  const { submissionId, files, matchingProgress, setMatchingProgress, docs, setDocs, updateFile, setSubmissionId, setFiles, reset } = useMatching();
   const router = useRouter();
   const searchParams = useSearchParams();
   const targetId = searchParams.get('id');
+  const { reset } = useMatching();
+  
+  // Local state instead of global context to avoid polluting the Upload Dashboard
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const [files, setFiles] = useState<FileItem[]>([]);
+  const [matchingProgress, setMatchingProgress] = useState(0);
+  const [docs, setDocs] = useState({ bast: false, nda: false });
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [submissionOptions, setSubmissionOptions] = useState<any[]>([]);
