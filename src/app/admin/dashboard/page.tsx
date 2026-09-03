@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin, FileDown, UploadCloud, Send, Table as TableIcon, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FileText, Download, CheckCircle, Clock, ShieldCheck, Database, FolderArchive, Activity, Server, HardDrive, MapPin, FileDown, UploadCloud, Send, Table as TableIcon, Loader2, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import DashboardStats from '@/components/DashboardStats';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -44,6 +44,12 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [verifyingId, setVerifyingId] = useState<number | null>(null);
 
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [avgMatch, setAvgMatch] = useState(0);
+  const [dynamicLogs, setDynamicLogs] = useState<any[]>([]);
+  const [processingId, setProcessingId] = useState<string | null>(null);
+
+
   // Excel Table States
   const [excelType, setExcelType] = useState<'desil' | 'v4'>('desil');
   const [excelData, setExcelData] = useState<{headers: string[], rows: any[], total: number, page: number, totalPages: number} | null>(null);
@@ -75,15 +81,61 @@ export default function AdminDashboard() {
 
   const fetchSubmissions = async () => {
     try {
-      const res = await fetch('/api/submissions');
+      const res = await fetch('/api/submissions?limit=100');
       const json = await res.json();
       if (json.success) {
         setSubmissions(json.data);
+        
+        let total = 0;
+        let matchScores = 0;
+        let matchCount = 0;
+        const logs: any[] = [];
+        
+        json.data.forEach((sub: any, i: number) => {
+          total += sub.total_rows || 0;
+          if (sub.matching_stats && sub.matching_stats.avg_score) {
+            matchScores += sub.matching_stats.avg_score;
+            matchCount++;
+          }
+          if (i < 5) {
+            logs.push({
+              id: sub.id,
+              time: new Date(sub.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
+              text: `${sub.user?.instansi || 'Instansi Daerah'} ${sub.status === 'PENDING' ? 'mengajukan' : 'berstatus ' + sub.status} ${sub.file_name}`,
+              status: sub.status === 'PENDING' ? 'upload' : sub.status === 'COMPLETED' ? 'approve' : 'valid'
+            });
+          }
+        });
+        
+        setTotalRecords(total);
+        setAvgMatch(matchCount > 0 ? Math.round(matchScores / matchCount) : 0);
+        setDynamicLogs(logs);
       }
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateStatus = async (id: string, newStatus: string) => {
+    try {
+      setProcessingId(id);
+      const res = await fetch('/api/submissions', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: newStatus })
+      }).then(r => r.json());
+      
+      if (res.success) {
+        fetchSubmissions();
+        toast.success(`Status diubah ke ${newStatus}`);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Gagal memperbarui status');
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -182,7 +234,7 @@ export default function AdminDashboard() {
           <h3 className="text-lg font-bold text-foreground mb-1">Log Aktivitas</h3>
           <p className="text-xs text-muted mb-6">Real-time system feed</p>
           <div className="flex-1 space-y-5 overflow-y-auto pr-2">
-            {activityLogs.map((log) => (
+            {dynamicLogs.map((log) => (
               <div key={log.id} className="relative pl-6">
                 <div className={`absolute left-0 top-1.5 w-2 h-2 rounded-full ${log.status === 'upload' ? 'bg-blue-500' : log.status === 'valid' ? 'bg-success' : 'bg-amber-500'}`}></div>
                 <div className="absolute left-[3px] top-4 bottom-[-16px] w-[2px] bg-slate-200 dark:bg-slate-700"></div>
@@ -313,21 +365,37 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
-                          <button className="p-2 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Lihat Detail">
-                            <FileText className="w-4 h-4" />
-                          </button>
-                          <button className="p-2 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Unduh Manifes BPS">
-                            <Download className="w-4 h-4" />
-                          </button>
                           {sub.status === 'PENDING' && (
                             <button 
-                              onClick={() => handleVerify(sub.id)}
-                              disabled={verifyingId === sub.id}
-                              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5"
+                              onClick={() => updateStatus(sub.id, 'VALIDATED')}
+                              disabled={processingId === sub.id}
+                              className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
                             >
-                              <ShieldCheck className="w-3.5 h-3.5" /> 
-                              {verifyingId === sub.id ? 'Memproses...' : 'Verifikasi'}
+                              Approve Cek Sistem
                             </button>
+                          )}
+                          {sub.status === 'VALIDATED' && (
+                            <button 
+                              onClick={() => updateStatus(sub.id, 'MATCHING')}
+                              disabled={processingId === sub.id}
+                              className="px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center gap-1"
+                            >
+                              <Play className="w-3 h-3" /> Mulai Matching
+                            </button>
+                          )}
+                          {sub.status === 'MATCHING' && (
+                            <button 
+                              onClick={() => updateStatus(sub.id, 'COMPLETED')}
+                              disabled={processingId === sub.id}
+                              className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center gap-1"
+                            >
+                              <CheckCircle className="w-3 h-3" /> Selesaikan
+                            </button>
+                          )}
+                          {sub.status === 'COMPLETED' && (
+                            <span className="text-xs text-emerald-500 font-bold px-2 flex items-center gap-1">
+                               <CheckCircle className="w-4 h-4" /> BAST Selesai
+                            </span>
                           )}
                         </div>
                       </td>

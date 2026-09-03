@@ -268,8 +268,9 @@ export default function TrackingTimeline() {
       {files.length > 0 && (
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* SISI KIRI: TIMELINE */}
-          <div className="w-full lg:w-1/3 bg-surface border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm sticky top-24">
-            <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">Status Tahapan</h3>
+          <div className="w-full lg:w-1/3 glass rounded-3xl p-8 border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-blue-900/10 sticky top-24 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-blue-500/20 transition-all duration-500"></div>
+<h3 className="font-bold text-xl text-slate-900 dark:text-white mb-8 border-b border-slate-100 dark:border-slate-800 pb-4 relative z-10">Status Tahapan</h3>
             <div className="relative">
               <div className="absolute top-5 left-5 bottom-5 w-[2px] bg-slate-100 dark:bg-slate-800 z-0"></div>
               <div className="space-y-8 relative z-10">
@@ -306,13 +307,13 @@ export default function TrackingTimeline() {
             
             {/* BOX 1: Cek Variabel Sistem */}
             {steps[1].status !== 'pending' && (
-              <div className="bg-surface border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+              <div className="glass rounded-3xl p-6 border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
                 <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2 mb-4">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500" /> Hasil Pengecekan Sistem
                 </h3>
                 <div className="space-y-2">
                   {files.map(f => (
-                    <div key={f.id} className="flex items-center justify-between bg-slate-50 dark:bg-slate-900/50 p-3 px-4 rounded-xl border border-slate-100 dark:border-slate-800 text-sm">
+                    <div key={f.id} className="flex items-center justify-between bg-white/50 dark:bg-slate-800/50 backdrop-blur-md p-4 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 text-sm shadow-sm hover:shadow-md transition-all">
                       <span className="font-bold text-slate-700 dark:text-slate-300 truncate">{f.name}</span>
                       <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
                         {f.status === 'success' ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <XCircle className="w-4 h-4 text-rose-500" />}
@@ -328,7 +329,7 @@ export default function TrackingTimeline() {
 
             {/* BOX 2: Proses Matching */}
             {steps[2].status !== 'pending' && (
-              <div className="bg-surface border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm overflow-hidden relative">
+              <div className="glass rounded-3xl p-8 border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
                 {steps[2].status === 'current' && <Particles />}
                 
                 <div className="relative z-10">
@@ -336,7 +337,7 @@ export default function TrackingTimeline() {
                     <Database className="w-5 h-5 text-blue-600" /> Proses Pemadanan (Matching)
                   </h3>
                   
-                  <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-100 dark:border-slate-800 mb-5">
+                  <div className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-md p-6 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 mb-6 shadow-inner">
                     <div className="flex justify-between text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2">
                       <span>Core Engine: Levenshtein Matching</span>
                       <span>{matchingProgress}%</span>
@@ -382,7 +383,7 @@ export default function TrackingTimeline() {
 
             {/* BOX 3: Dokumen Serah Terima */}
             {steps[3].status !== 'pending' && (
-              <div className="bg-surface border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+              <div className="glass rounded-3xl p-8 border border-white/20 dark:border-slate-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                 <div className="flex flex-col md:flex-row gap-6">
                   <div className="flex-1 space-y-4">
                     <div>
@@ -431,7 +432,7 @@ export default function TrackingTimeline() {
                     </div>
                   </div>
                   
-                  <div className="md:w-56 flex flex-col justify-center items-center p-5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
+                  <div className="md:w-56 flex flex-col justify-center items-center p-6 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-slate-700/50 text-center shadow-sm">
                     <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center mb-3">
                       {isDownloadUnlocked ? <Unlock className="w-5 h-5 text-emerald-500" /> : <Lock className="w-5 h-5 text-slate-400" />}
                     </div>

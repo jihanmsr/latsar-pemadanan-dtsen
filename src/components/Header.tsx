@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: boolean) => void }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [adminNotifications, setAdminNotifications] = useState<any[]>([]);
   const { matchingProgress, files } = useMatching();
   const { user, logout } = useAuth();
   const isValidated = files && files.length > 0 && files.every(f => f.status === 'success');
@@ -17,11 +18,27 @@ export default function Header({ setIsSidebarOpen }: { setIsSidebarOpen?: (val: 
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI') {
+      fetch('/api/submissions')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            const pending = res.data.filter((s: any) => s.status === 'PENDING');
+            setAdminNotifications(pending.map((p: any) => ({
+              id: p.id,
+              title: 'Pengajuan Baru',
+              desc: `${p.user?.instansi || 'Instansi Daerah'} mengunggah ${p.total_rows?.toLocaleString() || 0} data.`
+            })));
+          }
+        }).catch(console.error);
+    }
+  }, [user]);
 
   const notifications = [];
 
-  if (user?.role === 'PEMDA') {
+  if (user?.role === 'BPS_ADMIN' || user?.role === 'BPS_PEGAWAI') {
+    notifications.push(...adminNotifications);
+  } else if (user?.role === 'PEMDA') {
     notifications.push({ id: 99, title: "Tindakan Diperlukan", desc: `Silakan lengkapi manifes untuk data ${user.instansi || 'instansi'}.` });
   }
 
